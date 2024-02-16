@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'coba yeeea')
+@section('title', 'Dahsboard')
 @section('content')
   <div class="page-heading">
     <h3>Profile Statistics</h3>
