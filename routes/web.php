@@ -2,7 +2,13 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+//Dashboard
 use App\Http\Controllers\DashboardController;
+//Location
+use App\Http\Controllers\MasterData\Location\ContainerLocationController;
+use App\Http\Controllers\MasterData\Location\DetailLocationController;
+use App\Http\Controllers\MasterData\Location\SubLocationController;
+use App\Http\Controllers\MasterData\Location\MainLocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +35,16 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['auth:sanctum', 'verified']], function () {
     Route::resource('dashboard', DashboardController::class);
+    Route::resource('main-location', MainLocationController::class);
+    Route::resource('sub-location', SubLocationController::class);
+    Route::resource('detail-location', DetailLocationController::class);
+    Route::resource('container-location', ContainerLocationController::class);
+
+    // Route::get('/get-sub-location', [DetailLocationController::class, 'getSubLocations'])->name('getSubLocations');
+
+    Route::get('/get-sub-location', [DetailLocationController::class, 'getSubLocations'])->name('getSubLocations');
+    Route::get('/get-container', [DetailLocationController::class, 'getContainers'])->name('getContainers');
+
 
 });
 

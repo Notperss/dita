@@ -5,7 +5,6 @@
   {{-- meta --}}
   @include('includes.meta')
   <title>@yield('title') | DITA</title>
-
   {{-- style --}}
   @stack('before-style')
   @include('includes.style')
@@ -13,16 +12,19 @@
 </head>
 
 <body>
-
-  <script src="../assets/static/js/initTheme.js"></script>
+  @routes()
+  <script src="{{ asset('') }}/assets/static/js/initTheme.js"></script>
   <div id="app">
     {{-- sidebar --}}
     @include('components.menu')
-    <div id="main">
+    <div id="main" class='layout-navbar'>
       {{-- header --}}
       @include('components.header')
-      {{-- content --}}
-      @yield('content')
+      <div id="main-content">
+        {{-- content --}}
+        @yield('content')
+        @include('sweetalert::alert')
+      </div>
       {{-- footer --}}
       @include('components.footer')
       {{-- script --}}

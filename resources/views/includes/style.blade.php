@@ -8,8 +8,22 @@
  <link rel="shortcut icon" href="{{ asset('/dist/assets/img/logo.png') }}" type="image/x-icon">
  <link rel="shortcut icon" href="{{ asset('/dist/assets/img/logo.png') }}" type="image/png">
 
+ <link rel="stylesheet" href="{{ asset('') }}/assets/extensions/sweetalert2/sweetalert2.min.css">
+ {{-- <link rel="stylesheet" crossorigin href="{{ asset('/assets/compiled/css/extra-component-sweetalert.css') }}"> --}}
 
+ <link rel="stylesheet" crossorigin href="{{ asset('./assets/compiled/css/app.css') }}">
+ <link rel="stylesheet" crossorigin href="{{ asset('./assets/compiled/css/app-dark.css') }}">
+ <link rel="stylesheet" crossorigin href="{{ asset('/assets/compiled/css/iconly.css') }}">
 
- <link rel="stylesheet" crossorigin href="../assets/compiled/css/app.css">
- <link rel="stylesheet" crossorigin href="../assets/compiled/css/app-dark.css">
- <link rel="stylesheet" crossorigin href="../assets/compiled/css/iconly.css">
+ <link rel="stylesheet" href="{{ asset('/assets/extensions/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}">
+ <link rel="stylesheet" href="{{ asset('/assets/extensions/simple-datatables/style.css') }}">
+
+ <link rel="stylesheet" href="{{ asset('assets/extensions/choices.js/public/assets/styles/choices.css') }}">
+
+ <!-- Styles -->
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+ <link rel="stylesheet"
+   href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+ <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

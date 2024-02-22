@@ -16,7 +16,8 @@
           <a href="#">
             <img src="{{ asset('dist/assets/img/CMNPFIX.png') }}" class="mb-4" alt="Logo" width="20%">
           </a>
-          <h5 class="auth-title ">Data Input Tapersip</h5>
+          {{-- <h5 class="auth-title ">Data Input Tapersip</h5> --}}
+          <h1>Data Input Tapersip</h1>
           <p class="auth-subtitle  my-3">Harap Login terlebih dahulu.</p>
         </div>
         {{-- <p class="auth-subtitle mb-5">Log in with your data that you entered during registration.</p> --}}

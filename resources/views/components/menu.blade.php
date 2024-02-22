@@ -47,93 +47,96 @@
         <div class="sidebar-menu">
           <ul class="menu">
             <li class="sidebar-title">Menu</li>
-
-            <li class="sidebar-item active ">
+            {{-- Dashboard --}}
+            <li
+              class="sidebar-item  {{ request()->is('backsite/dashboard') || request()->is('backsite/dashboard/*') || request()->is('backsite/*/dashboard') || request()->is('backsite/*/dashboard/*') ? 'active' : '' }}">
               <a href="{{ route('backsite.dashboard.index') }}" class='sidebar-link'>
                 <i class="bi bi-grid-fill"></i>
                 <span>Dashboard</span>
               </a>
             </li>
 
+            <li class="sidebar-title">Master Data</li>
+            {{-- Lokasi --}}
+            <li
+              class="sidebar-item  has-sub {{ request()->is('backsite/main-location') || request()->is('backsite/sub-location') || request()->is('backsite/detail-location') || request()->is('backsite/container-location') ? 'active' : '' }}">
+              <a href="#" class='sidebar-link'>
+                <i class="bi bi-building"></i>
+                <span>Lokasi</span>
+              </a>
+
+              <ul class="submenu ">
+                <li
+                  class="submenu-item  {{ request()->is('backsite/main-location') || request()->is('backsite/main-location/*') || request()->is('backsite/*/main-location') || request()->is('backsite/*/main-location/*') ? 'active' : '' }}">
+                  <a href="{{ route('backsite.main-location.index') }}" class="submenu-link">Lokasi Utama</a>
+                </li>
+
+                <li
+                  class="submenu-item  {{ request()->is('backsite/sub-location') || request()->is('backsite/sub-location/*') || request()->is('backsite/*/sub-location') || request()->is('backsite/*/sub-location/*') ? 'active' : '' }}">
+                  <a href="{{ route('backsite.sub-location.index') }}" class="submenu-link">Sub Lokasi</a>
+                </li>
+
+                <li
+                  class="submenu-item  {{ request()->is('backsite/detail-location') || request()->is('backsite/detail-location/*') || request()->is('backsite/*/detail-location') || request()->is('backsite/*/detail-location/*') ? 'active' : '' }}">
+                  <a href="{{ route('backsite.detail-location.index') }}" class="submenu-link">Detail Lokasi</a>
+                </li>
+
+                <li
+                  class="submenu-item {{ request()->is('backsite/container-location') || request()->is('backsite/container-location/*') || request()->is('backsite/*/container-location') || request()->is('backsite/*/container-location/*') ? 'active' : '' }} ">
+                  <a href="{{ route('backsite.container-location.index') }}" class="submenu-link">Container</a>
+                </li>
+
+              </ul>
+            </li>
+
+            {{-- Unit Kerja --}}
             <li class="sidebar-item  has-sub">
               <a href="#" class='sidebar-link'>
-                <i class="bi bi-stack"></i>
-                <span>Components</span>
+                <i class="bi bi-microsoft-teams"></i>
+                <span>Unit Kerja</span>
               </a>
 
               <ul class="submenu ">
                 <li class="submenu-item  ">
-                  <a href="component-accordion.html" class="submenu-link">Accordion</a>
+                  <a href="#" class="submenu-link">Divisi</a>
                 </li>
 
                 <li class="submenu-item  ">
-                  <a href="component-alert.html" class="submenu-link">Alert</a>
+                  <a href="#" class="submenu-link">Departemen</a>
                 </li>
 
                 <li class="submenu-item  ">
-                  <a href="component-badge.html" class="submenu-link">Badge</a>
+                  <a href="#" class="submenu-link">Seksi</a>
                 </li>
 
-                <li class="submenu-item  ">
-                  <a href="component-breadcrumb.html" class="submenu-link">Breadcrumb</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-button.html" class="submenu-link">Button</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-card.html" class="submenu-link">Card</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-carousel.html" class="submenu-link">Carousel</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-collapse.html" class="submenu-link">Collapse</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-dropdown.html" class="submenu-link">Dropdown</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-list-group.html" class="submenu-link">List Group</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-modal.html" class="submenu-link">Modal</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-navs.html" class="submenu-link">Navs</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-pagination.html" class="submenu-link">Pagination</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-placeholder.html" class="submenu-link">Placeholder</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-progress.html" class="submenu-link">Progress</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-spinner.html" class="submenu-link">Spinner</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-toasts.html" class="submenu-link">Toasts</a>
-                </li>
-
-                <li class="submenu-item  ">
-                  <a href="component-tooltip.html" class="submenu-link">Tooltip</a>
-                </li>
               </ul>
+            </li>
+
+            {{-- Klasifikasi --}}
+            <li class="sidebar-item  has-sub">
+              <a href="#" class='sidebar-link'>
+                <i class="bi bi-stack"></i>
+                <span>Klasifikasi Arsip</span>
+              </a>
+
+              <ul class="submenu ">
+                <li class="submenu-item  ">
+                  <a href="#" class="submenu-link">Nama Klasifikasi</a>
+                </li>
+
+                <li class="submenu-item  ">
+                  <a href="#" class="submenu-link">Sub Klasifikasi</a>
+                </li>
+
+              </ul>
+            </li>
+
+            {{-- Retensi Arsip --}}
+            <li class="sidebar-item  ">
+              <a href="#" class='sidebar-link'>
+                <i class="bi bi-file-earmark-richtext"></i>
+                <span>Retensi Arsip</span>
+              </a>
             </li>
 
             <li class="sidebar-item  has-sub">
@@ -450,8 +453,6 @@
                 <i class="bi bi-cloud-arrow-up-fill"></i>
                 <span>File Uploader</span>
               </a>
-
-
             </li>
 
             <li class="sidebar-item  has-sub">
