@@ -57,7 +57,7 @@
             </li>
 
             <li class="sidebar-title">Master Data</li>
-            {{-- Lokasi --}}
+            {{-- Location --}}
             <li
               class="sidebar-item  has-sub {{ request()->is('backsite/main-location') || request()->is('backsite/sub-location') || request()->is('backsite/detail-location') || request()->is('backsite/container-location') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
@@ -89,9 +89,9 @@
               </ul>
             </li>
 
-            {{-- Unit Kerja --}}
+            {{-- Work Unit --}}
             <li
-              class="sidebar-item  has-sub {{ request()->is('backsite/division') || request()->is('backsite/department') || request()->is('backsite/section') || request()->is('backsite/container-location') ? 'active' : '' }}">
+              class="sidebar-item  has-sub {{ request()->is('backsite/division') || request()->is('backsite/department') || request()->is('backsite/section') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
                 <i class="bi bi-microsoft-teams"></i>
                 <span>Unit Kerja</span>
@@ -116,20 +116,23 @@
               </ul>
             </li>
 
-            {{-- Klasifikasi --}}
-            <li class="sidebar-item  has-sub">
+            {{-- Classification --}}
+            <li
+              class="sidebar-item  has-sub {{ request()->is('backsite/main-classification') || request()->is('backsite/sub-classification') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
                 <i class="bi bi-stack"></i>
                 <span>Klasifikasi Arsip</span>
               </a>
 
               <ul class="submenu ">
-                <li class="submenu-item  ">
-                  <a href="#" class="submenu-link">Nama Klasifikasi</a>
+                <li
+                  class="submenu-item {{ request()->is('backsite/main-classification') || request()->is('backsite/main-classification/*') || request()->is('backsite/*/main-classification') || request()->is('backsite/*/main-classification/*') ? 'active' : '' }} ">
+                  <a href="{{ route('backsite.main-classification.index') }}" class="submenu-link">Nama Klasifikasi</a>
                 </li>
 
-                <li class="submenu-item  ">
-                  <a href="#" class="submenu-link">Sub Klasifikasi</a>
+                <li
+                  class="submenu-item {{ request()->is('backsite/sub-classification') || request()->is('backsite/sub-classification/*') || request()->is('backsite/*/sub-classification') || request()->is('backsite/*/sub-classification/*') ? 'active' : '' }} ">
+                  <a href="{{ route('backsite.sub-classification.index') }}" class="submenu-link">Sub Klasifikasi</a>
                 </li>
 
               </ul>

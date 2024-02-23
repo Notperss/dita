@@ -13,6 +13,9 @@ use App\Http\Controllers\MasterData\Location\ContainerLocationController;
 use App\Http\Controllers\MasterData\WorkUnits\DivisionController;
 use App\Http\Controllers\MasterData\WorkUnits\DepartmentController;
 use App\Http\Controllers\MasterData\WorkUnits\SectionController;
+//Classification
+use App\Http\Controllers\MasterData\Classification\MainClassificationController;
+use App\Http\Controllers\MasterData\Classification\SubClassificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +57,10 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::resource('department', DepartmentController::class);
     Route::resource('section', SectionController::class);
     Route::get('/get-department', [SectionController::class, 'getDepartments'])->name('getDepartments');
+
+    //Classification
+    Route::resource('main-classification', MainClassificationController::class);
+    Route::resource('sub-classification', SubClassificationController::class);
 
 
 

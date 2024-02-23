@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->bigInteger('main_location_id');
             $table->bigInteger('sub_location_id');
             $table->string('name');
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }

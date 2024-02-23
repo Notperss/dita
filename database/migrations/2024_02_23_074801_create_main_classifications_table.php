@@ -10,11 +10,8 @@ return new class extends Migration {
      */
     public function up() : void
     {
-        Schema::create('location_containers', function (Blueprint $table) {
+        Schema::create('classification_mains', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('main_location_id');
-            $table->bigInteger('sub_location_id');
-            $table->bigInteger('detail_location_id');
             $table->string('name');
             $table->longText('description')->nullable();
             $table->timestamps();
@@ -26,6 +23,6 @@ return new class extends Migration {
      */
     public function down() : void
     {
-        Schema::dropIfExists('location_containers');
+        Schema::dropIfExists('classification_mains');
     }
 };
