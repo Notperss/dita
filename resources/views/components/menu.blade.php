@@ -90,23 +90,27 @@
             </li>
 
             {{-- Unit Kerja --}}
-            <li class="sidebar-item  has-sub">
+            <li
+              class="sidebar-item  has-sub {{ request()->is('backsite/division') || request()->is('backsite/department') || request()->is('backsite/section') || request()->is('backsite/container-location') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
                 <i class="bi bi-microsoft-teams"></i>
                 <span>Unit Kerja</span>
               </a>
 
               <ul class="submenu ">
-                <li class="submenu-item  ">
-                  <a href="#" class="submenu-link">Divisi</a>
+                <li
+                  class="submenu-item {{ request()->is('backsite/division') || request()->is('backsite/division/*') || request()->is('backsite/*/division') || request()->is('backsite/*/division/*') ? 'active' : '' }}">
+                  <a href="{{ route('backsite.division.index') }}" class="submenu-link">Divisi</a>
                 </li>
 
-                <li class="submenu-item  ">
-                  <a href="#" class="submenu-link">Departemen</a>
+                <li
+                  class="submenu-item {{ request()->is('backsite/department') || request()->is('backsite/department/*') || request()->is('backsite/*/department') || request()->is('backsite/*/department/*') ? 'active' : '' }}  ">
+                  <a href="{{ route('backsite.department.index') }}" class="submenu-link">Departemen</a>
                 </li>
 
-                <li class="submenu-item  ">
-                  <a href="#" class="submenu-link">Seksi</a>
+                <li
+                  class="submenu-item {{ request()->is('backsite/section') || request()->is('backsite/section/*') || request()->is('backsite/*/section') || request()->is('backsite/*/section/*') ? 'active' : '' }} ">
+                  <a href="{{ route('backsite.section.index') }}" class="submenu-link">Seksi</a>
                 </li>
 
               </ul>

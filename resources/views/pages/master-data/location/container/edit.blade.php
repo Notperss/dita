@@ -146,11 +146,8 @@
                   '</option>');
               });
 
-              // Initialize Choices for the sub_location_id dropdown
-              var subLocationSelect = new Choices('#sub_location_id', {
-                searchEnabled: true, // Customize as needed
-                // Add more configuration options based on Choices documentation
-              });
+              // Manually reset the selected option in the department_id dropdown
+              $('#sub_location_id').val('').trigger('change');
             }
           });
         } else {
@@ -180,11 +177,8 @@
                   '</option>');
               });
 
-              // Initialize Choices for the detail_location_id dropdown
-              var detailLocationSelect = new Choices('#detail_location_id', {
-                searchEnabled: true, // Customize as needed
-                // Add more configuration options based on Choices documentation
-              });
+              // Manually reset the selected option in the department_id dropdown
+              $('#detail_location_id').val('').trigger('change');
             }
           });
         } else {

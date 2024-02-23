@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\MasterData\Location;
+namespace App\Http\Controllers\MasterData\WorkUnits;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
-use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
-use App\Models\MasterData\Location\MainLocation;
+use App\Models\MasterData\WorkUnits\Division;
 
-class MainLocationController extends Controller
+class DivisionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.main-location.index', compact('mainLocations'));
+        $divisions = Division::orderBy('name', 'asc')->get();
+        return view('pages.master-data.work-units.division.index', compact('divisions'));
     }
 
     /**
@@ -25,7 +24,8 @@ class MainLocationController extends Controller
      */
     public function create()
     {
-        return view('pages.master-data.location.main-location.create');
+        return view('pages.master-data.work-units.division.create');
+
     }
 
     /**
@@ -35,12 +35,15 @@ class MainLocationController extends Controller
     {
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:255', Rule::unique('location_mains')],
+            'code' => ['required', 'max:255', Rule::unique('divisions')],
+            'name' => ['required', 'max:255'],
             // Add other validation rules as needed
         ], [
-            'name.required' => 'Nama Lokasi Utama harus diisi.',
-            'name.max' => 'Nama Lokasi Utama tidak boleh lebih dari :max karakter.',
-            'name.unique' => 'Nama Lokasi Utama sudah digunakan.',
+            'name.required' => 'Nama Divisi harus diisi.',
+            'code.required' => 'Kode harus diisi.',
+            'name.max' => 'Nama Divisi tidak boleh lebih dari :max karakter.',
+            'code.max' => 'Kode tidak boleh lebih dari :max karakter.',
+            'code.unique' => 'Kode sudah digunakan.',
             // Add custom error messages for other rules
         ]);
         // Check if validation fails
@@ -48,17 +51,17 @@ class MainLocationController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // If the validation passes, create the MainLocation record
-        MainLocation::create($request->all());
+        // If the validation passes, create the Divisi record
+        Division::create($request->all());
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.main-location.index');
+        return redirect()->route('backsite.division.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(MainLocation $mainLocation)
+    public function show(Division $division)
     {
         abort(404);
     }
@@ -68,25 +71,26 @@ class MainLocationController extends Controller
      */
     public function edit($id)
     {
-        $mainLocations = MainLocation::find($id);
-        // $locations = MainLocation::orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.main-location.edit', compact('mainLocations'));
+        $divisions = Division::find($id);
+        return view('pages.master-data.work-units.division.edit', compact('divisions'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MainLocation $mainLocation)
+    public function update(Request $request, Division $division)
     {
-
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:255', Rule::unique('location_mains')->ignore($mainLocation->id)],
+            'code' => ['required', 'max:255', Rule::unique('divisions')->ignore($division->id)],
+            'name' => ['required', 'max:255'],
             // Add other validation rules as needed
         ], [
-            'name.required' => 'Nama Lokasi Utama harus diisi.',
-            'name.max' => 'Nama Lokasi Utama tidak boleh lebih dari :max karakter.',
-            'name.unique' => 'Nama Lokasi Utama sudah digunakan.',
+            'name.required' => 'Nama Divisi harus diisi.',
+            'code.required' => 'Kode harus diisi.',
+            'name.max' => 'Nama Divisi tidak boleh lebih dari :max karakter.',
+            'code.max' => 'Kode tidak boleh lebih dari :max karakter.',
+            'code.unique' => 'Kode sudah digunakan.',
             // Add custom error messages for other rules
         ]);
         // Check if validation fails
@@ -97,10 +101,10 @@ class MainLocationController extends Controller
         // get all request from frontsite
         $data = $request->all();
 
-        $mainLocation->update($data);
+        $division->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.main-location.index');
+        return redirect()->route('backsite.division.index');
     }
 
     /**
@@ -110,10 +114,10 @@ class MainLocationController extends Controller
     {
         // deskripsi id
         $decrypt_id = decrypt($id);
-        $locations = MainLocation::find($decrypt_id);
+        $division = Division::find($decrypt_id);
 
         // hapus location
-        $locations->forceDelete();
+        $division->forceDelete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();
