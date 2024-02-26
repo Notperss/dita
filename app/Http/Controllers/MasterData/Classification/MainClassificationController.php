@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\MasterData\Classification;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\MainClassification;
@@ -33,13 +34,22 @@ class MainClassificationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
+            'code' => ['required', 'max:255', Rule::unique('classification_mains')],
+
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Klasifikasi harus diisi.',
             'name.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.required' => 'Kode Klasifikasi harus diisi.',
+            'code.max' => 'Kode Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.unique' => 'Kode Klasifikasi sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
+        // Check if validation fails
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
         // Check if validation fails
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -77,10 +87,15 @@ class MainClassificationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
+            'code' => ['required', 'max:255', Rule::unique('classification_mains')->ignore($mainClassification->id)],
+
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Klasifikasi harus diisi.',
             'name.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.required' => 'Kode Klasifikasi harus diisi.',
+            'code.max' => 'Kode Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.unique' => 'Kode Klasifikasi sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);

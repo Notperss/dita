@@ -35,6 +35,7 @@
           <thead>
             <tr>
               <th class="text-center">#</th>
+              <th class="text-center">Kode</th>
               <th class="text-center">Nama Klasifikasi</th>
               <th class="text-center">Keterangan</th>
               <th class="text-center">Action</th>
@@ -44,6 +45,7 @@
             @foreach ($mainClassifications as $mainClassification)
               <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
+                <td class="text-center">{{ $mainClassification->code ?? 'N/A' }}</td>
                 <td class="text-center">{{ $mainClassification->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $mainClassification->description ?? 'N/A' }}</td>
                 <td class="text-center">

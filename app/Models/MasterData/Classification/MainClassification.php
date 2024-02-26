@@ -11,6 +11,7 @@ class MainClassification extends Model
 
     protected $table = 'classification_mains';
     protected $fillable = [
+        'code',
         'name',
         'description',
     ];

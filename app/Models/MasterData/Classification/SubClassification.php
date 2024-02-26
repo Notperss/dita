@@ -12,6 +12,7 @@ class SubClassification extends Model
     protected $table = 'classification_subs';
     protected $fillable = [
         'main_classification_id',
+        'code',
         'name',
         'description',
     ];

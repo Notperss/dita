@@ -39,6 +39,15 @@
                 <div class="row ">
                   <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
+                      <label for="code">Kode Klasifikasi <code>*</code></label>
+                      <input type="text" id="code" class="form-control" placeholder="Nama Klasifikasi"
+                        name="code" value="{{ old('code', $mainClassifications->code) }}" required>
+                      @if ($errors->has('code'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('code') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
                       <label for="name">Nama Klasifikasi <code>*</code></label>
                       <input type="text" id="name" class="form-control" placeholder="Nama Klasifikasi"
                         name="name" value="{{ old('name', $mainClassifications->name) }}" required>

@@ -52,6 +52,15 @@
                       @endif
                     </div>
                     <div class="form-group">
+                      <label for="code">Kode Sub Klasifikasi <code>*</code></label>
+                      <input type="text" id="code" class="form-control" placeholder="Kode Sub Klasifikasi"
+                        name="code" value="{{ old('code') }}" required>
+                      @if ($errors->has('code'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('code') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
                       <label for="name">Nama Sub Klasifikasi <code>*</code></label>
                       <input type="text" id="name" class="form-control" placeholder="Nama Sub Klasifikasi"
                         name="name" value="{{ old('name') }}" required>

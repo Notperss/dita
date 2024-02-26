@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\MasterData\Classification;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\SubClassification;
@@ -36,12 +37,17 @@ class SubClassificationController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'main_classification_id' => ['required', 'max:255'],
+            'code' => ['required', 'max:255', Rule::unique('classification_subs')],
+
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Sub Klasifikasi harus diisi.',
             'name.max' => 'Nama Sub Klasifikasi tidak boleh lebih dari :max karakter.',
             'main_classification_id.required' => 'Nama Klasifikasi harus diisi.',
             'main_classification_id.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.required' => 'Kode Sub Klasifikasi harus diisi.',
+            'code.max' => 'Kode Sub Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.unique' => 'Kode Sub Klasifikasi sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
@@ -84,10 +90,18 @@ class SubClassificationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
+            'main_classification_id' => ['required', 'max:255'],
+            'code' => ['required', 'max:255', Rule::unique('classification_subs')->ignore($subClassification->id)],
+
             // Add other validation rules as needed
         ], [
-            'name.required' => 'Nama Klasifikasi harus diisi.',
-            'name.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
+            'name.required' => 'Nama Sub Klasifikasi harus diisi.',
+            'name.max' => 'Nama Sub Klasifikasi tidak boleh lebih dari :max karakter.',
+            'main_classification_id.required' => 'Nama Klasifikasi harus diisi.',
+            'main_classification_id.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.required' => 'Kode Sub Klasifikasi harus diisi.',
+            'code.max' => 'Kode Sub Klasifikasi tidak boleh lebih dari :max karakter.',
+            'code.unique' => 'Kode Sub Klasifikasi sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
