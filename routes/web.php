@@ -16,6 +16,7 @@ use App\Http\Controllers\MasterData\WorkUnits\SectionController;
 //Classification
 use App\Http\Controllers\MasterData\Classification\MainClassificationController;
 use App\Http\Controllers\MasterData\Classification\SubClassificationController;
+use App\Http\Controllers\MasterData\Retention\RetentionArchivesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,11 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     //Classification
     Route::resource('main-classification', MainClassificationController::class);
     Route::resource('sub-classification', SubClassificationController::class);
+
+    //Retention
+    Route::resource('retention', RetentionArchivesController::class);
+    Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
+
 
 
 

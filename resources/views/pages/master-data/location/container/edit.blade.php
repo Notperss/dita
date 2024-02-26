@@ -91,12 +91,31 @@
 
                   <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
-                      <label for="name">Nama Container Lokasi <code>*</code></label>
-                      <input type="text" id="name" class="form-control" placeholder="Nama Container Lokasi"
-                        name="name" value="{{ old('name', $containerLocations->name) }}" required>
-                      @if ($errors->has('name'))
+                      <label for="division_id">Nama Divisi <code>*</code></label>
+                      <select name="division_id" id="division_id" class="form-control choices" required>
+                        <option value="" selected disabled>Pilih Divisi</option>
+                        @foreach ($divisions as $division)
+                          <option
+                            value="{{ $division->id }}"{{ $division->id == $containerLocations->division_id ? 'selected' : '' }}>
+                            {{ $division->name }}</option>
+                        @endforeach
+                      </select>
+                      @if ($errors->has('division_id'))
                         <p style="font-style: bold; color: red;">
-                          {{ $errors->first('name') }}</p>
+                          {{ $errors->first('division_id') }}</p>
+                      @endif
+                    </div>
+                  </div>
+
+                  <div class="col-md-8 col-12 mx-auto">
+                    <div class="form-group">
+                      <label for="number_container">Nomor Container <code>*</code></label>
+                      <input type="text" id="number_container" class="form-control" name="number_container"
+                        value="{{ isset($containerLocations->number_container) ? str_pad($containerLocations->number_container, 3, '0', STR_PAD_LEFT) : 'N/A' }}"
+                        readonly required>
+                      @if ($errors->has('number_container'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_container') }}</p>
                       @endif
                     </div>
                   </div>

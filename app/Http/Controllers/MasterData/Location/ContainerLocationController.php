@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\MasterData\Location;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Models\MasterData\WorkUnits\Division;
 use App\Models\MasterData\Location\SubLocation;
 use App\Models\MasterData\Location\MainLocation;
 use App\Models\MasterData\Location\DetailLocation;
@@ -21,7 +23,7 @@ class ContainerLocationController extends Controller
             with('mainLocation',
                 'subLocation',
                 'detailLocation')
-            ->orderBy('name', 'asc')
+            ->orderBy('number_container', 'asc')
             ->get();
 
         return view('pages.master-data.location.container.index', compact('containerLocations'));
@@ -33,7 +35,8 @@ class ContainerLocationController extends Controller
     public function create()
     {
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.container.create', compact('mainLocations'));
+        $divisions = Division::orderBy('name', 'asc')->get();
+        return view('pages.master-data.location.container.create', compact('mainLocations', 'divisions'));
     }
 
     /**
@@ -42,20 +45,19 @@ class ContainerLocationController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'main_location_id' => ['required', 'max:255'],
-            'sub_location_id' => ['required', 'max:255'],
-            'detail_location_id' => ['required', 'max:255'],
-            'name' => ['required', 'max:255',],
-            'description' => ['max:255',],
+            'main_location_id' => ['required'],
+            'sub_location_id' => ['required'],
+            'detail_location_id' => ['required'],
+            'division_id' => ['required'],
+            'number_container' => ['required', Rule::unique('location_containers')],
             // Add other validation rules as needed
         ],
             [
-                'main_location_id.required' => 'Nama Lokasi Utama harus diisi.',
-                'sub_location_id.required' => 'Nama Sub Lokasi harus diisi.',
-                'detail_location_id.required' => 'Nama Detail Lokasi harus diisi.',
-                'name.required' => 'Nama Container Lokasi harus diisi.',
-                'name.max' => 'Nama Container Lokasi tidak boleh lebih dari :max karakter.',
-                'description.max' => 'Keterangan tidak boleh lebih dari :max karakter.',
+                'main_location_id.required' => 'Lokasi Utama harus diisi.',
+                'sub_location_id.required' => 'Sub Lokasi harus diisi.',
+                'detail_location_id.required' => 'Detail Lokasi harus diisi.',
+                'division_id.required' => 'Divisi harus diisi.',
+                'number_container.required' => 'Nomor Container harus diisi.',
                 // Add custom error messages for other rules
             ]
         );
@@ -85,10 +87,11 @@ class ContainerLocationController extends Controller
     public function edit($id)
     {
         $containerLocations = ContainerLocation::find($id);
+        $divisions = Division::orderBy('name', 'asc')->get();
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
         $subLocations = SubLocation::where('main_location_id', $containerLocations->main_location_id)->orderBy('name', 'asc')->get();
         $detailLocations = DetailLocation::where('sub_location_id', $containerLocations->sub_location_id)->orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.container.edit', compact('mainLocations', 'subLocations', 'detailLocations', 'containerLocations'));
+        return view('pages.master-data.location.container.edit', compact('mainLocations', 'subLocations', 'detailLocations', 'containerLocations', 'divisions'));
     }
 
     /**
@@ -96,21 +99,23 @@ class ContainerLocationController extends Controller
      */
     public function update(Request $request, ContainerLocation $containerLocation)
     {
-        // Validate the request data
         $validator = Validator::make($request->all(), [
-            'main_location_id' => ['required', 'max:255'],
-            'sub_location_id' => ['required', 'max:255'],
-            'name' => ['required', 'max:255',],
-            'description' => ['max:255',],
+            'main_location_id' => ['required'],
+            'sub_location_id' => ['required'],
+            'detail_location_id' => ['required'],
+            'division_id' => ['required'],
+            'number_container' => ['required', Rule::unique('location_containers')->ignore($containerLocation->id)],
             // Add other validation rules as needed
-        ], [
-            'main_location_id.required' => 'Nama Lokasi Utama harus diisi.',
-            'sub_location_id.required' => 'Nama Sub Lokasi harus diisi.',
-            'name.required' => 'Nama Detail Lokasi harus diisi.',
-            'name.max' => 'Nama Detail Lokasi tidak boleh lebih dari :max karakter.',
-            'description.max' => 'Keterangan tidak boleh lebih dari :max karakter.',
-            // Add custom error messages for other rules
-        ]);
+        ],
+            [
+                'main_location_id.required' => 'Lokasi Utama harus diisi.',
+                'sub_location_id.required' => 'Sub Lokasi harus diisi.',
+                'detail_location_id.required' => 'Detail Lokasi harus diisi.',
+                'division_id.required' => 'Divisi harus diisi.',
+                'number_container.required' => 'Nomor Container harus diisi.',
+                // Add custom error messages for other rules
+            ]
+        );
         // Check if validation fails
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();

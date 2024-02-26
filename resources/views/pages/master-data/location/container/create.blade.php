@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Location')
+@section('title', 'Container Location')
 @section('content')
   <div class="page-heading">
 
     <div class="page-title">
       <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
-          <h3>Detail Location</h3>
+          <h3>Container Location</h3>
         </div>
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Master Data</a></li>
-              <li class="breadcrumb-item" aria-current="page">Detail Location</li>
+              <li class="breadcrumb-item" aria-current="page">Container Location</li>
               <li class="breadcrumb-item active" aria-current="page">Create</li>
             </ol>
           </nav>
@@ -36,6 +36,12 @@
                 enctype="multipart/form-data" id=myForm>
                 @csrf
                 <div class="row ">
+                  @php
+                    $latestReport = DB::table('location_containers')->whereNotNull('number_container')->latest()->first();
+
+                    $nextNumber = $latestReport ? $latestReport->number_container + 1 : 1;
+                    $formattedNextNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+                  @endphp
                   <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
                       <label for="main_location_id">Nama Lokasi Utama <code>*</code></label>
@@ -80,12 +86,28 @@
 
                   <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
-                      <label for="name">Nama Container <code>*</code></label>
-                      <input type="text" id="name" class="form-control" placeholder="Nama Container"
-                        name="name" value="{{ old('name') }}" required>
-                      @if ($errors->has('name'))
+                      <label for="division_id">Nama Divisi <code>*</code></label>
+                      <select name="division_id" id="division_id" class="form-control choices" required>
+                        <option value="" selected disabled>Pilih Divisi</option>
+                        @foreach ($divisions as $division)
+                          <option value="{{ $division->id }}">{{ $division->name }}</option>
+                        @endforeach
+                      </select>
+                      @if ($errors->has('division_id'))
                         <p style="font-style: bold; color: red;">
-                          {{ $errors->first('name') }}</p>
+                          {{ $errors->first('division_id') }}</p>
+                      @endif
+                    </div>
+                  </div>
+
+                  <div class="col-md-8 col-12 mx-auto">
+                    <div class="form-group">
+                      <label for="number_container">Nomor Container <code>*</code></label>
+                      <input type="text" id="number_container" class="form-control" name="number_container"
+                        value="{{ $formattedNextNumber }}" readonly required>
+                      @if ($errors->has('number_container'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_container') }}</p>
                       @endif
                     </div>
                   </div>

@@ -39,7 +39,8 @@
               <th class="text-center">Sub Lokasi</th>
               <th class="text-center">Detail Lokasi</th>
               <th class="text-center">Container</th>
-              <th class="text-center">Keterangan</th>
+              <th class="text-center">Divisi</th>
+              {{-- <th class="text-center">Keterangan</th> --}}
               <th class="text-center">Action</th>
             </tr>
           </thead>
@@ -48,11 +49,14 @@
               <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
                 {{-- <td class="text-center">{{ $containerLocation->mainLocation->name }}</td> --}}
-                <td class="text-center">{{ $containerLocation->mainLocation->name }}</td>
-                <td class="text-center">{{ $containerLocation->subLocation->name }}</td>
-                <td class="text-center">{{ $containerLocation->detailLocation->name }}</td>
-                <td class="text-center">{{ $containerLocation->name }}</td>
-                <td class="text-center">{{ $containerLocation->description }}</td>
+                <td class="text-center">{{ $containerLocation->mainLocation->name ?? 'N/A' }}</td>
+                <td class="text-center">{{ $containerLocation->subLocation->name ?? 'N/A' }}</td>
+                <td class="text-center">{{ $containerLocation->detailLocation->name ?? 'N/A' }}</td>
+                <td class="text-center">
+                  {{ isset($containerLocation->number_container) ? str_pad($containerLocation->number_container, 3, '0', STR_PAD_LEFT) : 'N/A' }}
+                </td>
+                <td class="text-center">{{ $containerLocation->division->name ?? 'N/A' }}</td>
+                {{-- <td class="text-center">{{ $containerLocation->description ?? 'N/A' }}</td> --}}
                 <td class="text-center">
                   <a href="{{ route('backsite.container-location.edit', $containerLocation->id) }}"
                     class="btn icon btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>

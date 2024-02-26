@@ -2,6 +2,7 @@
 
 namespace App\Models\MasterData\Location;
 
+use App\Models\MasterData\WorkUnits\Division;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,8 @@ class ContainerLocation extends Model
         'main_location_id',
         'sub_location_id',
         'detail_location_id',
-        'name',
+        'division_id',
+        'number_container',
         'description',
     ];
 
@@ -31,6 +33,11 @@ class ContainerLocation extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(DetailLocation::class, 'detail_location_id');
+    }
+    public function division()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(Division::class, 'division_id');
     }
 
 }

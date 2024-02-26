@@ -139,8 +139,9 @@
             </li>
 
             {{-- Retention --}}
-            <li class="sidebar-item  ">
-              <a href="#" class='sidebar-link'>
+            <li
+              class="sidebar-item  {{ request()->is('backsite/retention') || request()->is('backsite/retention/*') || request()->is('backsite/*/retention') || request()->is('backsite/*/retention/*') ? 'active' : '' }} ">
+              <a href="{{ route('backsite.retention.index') }}" class='sidebar-link'>
                 <i class="bi bi-file-earmark-richtext"></i>
                 <span>Retensi Arsip</span>
               </a>
