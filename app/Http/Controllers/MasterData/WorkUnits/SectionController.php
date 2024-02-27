@@ -66,7 +66,8 @@ class SectionController extends Controller
      */
     public function show(Section $section)
     {
-        abort(404);
+        return abort(404);
+
     }
 
     /**

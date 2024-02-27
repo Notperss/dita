@@ -147,6 +147,22 @@
               </a>
             </li>
 
+            <li class="sidebar-title">Management User</li>
+            <li
+              class="sidebar-item  {{ request()->is('backsite/user') || request()->is('backsite/user/*') || request()->is('backsite/*/user') || request()->is('backsite/*/user/*') ? 'active' : '' }} ">
+              <a href="{{ route('backsite.user.index') }}" class='sidebar-link'>
+                <i class="bi bi-file-earmark-richtext"></i>
+                <span>User</span>
+              </a>
+            </li>
+            <li
+              class="sidebar-item  {{ request()->is('backsite/type_user') || request()->is('backsite/type_user/*') || request()->is('backsite/*/type_user') || request()->is('backsite/*/type_user/*') ? 'active' : '' }} ">
+              <a href="{{ route('backsite.type_user.index') }}" class='sidebar-link'>
+                <i class="bi bi-file-earmark-richtext"></i>
+                <span>Type User</span>
+              </a>
+            </li>
+
             {{-- Log Out --}}
             <li class="sidebar-item  ">
               <a class='sidebar-link' href="{{ route('logout') }}"

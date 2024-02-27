@@ -63,7 +63,8 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        abort(404);
+        return abort(404);
+
     }
 
     /**

@@ -27,6 +27,9 @@
             {{ session('status') }}
           </div>
         @endif
+        @if ($errors->has('email'))
+          <p class="mb-2 text-sm text-danger">{{ $errors->first('email') }}</p>
+        @endif
 
         <form method="POST" action="{{ route('login') }}">
           @csrf

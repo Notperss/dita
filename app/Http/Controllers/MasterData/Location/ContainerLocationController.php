@@ -78,7 +78,7 @@ class ContainerLocationController extends Controller
      */
     public function show(ContainerLocation $containerLocation)
     {
-        abort(404);
+       return abort(404);
     }
 
     /**

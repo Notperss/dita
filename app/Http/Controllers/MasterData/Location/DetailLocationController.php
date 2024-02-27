@@ -69,7 +69,8 @@ class DetailLocationController extends Controller
      */
     public function show(DetailLocation $detailLocation)
     {
-        abort(404);
+        return abort(404);
+
     }
 
     /**

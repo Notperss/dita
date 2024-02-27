@@ -4,19 +4,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 //Dashboard
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ManagementAccess\UserController;
 //Location
-use App\Http\Controllers\MasterData\Location\MainLocationController;
-use App\Http\Controllers\MasterData\Location\SubLocationController;
-use App\Http\Controllers\MasterData\Location\DetailLocationController;
-use App\Http\Controllers\MasterData\Location\ContainerLocationController;
-//WorkUnits
-use App\Http\Controllers\MasterData\WorkUnits\DivisionController;
-use App\Http\Controllers\MasterData\WorkUnits\DepartmentController;
+use App\Http\Controllers\ManagementAccess\TypeUserController;
 use App\Http\Controllers\MasterData\WorkUnits\SectionController;
+use App\Http\Controllers\MasterData\WorkUnits\DivisionController;
+use App\Http\Controllers\MasterData\Location\SubLocationController;
+//WorkUnits
+use App\Http\Controllers\MasterData\WorkUnits\DepartmentController;
+use App\Http\Controllers\MasterData\Location\MainLocationController;
+use App\Http\Controllers\MasterData\Location\DetailLocationController;
 //Classification
-use App\Http\Controllers\MasterData\Classification\MainClassificationController;
-use App\Http\Controllers\MasterData\Classification\SubClassificationController;
+use App\Http\Controllers\MasterData\Location\ContainerLocationController;
 use App\Http\Controllers\MasterData\Retention\RetentionArchivesController;
+use App\Http\Controllers\MasterData\Classification\SubClassificationController;
+use App\Http\Controllers\MasterData\Classification\MainClassificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +68,10 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     //Retention
     Route::resource('retention', RetentionArchivesController::class);
     Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
+
+    //Management Access
+    Route::resource('type_user', TypeUserController::class);
+    Route::resource('user', UserController::class);
 
 
 

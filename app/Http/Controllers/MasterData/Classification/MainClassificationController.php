@@ -68,7 +68,8 @@ class MainClassificationController extends Controller
      */
     public function show(MainClassification $mainClassification)
     {
-        abort('404');
+        return abort(404);
+
     }
 
     /**

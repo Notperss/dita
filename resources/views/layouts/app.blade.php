@@ -28,9 +28,9 @@
       {{-- footer --}}
       @include('components.footer')
       {{-- script --}}
-      @stack('before-style')
+      @stack('before-script')
       @include('includes.script')
-      @stack('after-style')
+      @stack('after-script')
     </div>
   </div>
 

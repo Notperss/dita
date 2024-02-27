@@ -64,7 +64,8 @@ class SubLocationController extends Controller
      */
     public function show(SubLocation $subLocation)
     {
-        abort(404);
+        return abort(404);
+
     }
 
     /**

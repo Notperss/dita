@@ -63,7 +63,8 @@ class DivisionController extends Controller
      */
     public function show(Division $division)
     {
-        abort(404);
+        return abort(404);
+
     }
 
     /**

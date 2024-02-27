@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\MasterData\Location;
+namespace App\Http\Controllers\ManagementAccess;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
-use RealRashid\SweetAlert\Facades\Alert;
+use App\Models\ManagementAccess\TypeUser;
 use Illuminate\Support\Facades\Validator;
-use App\Models\MasterData\Location\MainLocation;
 
-class MainLocationController extends Controller
+class TypeUserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.main-location.index', compact('mainLocations'));
+        $type_users = TypeUser::orderBy('name', 'asc')->get();
+        return view('pages.management-access.type-user.index', compact('type_users'));
     }
 
     /**
@@ -25,7 +24,7 @@ class MainLocationController extends Controller
      */
     public function create()
     {
-        return view('pages.master-data.location.main-location.create');
+        return view('pages.management-access.type-user.create');
     }
 
     /**
@@ -35,59 +34,60 @@ class MainLocationController extends Controller
     {
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:255', Rule::unique('location_mains')],
+            'name' => ['required', 'max:255', Rule::unique('type_users')],
             // Add other validation rules as needed
         ], [
-            'name.required' => 'Nama Lokasi Utama harus diisi.',
-            'name.max' => 'Nama Lokasi Utama tidak boleh lebih dari :max karakter.',
-            'name.unique' => 'Nama Lokasi Utama sudah digunakan.',
+            'name.required' => 'Tipe User harus diisi.',
+            'name.max' => 'Tipe User tidak boleh lebih dari :max karakter.',
+            'name.unique' => 'Tipe User sudah digunakan.',
             // Add custom error messages for other rules
         ]);
         // Check if validation fails
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        // get all request from frontsite
+        $data = $request->all();
 
-        // If the validation passes, create the MainLocation record
-        MainLocation::create($request->all());
+        // store to database
+        TypeUser::create($data);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.main-location.index');
+        return redirect()->route('backsite.type_user.index');
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(MainLocation $mainLocation)
+    public function show(TypeUser $typeUser)
     {
         return abort(404);
-
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(TypeUser $typeUser)
     {
-        $mainLocations = MainLocation::find($id);
-        // $locations = MainLocation::orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.main-location.edit', compact('mainLocations'));
+        $id = $typeUser->id;
+        $type_users = TypeUser::find($id);
+        return view('pages.management-access.type-user.edit', compact('type_users'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MainLocation $mainLocation)
+    public function update(Request $request, TypeUser $typeUser)
     {
-
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:255', Rule::unique('location_mains')->ignore($mainLocation->id)],
+            'name' => ['required', 'max:255', Rule::unique('type_users')->ignore($typeUser->id)],
             // Add other validation rules as needed
         ], [
-            'name.required' => 'Nama Lokasi Utama harus diisi.',
-            'name.max' => 'Nama Lokasi Utama tidak boleh lebih dari :max karakter.',
-            'name.unique' => 'Nama Lokasi Utama sudah digunakan.',
+            'name.required' => 'Tipe User harus diisi.',
+            'name.max' => 'Tipe User tidak boleh lebih dari :max karakter.',
+            'name.unique' => 'Tipe User sudah digunakan.',
             // Add custom error messages for other rules
         ]);
         // Check if validation fails
@@ -98,10 +98,10 @@ class MainLocationController extends Controller
         // get all request from frontsite
         $data = $request->all();
 
-        $mainLocation->update($data);
-
-        alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.main-location.index');
+        // update to database
+        $typeUser->update($data);
+        alert()->success('Sukses', 'Data berhasil diupdate');
+        return redirect()->route('backsite.type_user.index');
     }
 
     /**
@@ -109,12 +109,13 @@ class MainLocationController extends Controller
      */
     public function destroy($id)
     {
+
         // deskripsi id
         $decrypt_id = decrypt($id);
-        $locations = MainLocation::find($decrypt_id);
+        $type_user = TypeUser::find($decrypt_id);
 
-        // hapus location
-        $locations->forceDelete();
+        // hapus daily activity
+        $type_user->forceDelete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

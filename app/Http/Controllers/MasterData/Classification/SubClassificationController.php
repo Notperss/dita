@@ -69,7 +69,8 @@ class SubClassificationController extends Controller
      */
     public function show(SubClassification $subClassification)
     {
-        abort('404');
+        return abort(404);
+
     }
 
     /**

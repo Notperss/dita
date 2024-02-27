@@ -74,7 +74,7 @@ class RetentionArchivesController extends Controller
      */
     public function show(RetentionArchives $retentionArchives)
     {
-        abort('404');
+        return abort('404');
     }
 
     /**
