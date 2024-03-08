@@ -38,7 +38,7 @@
               <th class="text-center">Nama</th>
               <th class="text-center">Email</th>
               <th class="text-center">Tipe User</th>
-              <th class="text-center">Job Position</th>
+              <th class="text-center">Perusahaan</th>
               <th class="text-center">Status</th>
               <th class="text-center">Action</th>
             </tr>
@@ -51,25 +51,7 @@
                 <td class="text-center">{{ $user->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $user->email ?? 'N/A' }}</td>
                 <td class="text-center">{{ $user->detail_user->type_user->name ?? '' }}</td>
-                <td class="text-center">
-                  @if ($user->detail_user->job_position == 1 ? 'selected' : '')
-                    Manager
-                  @elseif($user->detail_user->job_position == 2 ? 'selected' : '')
-                    Kepala Departemen
-                  @elseif($user->detail_user->job_position == 3 ? 'selected' : '')
-                    Administrasi
-                  @elseif($user->detail_user->job_position == 4 ? 'selected' : '')
-                    Hardware & Jaringan
-                  @elseif($user->detail_user->job_position == 5 ? 'selected' : '')
-                    Peralatan Tol
-                  @elseif($user->detail_user->job_position == 6 ? 'selected' : '')
-                    Sistem Informasi
-                  @elseif($user->detail_user->job_position == 7 ? 'selected' : '')
-                    Senior Officer
-                  @else
-                    N/A
-                  @endif
-                </td>
+                <td class="text-center">{{ $user->detail_user->company->name ?? '' }}</td>
                 <td class="text-center">
                   @if ($user->detail_user->status == 1)
                     Aktif

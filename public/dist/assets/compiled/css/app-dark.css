@@ -10272,3 +10272,61 @@ html[data-bs-theme="dark"] .is-invalid ~ .invalid-feedback,
 html[data-bs-theme="dark"] .is-invalid ~ .invalid-tooltip {
     display: block;
 }
+
+/* Dark theme for Select2 */
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-selection--single,
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-selection--multiple {
+    background-color: #1b1b29 !important;
+    border-color: #1b1b29 !important;
+    color: #fff !important;
+}
+
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-selection__arrow
+    b {
+    border-color: #1b1b29 transparent transparent transparent !important;
+}
+
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-selection__placeholder {
+    color: #aaa !important;
+}
+
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-selection__rendered {
+    color: #fff !important;
+    background-color: #1b1b29 !important;
+}
+
+html[data-bs-theme="dark"] .select2-container--classic .select2-dropdown {
+    background-color: #1b1b29 !important;
+    border-color: #1b1b29 !important;
+}
+
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-results__option {
+    background-color: #1b1b29 !important;
+    color: #fff !important;
+}
+
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-results__option--highlighted[aria-selected] {
+    background-color: #28283c !important;
+    color: #fff !important;
+}
+
+html[data-bs-theme="dark"]
+    .select2-container--classic
+    .select2-results__option[aria-selected] {
+    background-color: #1b1b29 !important;
+    color: #fff !important;
+}

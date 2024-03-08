@@ -12,12 +12,18 @@ return new class extends Migration {
     {
         Schema::create('retention_archives', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('main_classification_id');
-            $table->bigInteger('sub_classification_id');
+            $table->unsignedBigInteger('main_classification_id');
+            $table->unsignedBigInteger('sub_classification_id');
             $table->string('sub_series');
-            $table->string('retention_period');
+            $table->string('period_active');
+            $table->string('period_inactive');
+            $table->longText('description_active')->nullable();
+            $table->longText('description_inactive')->nullable();
             $table->longText('description')->nullable();
             $table->timestamps();
+
+            $table->foreign('main_classification_id')->references('id')->on('location_mains')->onDelete('cascade');
+            $table->foreign('sub_classification_id')->references('id')->on('location_subs')->onDelete('cascade');
         });
     }
 

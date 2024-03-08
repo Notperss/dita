@@ -30,8 +30,8 @@ class UpdateUserRequest extends FormRequest
             'name' => [
                 'required', 'string', 'max:255',
             ],
-            'job_position' => [
-                'required', 'string', 'max:255',
+            'company_id' => [
+                'required',
             ],
             'type_user_id' => [
                 'required', 'string', 'max:255',
@@ -55,14 +55,14 @@ class UpdateUserRequest extends FormRequest
             'nik.required' => 'Kolom NIK wajib diisi.',
             'nik.string' => 'NIK harus berupa teks.',
             'nik.max' => 'NIK tidak boleh lebih dari :max karakter.',
+            'nik.unique' => 'NIK sudah digunakan.',
+
 
             'name.required' => 'Kolom nama wajib diisi.',
             'name.string' => 'Nama harus berupa teks.',
             'name.max' => 'Nama tidak boleh lebih dari :max karakter.',
 
-            'job_position.required' => 'Kolom posisi pekerjaan wajib diisi.',
-            'job_position.string' => 'Posisi pekerjaan harus berupa teks.',
-            'job_position.max' => 'Posisi pekerjaan tidak boleh lebih dari :max karakter.',
+            'company_id.required' => 'Kolom Perusahaan wajib diisi.',
 
             'type_user_id.required' => 'Kolom Tipe User pengguna wajib diisi.',
             'type_user_id.string' => 'Tipe User pengguna harus berupa teks.',
@@ -78,7 +78,6 @@ class UpdateUserRequest extends FormRequest
             'email.email' => 'Alamat email harus berupa alamat email yang valid.',
             'email.unique' => 'Alamat email sudah digunakan.',
 
-            'password.required' => 'Kolom kata sandi wajib diisi.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
             // tambahkan pesan validasi kustom untuk peran di sini jika diperlukan
         ];

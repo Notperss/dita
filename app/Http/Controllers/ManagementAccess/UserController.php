@@ -11,6 +11,7 @@ use App\Models\ManagementAccess\TypeUser;
 use App\Models\ManagementAccess\DetailUser;
 use App\Http\Requests\ManagementAccess\User\StoreUserRequest;
 use App\Http\Requests\ManagementAccess\User\UpdateUserRequest;
+use App\Models\MasterData\Company\Company;
 
 class UserController extends Controller
 {
@@ -33,8 +34,8 @@ class UserController extends Controller
     {
         $users = User::where('name', '!=', 'Administrator')->orderBy('name', 'asc')->get();
         $type_users = TypeUser::where('name', '!=', 'Admin')->orderBy('name', 'asc')->get();
-
-        return view('pages.management-access.user.create', compact('users', 'type_users'));
+        $companies = Company::orderBy('name', 'asc')->get();
+        return view('pages.management-access.user.create', compact('users', 'type_users', 'companies'));
     }
 
     /**
@@ -62,7 +63,7 @@ class UserController extends Controller
         $detail_user->user_id = $user['id'];
         $detail_user->type_user_id = $request['type_user_id'];
         $detail_user->nik = $request['nik'];
-        $detail_user->job_position = $request['job_position'];
+        $detail_user->company_id = $request['company_id'];
         $detail_user->status = $request['status'];
         $user->profile_photo_path = $detail_user['profile_photo_path'];
         $user->save();
@@ -90,8 +91,8 @@ class UserController extends Controller
         $user = User::find($id);
 
         $type_user = TypeUser::where('name', '!=', 'Admin')->orderBy('name', 'asc')->get();
-
-        return view('pages.management-access.user.edit', compact('user', 'type_user'));
+        $companies = Company::orderBy('name', 'asc')->get();
+        return view('pages.management-access.user.edit', compact('user', 'type_user', 'companies'));
     }
 
     /**
@@ -131,7 +132,7 @@ class UserController extends Controller
         }
         $detail_user->type_user_id = $request['type_user_id'];
         $detail_user->nik = $request['nik'];
-        $detail_user->job_position = $request['job_position'];
+        $detail_user->company_id = $request['company_id'];
         $detail_user->status = $request['status'];
         $user->profile_photo_path = $detail_user['profile_photo_path'];
         $user->save();

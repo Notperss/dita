@@ -4,21 +4,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 //Dashboard
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ManagementAccess\UserController;
+//Company
+use App\Http\Controllers\MasterData\Company\CompanyController;
 //Location
-use App\Http\Controllers\ManagementAccess\TypeUserController;
 use App\Http\Controllers\MasterData\WorkUnits\SectionController;
 use App\Http\Controllers\MasterData\WorkUnits\DivisionController;
-use App\Http\Controllers\MasterData\Location\SubLocationController;
 //WorkUnits
+use App\Http\Controllers\MasterData\Location\SubLocationController;
 use App\Http\Controllers\MasterData\WorkUnits\DepartmentController;
 use App\Http\Controllers\MasterData\Location\MainLocationController;
-use App\Http\Controllers\MasterData\Location\DetailLocationController;
 //Classification
+use App\Http\Controllers\MasterData\Location\DetailLocationController;
 use App\Http\Controllers\MasterData\Location\ContainerLocationController;
 use App\Http\Controllers\MasterData\Retention\RetentionArchivesController;
 use App\Http\Controllers\MasterData\Classification\SubClassificationController;
 use App\Http\Controllers\MasterData\Classification\MainClassificationController;
+//Management User
+use App\Http\Controllers\ManagementAccess\UserController;
+use App\Http\Controllers\ManagementAccess\TypeUserController;
+use App\Http\Controllers\TransactionArchive\Archive\ArchiveContainerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +51,9 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     //Dashboard
     Route::resource('dashboard', DashboardController::class);
 
+    //Company
+    Route::resource('company', CompanyController::class);
+
     //Location
     Route::resource('main-location', MainLocationController::class);
     Route::resource('sub-location', SubLocationController::class);
@@ -68,10 +75,19 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     //Retention
     Route::resource('retention', RetentionArchivesController::class);
     Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
+    Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 
     //Management Access
     Route::resource('type_user', TypeUserController::class);
     Route::resource('user', UserController::class);
+
+    //Transaction Archives
+    Route::resource('archive-container', ArchiveContainerController::class);
+    Route::get('form_upload', [ArchiveContainerController::class, 'form_upload'])->name('form_upload');
+    Route::get('/get-number-container', [ArchiveContainerController::class, 'getNumberContainer'])->name('getNumberContainer');
+    Route::get('/get-data-container', [ArchiveContainerController::class, 'getDataContainer'])->name('getDataContainer');
+
+
 
 
 

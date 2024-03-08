@@ -56,7 +56,27 @@
               </a>
             </li>
 
+            <li class="sidebar-title">Transaksi Arsip</li>
+
+            <li
+              class="sidebar-item  {{ request()->is('backsite/archive-container') || request()->is('backsite/archive-container/*') || request()->is('backsite/*/archive-container') || request()->is('backsite/*/archive-container/*') ? 'active' : '' }} ">
+              <a href="{{ route('backsite.archive-container.index') }}" class='sidebar-link'>
+                <i class="bi bi-file-earmark-richtext"></i>
+                <span>Penyimpanan Arsip</span>
+              </a>
+            </li>
+
+
             <li class="sidebar-title">Master Data</li>
+            {{-- Company --}}
+            <li
+              class="sidebar-item  {{ request()->is('backsite/company') || request()->is('backsite/company/*') || request()->is('backsite/*/company') || request()->is('backsite/*/company/*') ? 'active' : '' }} ">
+              <a href="{{ route('backsite.company.index') }}" class='sidebar-link'>
+                <i class="bi bi-file-earmark-richtext"></i>
+                <span>Perusahaan</span>
+              </a>
+            </li>
+
             {{-- Location --}}
             <li
               class="sidebar-item  has-sub {{ request()->is('backsite/main-location') || request()->is('backsite/sub-location') || request()->is('backsite/detail-location') || request()->is('backsite/container-location') ? 'active' : '' }}">
@@ -127,7 +147,8 @@
               <ul class="submenu ">
                 <li
                   class="submenu-item {{ request()->is('backsite/main-classification') || request()->is('backsite/main-classification/*') || request()->is('backsite/*/main-classification') || request()->is('backsite/*/main-classification/*') ? 'active' : '' }} ">
-                  <a href="{{ route('backsite.main-classification.index') }}" class="submenu-link">Nama Klasifikasi</a>
+                  <a href="{{ route('backsite.main-classification.index') }}" class="submenu-link">Nama
+                    Klasifikasi</a>
                 </li>
 
                 <li
@@ -148,6 +169,7 @@
             </li>
 
             <li class="sidebar-title">Management User</li>
+            {{-- User  --}}
             <li
               class="sidebar-item  {{ request()->is('backsite/user') || request()->is('backsite/user/*') || request()->is('backsite/*/user') || request()->is('backsite/*/user/*') ? 'active' : '' }} ">
               <a href="{{ route('backsite.user.index') }}" class='sidebar-link'>
@@ -155,6 +177,8 @@
                 <span>User</span>
               </a>
             </li>
+
+            {{-- Type User --}}
             <li
               class="sidebar-item  {{ request()->is('backsite/type_user') || request()->is('backsite/type_user/*') || request()->is('backsite/*/type_user') || request()->is('backsite/*/type_user/*') ? 'active' : '' }} ">
               <a href="{{ route('backsite.type_user.index') }}" class='sidebar-link'>

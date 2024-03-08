@@ -102,7 +102,7 @@
                     <div class="form-group row">
                       <label class="col-md-4 label-control">Type User <code style="color:red;">*</code></label>
                       <div class="col-md-8 mx-auto">
-                        <select name="type_user_id" id="type_user_id" class="form-control" required>
+                        <select name="type_user_id" id="type_user_id" class="form-control choices" required>
                           <option value="{{ '' }}" disabled selected>Choose
                           </option>
                           @foreach ($type_users as $key => $type_user_item)
@@ -120,36 +120,21 @@
                     </div>
 
                     <div class="form-group row">
-                      <label class="col-md-4 label-control" for="hasil">Job Position
+                      <label class="col-md-4 label-control" for="company_id">Perushaaan
                         <code style="color:red;">*</code></label>
                       <div class="col-md-8 mx-auto">
-                        <select name="job_position" id="job_position" class="form-control" required>
+                        <select name="company_id" id="company_id" class="form-control choices" required>
                           <option value="{{ '' }}" disabled selected>
                             Choose
                           </option>
-                          <option value="1"{{ old('job_position') == 1 ? 'selected' : '' }}>Manajer
-                          </option>
-                          <option value="2"{{ old('job_position') == 2 ? 'selected' : '' }}>Kepala
-                            Departemen
-                          </option>
-                          <option value="3"{{ old('job_position') == 3 ? 'selected' : '' }}>Administrasi
-                          </option>
-                          <option value="4"{{ old('job_position') == 4 ? 'selected' : '' }}>Hardware &
-                            Jaringan</option>
-                          <option value="5"{{ old('job_position') == 5 ? 'selected' : '' }}>Peralatan
-                            Tol
-                          </option>
-                          <option value="6"{{ old('job_position') == 6 ? 'selected' : '' }}>Sistem
-                            Informasi
-                          </option>
-                          <option value="7"{{ old('job_position') == 7 ? 'selected' : '' }}>Senior
-                            Officer
-                          </option>
+                          @foreach ($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->name }}</option>
+                          @endforeach
                         </select>
 
-                        @if ($errors->has('job_position'))
+                        @if ($errors->has('company_id'))
                           <p style="font-style: bold; color: red;">
-                            {{ $errors->first('job_position') }}</p>
+                            {{ $errors->first('company_id') }}</p>
                         @endif
                       </div>
                     </div>
@@ -158,7 +143,7 @@
                       <label class="col-md-4 label-control" for="status">Status
                         <code style="color:red;">*</code></label>
                       <div class="col-md-8 mx-auto">
-                        <select name="status" id="status" class="form-control" required>
+                        <select name="status" id="status" class="form-control choices" required>
                           <option value="{{ '' }}" disabled selected>
                             Choose
                           </option>

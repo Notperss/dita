@@ -37,7 +37,8 @@
               <th class="text-center">Klasifikasi</th>
               <th class="text-center">Sub Klasifikasi</th>
               <th class="text-center">Sub Series</th>
-              <th class="text-center">Masa Retensi</th>
+              <th class="text-center">Masa Aktif</th>
+              <th class="text-center">Masa Inaktif</th>
               <th class="text-center">Action</th>
             </tr>
           </thead>
@@ -49,22 +50,35 @@
                 <td class="text-center">{{ $retention->sub_classification->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $retention->sub_series ?? 'N/A' }}</td>
                 <td class="text-center">
-                  @if (isset($retention->retention_period))
-                    @if ($retention->retention_period == 'PERMANEN')
-                      Permanen
-                    @elseif($retention->retention_period == 1)
-                      1 Tahun
-                    @elseif($retention->retention_period == 2)
-                      2 Tahun
-                    @elseif($retention->retention_period == 3)
-                      3 Tahun
-                    @elseif($retention->retention_period == 4)
-                      4 Tahun
-                    @elseif($retention->retention_period == 5)
-                      5 Tahun
-                    @else
-                      {{ $retention->retention_period }} Tahun
-                    @endif
+                  @if ($retention->period_active == 'PERMANEN')
+                    Permanen
+                  @elseif ($retention->period_active == 1)
+                    1 Tahun
+                  @elseif($retention->period_active == 2)
+                    2 Tahun
+                  @elseif($retention->period_active == 3)
+                    3 Tahun
+                  @elseif($retention->period_active == 4)
+                    4 Tahun
+                  @elseif($retention->period_active == 5)
+                    5 Tahun
+                  @else
+                    N/A
+                  @endif
+                </td>
+                <td class="text-center">
+                  @if ($retention->period_inactive == 'PERMANEN')
+                    Permanen
+                  @elseif ($retention->period_inactive == 1)
+                    1 Tahun
+                  @elseif($retention->period_inactive == 2)
+                    2 Tahun
+                  @elseif($retention->period_inactive == 3)
+                    3 Tahun
+                  @elseif($retention->period_inactive == 4)
+                    4 Tahun
+                  @elseif($retention->period_inactive == 5)
+                    5 Tahun
                   @else
                     N/A
                   @endif

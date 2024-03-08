@@ -41,8 +41,10 @@ class RetentionArchivesController extends Controller
         $validator = Validator::make($request->all(), [
             'main_classification_id' => ['required'],
             'sub_classification_id' => ['required'],
-            'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')],
-            'retention_period' => ['required',],
+            // 'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')],
+            'sub_series' => ['required', 'max:255'],
+            'period_active' => ['required',],
+            'period_inactive' => ['required',],
 
 
             // Add other validation rules as needed
@@ -50,9 +52,10 @@ class RetentionArchivesController extends Controller
             'main_classification_id.required' => 'Nama Klasifikasi harus diisi.',
             'sub_classification_id.required' => 'Nama Sub Klasifikasi harus diisi.',
             'sub_series.required' => 'Sub Series harus diisi.',
-            'retention_period.required' => 'Masa Retensi harus diisi.',
+            'period_active.required' => 'Masa Aktif harus diisi.',
+            'period_inactive.required' => 'Masa Inaktif harus diisi.',
             'sub_series.max' => 'Sub Series tidak boleh lebih dari :max karakter.',
-            'sub_series.unique' => 'Sub Series sudah digunakan.',
+            // 'sub_series.unique' => 'Sub Series sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
@@ -97,8 +100,10 @@ class RetentionArchivesController extends Controller
         $validator = Validator::make($request->all(), [
             'main_classification_id' => ['required'],
             'sub_classification_id' => ['required'],
-            'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')->ignore($retention->id)],
-            'retention_period' => ['required',],
+            // 'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')->ignore($retention->id)],
+            'sub_series' => ['required', 'max:255'],
+            'period_active' => ['required',],
+            'period_inactive' => ['required',],
 
 
             // Add other validation rules as needed
@@ -106,9 +111,10 @@ class RetentionArchivesController extends Controller
             'main_classification_id.required' => 'Nama Klasifikasi harus diisi.',
             'sub_classification_id.required' => 'Nama Sub Klasifikasi harus diisi.',
             'sub_series.required' => 'Sub Series harus diisi.',
-            'retention_period.required' => 'Masa Retensi harus diisi.',
+            'period_active.required' => 'Masa Aktif harus diisi.',
+            'period_inactive.required' => 'Masa Inaktif harus diisi.',
             'sub_series.max' => 'Sub Series tidak boleh lebih dari :max karakter.',
-            'sub_series.unique' => 'Sub Series sudah digunakan.',
+            // 'sub_series.unique' => 'Sub Series sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
@@ -147,5 +153,11 @@ class RetentionArchivesController extends Controller
         $mainClassification = $request->input('main_classification_id');
         $subClassifications = SubClassification::where('main_classification_id', $mainClassification)->get();
         return response()->json($subClassifications);
+    }
+    public function getSeriesClassifications(Request $request)
+    {
+        $subClassification = $request->input('sub_classification_id');
+        $seriesClassifications = RetentionArchives::where('sub_classification_id', $subClassification)->get();
+        return response()->json($seriesClassifications);
     }
 }

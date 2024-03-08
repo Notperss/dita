@@ -75,8 +75,8 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="retention_period">Masa Retensi <code>*</code></label>
-                      <select type="year" id="retention_period" class="form-control choices" name="retention_period"
+                      <label for="period_active">Masa aktif<code>*</code></label>
+                      <select type="year" id="period_active" class="form-control choices" name="period_active"
                         required>
                         <option value="" disabled selected>Choose</option>
                         <option value="1">1 Tahun</option>
@@ -86,13 +86,46 @@
                         <option value="5">5 Tahun</option>
                         <option value="PERMANEN">Permanen</option>
                       </select>
-                      @if ($errors->has('retention_period'))
+                      @if ($errors->has('period_active'))
                         <p style="font-style: bold; color: red;">
-                          {{ $errors->first('retention_period') }}</p>
+                          {{ $errors->first('period_active') }}</p>
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description">Keterangan</label>
+                      <label for="description_active">Keterangan Aktif</label>
+                      <textarea type="text" id="description_active" class="form-control" name="description_active"> </textarea>
+                      @if ($errors->has('description_active'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_active') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="period_inactive">Masa Inaktif <code>*</code></label>
+                      <select type="year" id="period_inactive" class="form-control choices" name="period_inactive"
+                        required>
+                        <option value="" disabled selected>Choose</option>
+                        <option value="1">1 Tahun</option>
+                        <option value="2">2 Tahun</option>
+                        <option value="3">3 Tahun</option>
+                        <option value="4">4 Tahun</option>
+                        <option value="5">5 Tahun</option>
+                        <option value="PERMANEN">Permanen</option>
+                      </select>
+                      @if ($errors->has('period_inactive'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('period_inactive') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description_inactive">Keterangan Inaktif</label>
+                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive"> </textarea>
+                      @if ($errors->has('description_inactive'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_inactive') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description">Keterangan Tambahan</label>
                       <textarea type="text" id="description" class="form-control" name="description"> </textarea>
                       @if ($errors->has('description'))
                         <p style="font-style: bold; color: red;">
