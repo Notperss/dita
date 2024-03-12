@@ -12,11 +12,15 @@ return new class extends Migration {
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('division_id');
-            $table->bigInteger('department_id');
+            $table->unsignedBigInteger('division_id');
+            $table->unsignedBigInteger('department_id');
             $table->string('name');
             // $table->longText('description')->nullable();
             $table->timestamps();
+
+            $table->foreign('division_id')->references('id')->on('divisions')->onDelete('cascade');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
+
         });
     }
 

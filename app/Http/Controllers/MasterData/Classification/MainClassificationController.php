@@ -124,10 +124,22 @@ class MainClassificationController extends Controller
         $decrypt_id = decrypt($id);
         $mainClassification = MainClassification::find($decrypt_id);
 
-        // hapus location
-        $mainClassification->forceDelete();
+        /// Check if there are any foreign key relationships
+        if ($mainClassification) {
+            // Assuming there is a foreign key relationship with another model, e.g., "relatedModel"
+            if ($mainClassification->sub_classification()->count() > 0) {
+                alert()->error('Gagal', 'Terdapat relasi dengan data lain.');
+                return back();
+            }
 
-        alert()->success('Sukses', 'Data berhasil dihapus');
-        return back();
+            // No foreign key relationships, proceed with deletion
+            $mainClassification->forceDelete();
+
+            alert()->success('Sukses', 'Data berhasil dihapus');
+            return back();
+        } else {
+            alert()->error('Gagal', 'Data tidak ditemukan');
+            return back();
+        }
     }
 }

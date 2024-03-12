@@ -22,8 +22,8 @@ return new class extends Migration {
             $table->longText('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('main_classification_id')->references('id')->on('location_mains')->onDelete('cascade');
-            $table->foreign('sub_classification_id')->references('id')->on('location_subs')->onDelete('cascade');
+            $table->foreign('main_classification_id')->references('id')->on('classification_mains')->onDelete('cascade');
+            $table->foreign('sub_classification_id')->references('id')->on('classification_subs')->onDelete('cascade');
         });
     }
 

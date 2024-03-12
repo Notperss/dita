@@ -12,13 +12,17 @@ return new class extends Migration {
     {
         Schema::create('detail_users', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('type_user_id')->unsigned();
-            $table->bigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('user_id')->unsigned();
+            $table->unsignedBigInteger('type_user_id')->unsigned();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->string('nik')->nullable();
             $table->integer('status')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
+
+            $table->foreign('type_user_id')->references('id')->on('type_users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
         });
     }
 
