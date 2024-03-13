@@ -199,6 +199,24 @@
               </a>
             </li>
 
+            @foreach ($menus as $menu)
+              @can($menu->permission_name)
+                <li class="sidebar-title">{{ $menu->name }}</li>
+
+                @foreach ($menu->items as $item)
+                  @can($item->permission_name)
+                    <li class="sidebar-item  {{ request()->routeIs($item->route) ? 'active' : '' }}">
+                      <a class="sidebar-link" href="{{ route($item->route) }}">
+                        <i class="{{ $item->icon }}"></i> <span data-key="t-landing">{{ $item->name }}</span>
+                      </a>
+                    </li>
+                  @endcan
+                  <!-- end can item -->
+                @endforeach
+                <!-- end foreach items -->
+              @endcan
+              <!-- end can menu -->
+            @endforeach
           </ul>
         </div>
       </div>

@@ -16,11 +16,25 @@
   <script src="{{ asset('') }}/assets/static/js/initTheme.js"></script>
   <div id="app">
     {{-- sidebar --}}
-    @include('components.menu')
+    {{-- @include('components.menu') --}}
+    <x-menu />
+
     <div id="main" class='layout-navbar'>
       {{-- header --}}
       @include('components.header')
+
+
+
       <div id="main-content">
+        <div class="page-heading">
+          <div class="page-title">
+            <div class="row">
+              @yield('breadcrumb')
+            </div>
+          </div>
+        </div>
+        <x-form.notivication.alert />
+        <x-form.validation.error />
         {{-- content --}}
         @yield('content')
         @include('sweetalert::alert')

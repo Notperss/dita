@@ -3,26 +3,34 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 //Dashboard
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RoleController;
 //Company
-use App\Http\Controllers\MasterData\Company\CompanyController;
+use App\Http\Controllers\RouteController;
 //Location
-use App\Http\Controllers\MasterData\WorkUnits\SectionController;
-use App\Http\Controllers\MasterData\WorkUnits\DivisionController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\MenuItemController;
 //WorkUnits
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MenuGroupController;
+use App\Http\Controllers\PermissionController;
+//Classification
+use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ManagementAccess\UserController;
+use App\Http\Controllers\ManagementAccess\TypeUserController;
+use App\Http\Controllers\MasterData\Company\CompanyController;
+use App\Http\Controllers\MasterData\WorkUnits\SectionController;
+//Management User
+use App\Http\Controllers\MasterData\WorkUnits\DivisionController;
 use App\Http\Controllers\MasterData\Location\SubLocationController;
 use App\Http\Controllers\MasterData\WorkUnits\DepartmentController;
 use App\Http\Controllers\MasterData\Location\MainLocationController;
-//Classification
 use App\Http\Controllers\MasterData\Location\DetailLocationController;
+use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 use App\Http\Controllers\MasterData\Location\ContainerLocationController;
 use App\Http\Controllers\MasterData\Retention\RetentionArchivesController;
 use App\Http\Controllers\MasterData\Classification\SubClassificationController;
-use App\Http\Controllers\MasterData\Classification\MainClassificationController;
-//Management User
-use App\Http\Controllers\ManagementAccess\UserController;
-use App\Http\Controllers\ManagementAccess\TypeUserController;
 use App\Http\Controllers\TransactionArchive\Archive\ArchiveContainerController;
+use App\Http\Controllers\MasterData\Classification\MainClassificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +57,7 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['auth:sanctum', 'verified']], function () {
     //Dashboard
-    Route::resource('dashboard', DashboardController::class);
+    Route::resource('dashboard', DashboardController::class)->only('index');
 
     //Company
     Route::resource('company', CompanyController::class);
@@ -87,12 +95,26 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::get('/get-number-container', [ArchiveContainerController::class, 'getNumberContainer'])->name('getNumberContainer');
     Route::get('/get-data-container', [ArchiveContainerController::class, 'getDataContainer'])->name('getDataContainer');
 
+});
 
+Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
+    Route::resource('dashboard', DashboardController::class)->only('index');
+    Route::resource('user', UserManagementController::class)->only('index', 'store', 'update', 'destroy');
+    Route::prefix('user')->group(function () {
+        Route::resource('profile', UserProfileController::class)->only('index');
+    });
+    Route::resource('setting', SettingController::class)->only('index', 'update');
+    Route::resource('contoh', SettingController::class)->only('index', 'update');
 
+    Route::resource('route', RouteController::class)->only('index', 'store', 'update', 'destroy');
+    Route::resource('role', RoleController::class)->only('index', 'store', 'update', 'destroy');
+    Route::resource('permission', PermissionController::class)->only('index', 'store', 'update', 'destroy');
 
-
+    Route::resource('menu', MenuGroupController::class)->only('index', 'store', 'update', 'destroy');
+    Route::resource('menu.item', MenuItemController::class)->only('index', 'store', 'update', 'destroy');
 
 });
+
 
 // Route::middleware([
 //     'auth:sanctum',

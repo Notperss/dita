@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Dahsboard')
+@section('breadcrumb')
+  <x-breadcrumb title="Dashboard" page="Dashboard" active="Dashboard" route="{{ route('dashboard.index') }}" />
+@endsection
 @section('content')
   <div class="page-heading">
     <h3>Dashboard</h3>
