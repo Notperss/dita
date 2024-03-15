@@ -40,9 +40,9 @@
                 <td>{{ $menuGroup->permission_name }}</td>
                 <td>
                   @if ($menuGroup->status)
-                    <span class="badge badge-soft-success">Show</span>
+                    <span class="badge bg-light-success">Show</span>
                   @else
-                    <span class="badge badge-soft-danger">Hide</span>
+                    <span class="badge bg-light-danger">Hide</span>
                   @endif
                 </td>
                 {{-- <td>
@@ -76,7 +76,7 @@
 
                 <td style="width: 200px;">
                   <a href="{{ route('menu.item.index', $menuGroup->id) }}" class="btn icon btn-info"
-                    title="Management Menu Item"><i class="bi bi-file"></i></a>
+                    title="Add Management Menu Item"><i class="bi bi-plus"></i></a>
                   <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $menuGroup->id }}"
                     class="btn icon btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $menuGroup->id }}')">

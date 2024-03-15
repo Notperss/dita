@@ -300,9 +300,13 @@
                         name="number_container" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($locationContainers as $locationContainer)
-                          <option value="{{ $locationContainer->number_container }}"
-                            {{ $locationContainer->number_container == $archiveContainers->number_container ? 'selected' : '' }}>
-                            {{ $locationContainer->number_container }}</option>
+                          <?php
+                          $paddedNumber = str_pad($locationContainer->number_container, 3, '0', STR_PAD_LEFT);
+                          ?>
+                          <option value="{{ $paddedNumber }}"
+                            {{ $paddedNumber == $archiveContainers->number_container ? 'selected' : '' }}>
+                            {{ $paddedNumber }}
+                          </option>
                         @endforeach
                       </select>
                       @if ($errors->has('number_container'))
@@ -397,21 +401,91 @@
                           {{ $errors->first('subseries') }}</p>
                       @endif
                     </div>
-                    <div class="form-group">
-                      <label for="retention">Masa Retensi<code>*</code></label>
-                      <input type="text" id="retentions" class="form-control" name="retention"
-                        value="{{ old('retention', $archiveContainers->retention) }}" required readonly>
-                      <input type="text" id="retention" class="form-control" name="expiration_date"
-                        value="{{ old('expiration_date', $archiveContainers->expiration_date) }}" hidden>
-                      @if ($errors->has('retention'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('retention') }}</p>
-                      @endif
-                    </div>
                   </div>
 
                   <div class="col-md-4 col-4">
-                    <h4 class="card-title">Input Data Arsip</h4>
+                    <h4 class="card-title">Masa Aktif</h4>
+                    <div class="form-group">
+                      <label for="period_active">Masa Aktif<code>*</code></label>
+                      <input type="text" id="period_actives" class="form-control" name="period_active"
+                        value="{{ old('period_active', $archiveContainers->period_active) }}" required readonly>
+                      <input type="text" id="period_active" class="form-control" name="expiration_active"
+                        value="{{ old('expiration_active', $archiveContainers->expiration_active) }}" hidden>
+                      @if ($errors->has('period_active'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('period_active') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description_active">keterangan Masa Aktif<code>*</code></label>
+                      <textarea type="text" id="description_active" class="form-control" name="description_active" required readonly>{{ $archiveContainers->description_active }}</textarea>
+                      @if ($errors->has('description_active'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_active') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="period_inactive">Masa Inaktif<code>*</code></label>
+                      <input type="text" id="period_inactives" class="form-control" name="period_inactive"
+                        value="{{ old('period_inactive', $archiveContainers->period_inactive) }}" required readonly>
+                      <input type="text" id="period_inactive" class="form-control" name="expiration_inactive"
+                        value="{{ old('expiration_inactive', $archiveContainers->expiration_inactive) }}" hidden>
+                      @if ($errors->has('period_inactive'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('period_inactive') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description_inactive">keterangan Masa Inaktif<code>*</code></label>
+                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive" required
+                        readonly>{{ $archiveContainers->description_inactive }}</textarea>
+                      @if ($errors->has('description_inactive'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_inactive') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description_retention">keterangan Tambahan<code>*</code></label>
+                      <textarea type="text" id="description_retention" class="form-control" name="description_retention" required
+                        readonly>{{ $archiveContainers->description_retention }}</textarea>
+                      @if ($errors->has('description_retention'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_retention') }}</p>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row my-3">
+                  <h4 class="card-title text-center">Input Data Arsip</h4>
+                  <div class="col-md-4 col-4">
+                    <div class="form-group">
+                      <label for="number_app">Nomor Aplikasi<code>*</code></label>
+                      <input type="text" id="number_app" name="number_app"
+                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control">
+                      @if ($errors->has('number_app'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_app') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="number_catalog">Nomor Katalog<code>*</code></label>
+                      <input type="text" id="number_catalog" name="number_catalog"
+                        value="{{ old('number_catalog', $archiveContainers->number_catalog) }}" class="form-control">
+                      @if ($errors->has('number_catalog'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_catalog') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="number_document">Nomor Document<code>*</code></label>
+                      <input type="text" id="number_document" name="number_document"
+                        value="{{ old('number_document', $archiveContainers->number_document) }}" class="form-control">
+                      @if ($errors->has('number_document'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_document') }}</p>
+                      @endif
+                    </div>
                     <div class="form-group">
                       <label for="number_archive">Nomor Arsip<code>*</code></label>
                       <input type="text" id="number_archive" name="number_archive"
@@ -421,6 +495,9 @@
                           {{ $errors->first('number_archive') }}</p>
                       @endif
                     </div>
+                  </div>
+
+                  <div class="col-md-4 col-4">
                     <div class="form-group">
                       <label for="archive_in">Tanggal Masuk Arsip<code>*</code></label>
                       <input type="date" id="archive_in" name="archive_in"
@@ -441,6 +518,25 @@
                           {{ $errors->first('year') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="regarding">Perihal<code>*</code></label>
+                      <textarea type="text" id="regarding" class="form-control" name="regarding" required readonly>{{ $archiveContainers->regarding }}</textarea>
+                      @if ($errors->has('regarding'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('regarding') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="tag">keterangan Tag<code>*</code></label>
+                      <textarea type="text" id="tag" class="form-control" name="tag" required readonly>{{ $archiveContainers->tag }}</textarea>
+                      @if ($errors->has('tag'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('tag') }}</p>
+                      @endif
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-4">
                     <div class="form-group">
                       <label for="document_type">Bentuk Dokumen<code>*</code></label>
                       <select type="text" id="document_type" class="form-control" style="width: 100%"
@@ -519,13 +615,17 @@
                       @endif
                     </div>
                   </div>
-
-                  <div class="col-12 d-flex justify-content-end my-3">
-                    <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
-                    <a href="{{ route('backsite.archive-container.index') }}"
-                      class="btn btn-light-secondary me-1 mb-1">Cancel</a>
-                  </div>
                 </div>
+
+
+
+
+                <div class="col-12 d-flex justify-content-end my-3">
+                  <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
+                  <a href="{{ route('backsite.archive-container.index') }}"
+                    class="btn btn-light-secondary me-1 mb-1">Cancel</a>
+                </div>
+
               </form>
             </div>
           </div>

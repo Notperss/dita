@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Classification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\SubClassification;
 use App\Models\MasterData\Classification\MainClassification;
@@ -16,6 +17,9 @@ class SubClassificationController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('sub_classification_index')) {
+            abort(403);
+        }
         $subClassifications = SubClassification::orderBy('name', 'asc')->get();
         return view('pages.master-data.classification.sub-classification.index', compact('subClassifications'));
     }
@@ -34,6 +38,9 @@ class SubClassificationController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('sub_classification_create')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'main_classification_id' => ['required', 'max:255'],
@@ -78,6 +85,9 @@ class SubClassificationController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('sub_classification_edit')) {
+            abort(403);
+        }
         $subClassifications = SubClassification::find($id);
         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
 
@@ -89,6 +99,9 @@ class SubClassificationController extends Controller
      */
     public function update(Request $request, SubClassification $subClassification)
     {
+        if (! Gate::allows('sub_classification_update')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'main_classification_id' => ['required', 'max:255'],
@@ -126,6 +139,9 @@ class SubClassificationController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('sub_classification_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $subClassification = SubClassification::find($decrypt_id);

@@ -4,10 +4,11 @@ namespace App\Http\Controllers\MasterData\WorkUnits;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\MasterData\WorkUnits\Department;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Section;
 use App\Models\MasterData\WorkUnits\Division;
+use App\Models\MasterData\WorkUnits\Department;
 
 class SectionController extends Controller
 {
@@ -16,6 +17,9 @@ class SectionController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('section_index')) {
+            abort(403);
+        }
         $sections = Section::with('division', 'department')->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.section.index', compact('sections'));
     }
@@ -25,7 +29,9 @@ class SectionController extends Controller
      */
     public function create()
     {
-
+        if (! Gate::allows('section_create')) {
+            abort(403);
+        }
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.section.create', compact('divisions', ));
     }
@@ -35,6 +41,9 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('section_store')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'division_id' => ['required', 'max:255'],
             'department_id' => ['required', 'max:255'],
@@ -75,6 +84,9 @@ class SectionController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('section_edit')) {
+            abort(403);
+        }
         $sections = Section::find($id);
         $divisions = Division::orderBy('name', 'asc')->get();
         $departments = Department::where('division_id', $sections->division_id)->orderBy('name', 'asc')->get();
@@ -87,6 +99,9 @@ class SectionController extends Controller
      */
     public function update(Request $request, Section $section)
     {
+        if (! Gate::allows('section_update')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'division_id' => ['required', 'max:255'],
             'department_id' => ['required', 'max:255'],
@@ -120,6 +135,9 @@ class SectionController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('section_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $section = Section::find($decrypt_id);

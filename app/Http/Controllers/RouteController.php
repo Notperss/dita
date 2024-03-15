@@ -24,8 +24,9 @@ class RouteController extends Controller
                     ->orWhere('permission_name', 'like', '%' . $request->search . '%');
             })
             ->orderBy('route')
-            ->paginate(10);
+            ->get();
         $facadesRoutes = FacadesRoute::getRoutes();
+
         $permissions = Permission::orderBy('name')->get();
 
         return view('pages.management-access.route.index', compact('routes', 'permissions', 'facadesRoutes'));

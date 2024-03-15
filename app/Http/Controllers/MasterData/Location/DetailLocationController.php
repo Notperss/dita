@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MasterData\Location;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Location\SubLocation;
 use App\Models\MasterData\Location\MainLocation;
@@ -16,6 +17,9 @@ class DetailLocationController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('detail_location_index')) {
+            abort(403);
+        }
         $detailLocations = DetailLocation::orderBy('name', 'asc')->get();
         // $detailLocations = DetailLocation::with('mainLocation', 'subLocation')->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.detail-location.index', compact('detailLocations'));
@@ -26,6 +30,9 @@ class DetailLocationController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('detail_location_create')) {
+            abort(403);
+        }
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
         $subLocations = SubLocation::orderBy('name', 'asc')->get();
         return view('pages.master-data.location.detail-location.create', compact('mainLocations', 'subLocations'));
@@ -36,6 +43,9 @@ class DetailLocationController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('detail_location_store')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'main_location_id' => ['required', 'max:255'],
@@ -78,6 +88,9 @@ class DetailLocationController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('detail_location_edit')) {
+            abort(403);
+        }
         $detailLocations = DetailLocation::find($id);
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
         $subLocations = SubLocation::where('main_location_id', $detailLocations->main_location_id)->orderBy('name', 'asc')->get();
@@ -89,6 +102,9 @@ class DetailLocationController extends Controller
      */
     public function update(Request $request, DetailLocation $detailLocation)
     {
+        if (! Gate::allows('detail_location_update')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'main_location_id' => ['required', 'max:255'],
@@ -123,6 +139,9 @@ class DetailLocationController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('detail_location_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $detailLocations = DetailLocation::find($decrypt_id);

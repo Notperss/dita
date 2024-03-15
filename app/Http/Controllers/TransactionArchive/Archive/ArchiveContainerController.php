@@ -8,15 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Section;
 use App\Models\MasterData\WorkUnits\Division;
 use App\Models\MasterData\Location\ContainerLocation;
+use App\Models\MasterData\Retention\RetentionArchives;
+use App\Models\MasterData\Classification\SubClassification;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\MasterData\Classification\MainClassification;
-use App\Models\MasterData\Classification\SubClassification;
-use App\Models\MasterData\Retention\RetentionArchives;
 
 class ArchiveContainerController extends Controller
 {
@@ -28,7 +30,7 @@ class ArchiveContainerController extends Controller
         if (request()->ajax()) {
 
 
-            $archiveContainers = ArchiveContainer::with('division')->orderBy('id', 'asc');
+            $archiveContainers = ArchiveContainer::with('division');
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
@@ -63,6 +65,10 @@ class ArchiveContainerController extends Controller
                 ->rawColumns(['action',])
                 ->toJson();
         }
+
+        if (! Gate::allows('archive_container_index')) {
+            abort(403);
+        }
         // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
         return view('pages.transaction-archive.archive-container.index');
     }
@@ -72,6 +78,10 @@ class ArchiveContainerController extends Controller
      */
     public function create(Request $request)
     {
+        if (! Gate::allows('archive_container_create')) {
+            abort(403);
+        }
+
         $id = $request->id;
         $archiveContainersId = ArchiveContainer::find($id);
         $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
@@ -93,6 +103,7 @@ class ArchiveContainerController extends Controller
         }
         return view('pages.transaction-archive.archive-container.create',
             compact('archiveContainers', 'archiveContainersId', 'divisions', 'mainClassifications', 'numberContainers'));
+
 
     }
 
@@ -135,16 +146,20 @@ class ArchiveContainerController extends Controller
             'amount' => 'required|string',
             'archive_in' => 'required|date',
             // 'expiration_date' => 'required',
+            'number_app' => 'required|string',
+            'number_catalog' => 'required|string',
+            'number_document' => 'required|string',
+            'number_container' => 'required|string',
             'year' => 'required|string',
             'subseries' => 'required|string',
-            'number_container' => 'required|string',
-            'file' => 'required|file|mimes:pdf',
+            'file' => 'required|file|mimes:pdf|max:100',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
             'string' => 'Kolom :attribute harus berupa teks.',
             'date' => 'Kolom :attribute harus berupa tanggal.',
             'file' => 'Kolom :attribute harus berupa file.',
+            'max' => 'Nama :attribute terlalu panjang (maks 100 karakter).',
             'mimes' => 'File :attribute harus berformat PDF.',
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
         ]);
@@ -156,36 +171,49 @@ class ArchiveContainerController extends Controller
             // Process file upload
             if ($request->hasFile('file')) {
                 $files = $request->file('file');
-                $file = $files->getClientOriginalName();
-                $basename = pathinfo($file, PATHINFO_FILENAME) . '-' . Str::random(5);
-                $extension = $files->getClientOriginalExtension();
-                $fullname = $basename . '.' . $extension;
+
 
                 if ($files->getClientOriginalExtension() == 'pdf') {
                     // Specify the path to pdftotext executable
-                    $pdftotextPath = 'C:/Program Files/Git/mingw64/bin/pdftotext.exe';
+                    $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
                     // Use spatie/pdf-to-text to extract text from the PDF
                     $text = (new Pdf($pdftotextPath))
                         ->setPdf($files->getRealPath())
                         ->text();
 
-                    // Filter out non-alphabetic characters from the extracted text
                     // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-                    $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+                    // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+                    $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+
+                    // Get the first 100 characters from the filtered text
+                    $first200Chars = substr($filteredText, 0, 180);
 
                     // Store the filtered text in the 'content_file' column
                     $data['content_file'] = $filteredText;
                 }
 
+                $file = $files->getClientOriginalName();
+                $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+                $extension = $files->getClientOriginalExtension();
+                $fullname = $basename . '.' . $extension;
+
                 // Store the file in the specified directory
                 $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+
+                if ($data['file'] === false) {
+                    // Handle the error
+                    alert()->error('Error', 'Failed to upload file');
+                    return redirect()->back()->withInput();
+                }
             } else {
                 // Handle the case where no file was uploaded
                 // You may want to return an error message or redirect back to the form
                 alert()->error('Error', 'No file uploaded. Please upload a file.');
                 return redirect()->back()->withInput();
             }
+            // dd($data);
+            // ArchiveContainer::create($data);
 
             // Start a database transaction
             DB::beginTransaction();
@@ -219,6 +247,73 @@ class ArchiveContainerController extends Controller
             alert()->error('Error', 'Failed to process the file. Please try again.');
             return redirect()->back()->withInput();
         }
+
+        // try {
+        //     // Retrieve form data
+        //     $data = $request->all();
+
+        //     // Process file upload
+        //     if ($request->hasFile('file')) {
+        //         $files = $request->file('file');
+        //         $file = $files->getClientOriginalName();
+        //         $basename = pathinfo($file, PATHINFO_FILENAME) . '-' . Str::random(5);
+        //         $extension = $files->getClientOriginalExtension();
+        //         $fullname = $basename . '.' . $extension;
+
+        //         // Check if the uploaded file is a PDF
+        //         if ($files->getClientOriginalExtension() == 'pdf') {
+        //             // Extract text from the PDF
+        //             $text = (new Pdf())
+        //                 ->setPdf($files->getRealPath())
+        //                 ->text();
+
+        //             // Filter out non-alphanumeric characters from the extracted text
+        //             $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+
+        //             // Store the filtered text in the 'content_file' column
+        //             $data['content_file'] = $filteredText;
+        //         }
+
+        //         // Store the file in the specified directory
+        //         $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+        //     } else {
+        //         // Handle the case where no file was uploaded
+        //         alert()->error('Error', 'No file uploaded. Please upload a file.');
+        //         return redirect()->back()->withInput();
+        //     }
+
+        //     // Start a database transaction
+        //     DB::beginTransaction();
+
+        //     try {
+        //         // Store data to the database
+        //         ArchiveContainer::create($data);
+
+        //         // Commit the transaction if everything is successful
+        //         DB::commit();
+
+        //         alert()->success('Success', 'Data successfully added');
+        //         return redirect()->back()->withInput();
+        //     } catch (\Exception $e) {
+        //         // Rollback the transaction in case of an error
+        //         DB::rollBack();
+
+        //         // Log the error
+        //         Log::error("Database transaction error: " . $e->getMessage());
+
+        //         // Provide feedback to the user or redirect with an error message
+        //         alert()->error('Error', 'Failed to add data. Please try again.');
+        //         return redirect()->back()->withInput();
+        //     }
+        // } catch (\Exception $e) {
+        //     // Log the error
+        //     Log::error("File upload or text extraction error: " . $e->getMessage());
+
+        //     // Provide feedback to the user or redirect with an error message
+        //     alert()->error('Error', 'Failed to process the file. Please try again.');
+        //     return redirect()->back()->withInput();
+        // }
+
     }
 
     /**
@@ -235,6 +330,10 @@ class ArchiveContainerController extends Controller
                 'archiveContainers',
                 'fileName',
             ));
+
+        if (! Gate::allows('archive_container_show')) {
+            abort(403);
+        }
     }
 
 
@@ -279,16 +378,19 @@ class ArchiveContainerController extends Controller
             'number_archive' => 'required|string',
             'main_classification_id' => 'required|string',
             'sub_classification_id' => 'required|string',
-            'retention' => 'required|string',
+            // 'retention' => 'required|string',
             'document_type' => 'required|string',
             'archive_type' => 'required|string',
             'amount' => 'required|string',
             'archive_in' => 'required|date',
-            'expiration_date' => 'required',
+            // 'expiration_date' => 'required',
+            'number_app' => 'required|string',
+            'number_catalog' => 'required|string',
+            'number_document' => 'required|string',
+            'number_container' => 'required|string',
             'year' => 'required|string',
             'subseries' => 'required|string',
-            'number_container' => 'required|string',
-            'file' => 'file|mimes:pdf',
+            'file' => 'file|mimes:pdf|max:100',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
@@ -303,33 +405,51 @@ class ArchiveContainerController extends Controller
             // Retrieve form data
             $data = $request->all();
 
+            $path_file = $archiveContainer['file'];
+
             // Process file upload
             if ($request->hasFile('file')) {
                 $files = $request->file('file');
-                $file = $files->getClientOriginalName();
-                $basename = pathinfo($file, PATHINFO_FILENAME) . '-' . Str::random(5);
-                $extension = $files->getClientOriginalExtension();
-                $fullname = $basename . '.' . $extension;
 
                 if ($files->getClientOriginalExtension() == 'pdf') {
                     // Specify the path to pdftotext executable
-                    $pdftotextPath = 'C:/Program Files/Git/mingw64/bin/pdftotext.exe';
+                    $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
                     // Use spatie/pdf-to-text to extract text from the PDF
                     $text = (new Pdf($pdftotextPath))
                         ->setPdf($files->getRealPath())
                         ->text();
 
-                    // Filter out non-alphabetic characters from the extracted text
                     // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-                    $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+                    // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+                    $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+
+                    // Get the first 100 characters from the filtered text
+                    $first200Chars = substr($filteredText, 0, 180);
 
                     // Store the filtered text in the 'content_file' column
                     $data['content_file'] = $filteredText;
                 }
 
+                $file = $files->getClientOriginalName();
+                $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+                $extension = $files->getClientOriginalExtension();
+                $fullname = $basename . '.' . $extension;
+
                 // Store the file in the specified directory
                 $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+
+                if ($path_file != null || $path_file != '') {
+                    Storage::delete($path_file);
+                }
+
+                if ($data['file'] === false) {
+                    // Handle the error
+                    alert()->error('Error', 'Failed to upload file');
+                    return redirect()->back()->withInput();
+                }
+            } else {
+                $data['file'] = $path_file;
             }
             // else {
             //     // Handle the case where no file was uploaded
@@ -351,7 +471,7 @@ class ArchiveContainerController extends Controller
                 // Commit the transaction if everything is successful
                 DB::commit();
 
-                alert()->success('Success', 'Data successfully added');
+                alert()->success('Success', 'Data successfully Updated');
                 // return redirect()->back()->withInput();
                 return redirect()->route('backsite.archive-container.index');
             } catch (\Exception $e) {
@@ -372,6 +492,10 @@ class ArchiveContainerController extends Controller
             // Provide feedback to the user or redirect with an error message
             alert()->error('Error', 'Failed to process the file. Please try again.');
             return redirect()->back()->withInput();
+        }
+
+        if (! Gate::allows('archive_container_edit')) {
+            abort(403, 'Unauthorized action.');
         }
     }
 

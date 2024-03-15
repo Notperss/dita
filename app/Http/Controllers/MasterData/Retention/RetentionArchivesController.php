@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Retention;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Retention\RetentionArchives;
 use App\Models\MasterData\Classification\SubClassification;
@@ -17,6 +18,9 @@ class RetentionArchivesController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('retention_index')) {
+            abort(403);
+        }
         $retentions = RetentionArchives::orderBy('sub_series', 'asc')->get();
         $subClassifications = SubClassification::orderBy('name', 'asc')->get();
         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
@@ -28,6 +32,9 @@ class RetentionArchivesController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('retention_create')) {
+            abort(403);
+        }
         $subClassifications = SubClassification::orderBy('name', 'asc')->get();
         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
         return view('pages.master-data.retention.create', compact('subClassifications', 'mainClassifications'));
@@ -38,6 +45,9 @@ class RetentionArchivesController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('retention_store')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'main_classification_id' => ['required'],
             'sub_classification_id' => ['required'],
@@ -85,6 +95,9 @@ class RetentionArchivesController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('retention_edit')) {
+            abort(403);
+        }
         $retentions = RetentionArchives::find($id);
         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
         $subClassifications = SubClassification::where('main_classification_id', $retentions->main_classification_id)->orderBy('name', 'asc')->get();
@@ -97,6 +110,9 @@ class RetentionArchivesController extends Controller
      */
     public function update(Request $request, RetentionArchives $retention)
     {
+        if (! Gate::allows('retention_update')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'main_classification_id' => ['required'],
             'sub_classification_id' => ['required'],
@@ -137,6 +153,9 @@ class RetentionArchivesController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('retention_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $retentionArchives = RetentionArchives::find($decrypt_id);

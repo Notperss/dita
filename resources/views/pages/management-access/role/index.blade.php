@@ -100,7 +100,7 @@
         if (result.isConfirmed) {
           // If the user clicks "Yes, delete it!", submit the corresponding form
           //   document.getElementById('deleteForm_' + roleId).submit();
-          document.getElementById('modal-form-delete-role-' + routeId).submit();
+          document.getElementById('modal-form-delete-role-' + roleId).submit();
         }
       });
     }

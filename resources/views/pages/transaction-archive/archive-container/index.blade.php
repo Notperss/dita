@@ -114,7 +114,7 @@
       $('#container-table').DataTable({
         processing: true,
         serverSide: true,
-        ordering: false,
+        ordering: true,
         lengthMenu: [
           [10, 25, 50, -1],
           [10, 25, 50, 'All']

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Location;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Location\SubLocation;
@@ -17,6 +18,9 @@ class SubLocationController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('sub_location_index')) {
+            abort(403);
+        }
         $subLocations = SubLocation::with('mainLocation')->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.sub-location.index', compact('subLocations'));
     }
@@ -26,6 +30,9 @@ class SubLocationController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('sub_location_create')) {
+            abort(403);
+        }
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
         return view('pages.master-data.location.sub-location.create', compact('mainLocations'));
     }
@@ -35,6 +42,9 @@ class SubLocationController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('sub_location_store')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'main_location_id' => ['required', 'max:255'],
@@ -73,6 +83,9 @@ class SubLocationController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('sub_location_edit')) {
+            abort(403);
+        }
         $subLocations = SubLocation::find($id);
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
         return view('pages.master-data.location.sub-location.edit', compact('mainLocations', 'subLocations'));
@@ -83,7 +96,9 @@ class SubLocationController extends Controller
      */
     public function update(Request $request, SubLocation $subLocation)
     {
-
+        if (! Gate::allows('sub_location_update')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'main_location_id' => ['required', 'max:255',],
@@ -114,6 +129,9 @@ class SubLocationController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('sub_location_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $subLocations = SubLocation::find($decrypt_id);

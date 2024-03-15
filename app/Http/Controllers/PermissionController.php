@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\Models\Permission;
 use App\Http\Requests\StorePermissionRequest;
 
 class PermissionController extends Controller
@@ -23,10 +24,18 @@ class PermissionController extends Controller
             ->with('roles', function ($query) {
                 return $query->select('id', 'name');
             })
-            ->orderBy('name')
-            ->paginate(10);
-        $roles = Role::orderBy('name')->get();
+            ->orderBy('name')->get();
+        // $roles = Role::orderBy('name')->get();
 
+        $roles = Role::orderBy('name')->get();
+        if ($roles->isEmpty()) {
+            abort(403, 'No roles found.');
+        }
+
+        // If user is not authorized, abort
+        if (! Gate::allows('permission_index')) {
+            abort(403);
+        }
         // dd($$permissions->links());
 
         return view('pages.management-access.permission.index', compact('permissions', 'roles'));
@@ -37,6 +46,9 @@ class PermissionController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('permission_create')) {
+            abort(403);
+        }
         return view('pages.management-access.permission.create');
     }
 
@@ -56,6 +68,9 @@ class PermissionController extends Controller
      */
     public function show(string $id)
     {
+        if (! Gate::allows('permission_show')) {
+            abort(403);
+        }
         return view('pages.management-access.permission.show');
     }
 
@@ -64,6 +79,9 @@ class PermissionController extends Controller
      */
     public function edit(string $id)
     {
+        if (! Gate::allows('permission_edit')) {
+            abort(403);
+        }
         return view('pages.management-access.permission.edit');
     }
 

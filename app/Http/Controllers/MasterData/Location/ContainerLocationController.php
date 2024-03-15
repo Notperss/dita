@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Location;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
 use App\Models\MasterData\Location\SubLocation;
@@ -19,6 +20,9 @@ class ContainerLocationController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('container_location_index')) {
+            abort(403);
+        }
         $containerLocations = ContainerLocation::
             with('mainLocation',
                 'subLocation',
@@ -34,6 +38,9 @@ class ContainerLocationController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('container_location_create')) {
+            abort(403);
+        }
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.master-data.location.container.create', compact('mainLocations', 'divisions'));
@@ -44,6 +51,9 @@ class ContainerLocationController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('container_location_store')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'main_location_id' => ['required'],
             'sub_location_id' => ['required'],
@@ -78,7 +88,7 @@ class ContainerLocationController extends Controller
      */
     public function show(ContainerLocation $containerLocation)
     {
-       return abort(404);
+        return abort(404);
     }
 
     /**
@@ -86,6 +96,9 @@ class ContainerLocationController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('container_location_edit')) {
+            abort(403);
+        }
         $containerLocations = ContainerLocation::find($id);
         $divisions = Division::orderBy('name', 'asc')->get();
         $mainLocations = MainLocation::orderBy('name', 'asc')->get();
@@ -99,6 +112,9 @@ class ContainerLocationController extends Controller
      */
     public function update(Request $request, ContainerLocation $containerLocation)
     {
+        if (! Gate::allows('container_location_update')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'main_location_id' => ['required'],
             'sub_location_id' => ['required'],
@@ -136,6 +152,9 @@ class ContainerLocationController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('container_location_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $containerLocations = ContainerLocation::find($decrypt_id);

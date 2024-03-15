@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\WorkUnits;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
 
@@ -15,6 +16,9 @@ class DivisionController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('division_index')) {
+            abort(403);
+        }
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.division.index', compact('divisions'));
     }
@@ -24,6 +28,9 @@ class DivisionController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('division_create')) {
+            abort(403);
+        }
         return view('pages.master-data.work-units.division.create');
 
     }
@@ -33,6 +40,9 @@ class DivisionController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('division_store')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'code' => ['required', 'max:255', Rule::unique('divisions')],
@@ -72,6 +82,9 @@ class DivisionController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('division_edit')) {
+            abort(403);
+        }
         $divisions = Division::find($id);
         return view('pages.master-data.work-units.division.edit', compact('divisions'));
     }
@@ -81,6 +94,9 @@ class DivisionController extends Controller
      */
     public function update(Request $request, Division $division)
     {
+        if (! Gate::allows('division_update')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'code' => ['required', 'max:255', Rule::unique('divisions')->ignore($division->id)],
@@ -113,6 +129,9 @@ class DivisionController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('division_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $division = Division::find($decrypt_id);

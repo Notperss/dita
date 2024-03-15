@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Company;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Company\Company;
 
@@ -15,6 +16,10 @@ class CompanyController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('company_index')) {
+            abort(403);
+        }
+
         $companies = Company::orderBy('name', 'asc')->get();
 
         return view('pages.master-data.company.index', compact('companies'));
@@ -25,6 +30,9 @@ class CompanyController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('company_create')) {
+            abort(403);
+        }
         return view('pages.master-data.company.create');
     }
 
@@ -33,6 +41,10 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('company_store')) {
+            abort(403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255', Rule::unique('companies')],
             'address' => ['required', 'max:255'],
@@ -79,6 +91,9 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('company_edit')) {
+            abort(403);
+        }
         $companies = Company::find($id);
         return view('pages.master-data.company.edit', compact('companies'));
     }
@@ -88,6 +103,10 @@ class CompanyController extends Controller
      */
     public function update(Request $request, Company $company)
     {
+        if (! Gate::allows('company_update')) {
+            abort(403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255', Rule::unique('companies')],
             'address' => ['required', 'max:255'],
@@ -128,6 +147,9 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('company_destroy')) {
+            abort(403);
+        }
         // Decrypt id
         $decrypt_id = decrypt($id);
         $company = Company::find($decrypt_id);

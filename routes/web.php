@@ -63,25 +63,25 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::resource('company', CompanyController::class);
 
     //Location
-    Route::resource('main-location', MainLocationController::class);
-    Route::resource('sub-location', SubLocationController::class);
-    Route::resource('detail-location', DetailLocationController::class);
-    Route::resource('container-location', ContainerLocationController::class);
+    Route::resource('main-location', MainLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('sub-location', SubLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('detail-location', DetailLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('container-location', ContainerLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::get('/get-sub-location', [DetailLocationController::class, 'getSubLocations'])->name('getSubLocations');
     Route::get('/get-container', [DetailLocationController::class, 'getContainers'])->name('getContainers');
 
     //WorkUnits
-    Route::resource('division', DivisionController::class);
-    Route::resource('department', DepartmentController::class);
-    Route::resource('section', SectionController::class);
+    Route::resource('division', DivisionController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('department', DepartmentController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('section', SectionController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::get('/get-department', [SectionController::class, 'getDepartments'])->name('getDepartments');
 
     //Classification
-    Route::resource('main-classification', MainClassificationController::class);
-    Route::resource('sub-classification', SubClassificationController::class);
+    Route::resource('main-classification', MainClassificationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('sub-classification', SubClassificationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
 
     //Retention
-    Route::resource('retention', RetentionArchivesController::class);
+    Route::resource('retention', RetentionArchivesController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
     Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 

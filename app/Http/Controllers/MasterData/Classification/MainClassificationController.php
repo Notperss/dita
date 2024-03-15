@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Classification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\MainClassification;
 
@@ -15,6 +16,9 @@ class MainClassificationController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('main_classification_index')) {
+            abort(403);
+        }
         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
         return view('pages.master-data.classification.main-classification.index', compact('mainClassifications'));
     }
@@ -24,6 +28,9 @@ class MainClassificationController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('main_classification_create')) {
+            abort(403);
+        }
         return view('pages.master-data.classification.main-classification.create');
     }
 
@@ -32,6 +39,9 @@ class MainClassificationController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('main_classification_store')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'code' => ['required', 'max:255', Rule::unique('classification_mains')],
@@ -77,6 +87,9 @@ class MainClassificationController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('main_classification_edit')) {
+            abort(403);
+        }
         $mainClassifications = MainClassification::find($id);
         return view('pages.master-data.classification.main-classification.edit', compact('mainClassifications'));
     }
@@ -86,6 +99,9 @@ class MainClassificationController extends Controller
      */
     public function update(Request $request, MainClassification $mainClassification)
     {
+        if (! Gate::allows('main_classification_update')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'code' => ['required', 'max:255', Rule::unique('classification_mains')->ignore($mainClassification->id)],
@@ -120,6 +136,9 @@ class MainClassificationController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('main_classification_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $mainClassification = MainClassification::find($decrypt_id);

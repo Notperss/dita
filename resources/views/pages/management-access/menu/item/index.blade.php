@@ -43,9 +43,9 @@
                 <td>{{ $menuItem->permission_name }}</td>
                 <td>
                   @if ($menuItem->status)
-                    <span class="badge badge-soft-success">Show</span>
+                    <span class="badge bg-light-success">Show</span>
                   @else
-                    <span class="badge badge-soft-danger">Hide</span>
+                    <span class="badge bg-light-danger">Hide</span>
                   @endif
                 </td>
                 {{-- <td>

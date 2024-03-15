@@ -19,8 +19,6 @@
         </h5>
       </div>
       <div class="card-body">
-        <!-- end cardheader -->
-        <!-- Hoverable Rows -->
         <table class="table table-hover table-nowrap mb-0" id="table1">
           <thead>
             <tr>
@@ -38,13 +36,13 @@
                 <th scope="row">{{ $loop->iteration }}</th>
                 <td>{{ $route->route }}</td>
                 <td>
-                  <span class="badge badge-soft-success">{{ $route->permission_name }}</span>
+                  <span class="badge bg-light-success">{{ $route->permission_name }}</span>
                 </td>
                 <td>
                   @if ($route->status)
-                    <span class="badge badge-soft-success">Enable</span>
+                    <span class="badge bg-light-success">Enable</span>
                   @else
-                    <span class="badge badge-soft-danger">Disable</span>
+                    <span class="badge bg-light-danger">Disable</span>
                   @endif
                 </td>
                 <td>{{ $route->description }}</td>

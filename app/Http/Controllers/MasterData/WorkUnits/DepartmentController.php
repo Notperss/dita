@@ -5,9 +5,10 @@ namespace App\Http\Controllers\MasterData\WorkUnits;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
-use App\Models\MasterData\WorkUnits\Department;
 use App\Models\MasterData\WorkUnits\Division;
+use App\Models\MasterData\WorkUnits\Department;
 
 class DepartmentController extends Controller
 {
@@ -16,6 +17,9 @@ class DepartmentController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('department_index')) {
+            abort(403);
+        }
         $departments = Department::with('division')->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.department.index', compact('departments'));
     }
@@ -25,7 +29,9 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-
+        if (! Gate::allows('department_create')) {
+            abort(403);
+        }
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.department.create', compact('divisions'));
     }
@@ -35,6 +41,9 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Gate::allows('department_store')) {
+            abort(403);
+        }
         $validator = Validator::make($request->all(), [
             'division_id' => ['required', 'max:255'],
             'name' => ['required', 'max:255'],
@@ -72,6 +81,9 @@ class DepartmentController extends Controller
      */
     public function edit($id)
     {
+        if (! Gate::allows('department_edit')) {
+            abort(403);
+        }
         $departments = Department::find($id);
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.department.edit', compact('departments', 'divisions'));
@@ -82,6 +94,9 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, Department $department)
     {
+        if (! Gate::allows('department_update')) {
+            abort(403);
+        }
         // Validate the request data
         $validator = Validator::make($request->all(), [
             'division_id' => ['required', 'max:255'],
@@ -113,6 +128,9 @@ class DepartmentController extends Controller
      */
     public function destroy($id)
     {
+        if (! Gate::allows('department_destroy')) {
+            abort(403);
+        }
         // deskripsi id
         $decrypt_id = decrypt($id);
         $department = Department::find($decrypt_id);
