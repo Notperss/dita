@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Classification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\MainClassification;
@@ -19,7 +20,8 @@ class MainClassificationController extends Controller
         if (! Gate::allows('main_classification_index')) {
             abort(403);
         }
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.classification.main-classification.index', compact('mainClassifications'));
     }
 
@@ -60,13 +62,13 @@ class MainClassificationController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        // Check if validation fails
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        $company_id = Auth::user()->company_id;
+
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
 
         // If the validation passes, create the Divisi record
-        MainClassification::create($request->all());
+        MainClassification::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.main-classification.index');

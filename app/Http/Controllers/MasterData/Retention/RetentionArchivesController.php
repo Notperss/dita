@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Retention;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Retention\RetentionArchives;
@@ -21,9 +22,13 @@ class RetentionArchivesController extends Controller
         if (! Gate::allows('retention_index')) {
             abort(403);
         }
-        $retentions = RetentionArchives::orderBy('sub_series', 'asc')->get();
-        $subClassifications = SubClassification::orderBy('name', 'asc')->get();
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
+        $retentions = RetentionArchives::where('company_id', $company_id)
+            ->orderBy('sub_series', 'asc')
+            ->get();
+        $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.retention.index', compact('subClassifications', 'mainClassifications', 'retentions'));
     }
 
@@ -35,8 +40,10 @@ class RetentionArchivesController extends Controller
         if (! Gate::allows('retention_create')) {
             abort(403);
         }
-        $subClassifications = SubClassification::orderBy('name', 'asc')->get();
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
+        $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.retention.create', compact('subClassifications', 'mainClassifications'));
     }
 
@@ -73,9 +80,12 @@ class RetentionArchivesController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $company_id = Auth::user()->company_id;
 
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
         // If the validation passes, create the Divisi record
-        RetentionArchives::create($request->all());
+        RetentionArchives::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.retention.index');
@@ -98,8 +108,10 @@ class RetentionArchivesController extends Controller
         if (! Gate::allows('retention_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
         $retentions = RetentionArchives::find($id);
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $subClassifications = SubClassification::where('main_classification_id', $retentions->main_classification_id)->orderBy('name', 'asc')->get();
 
         return view('pages.master-data.retention.edit', compact('retentions', 'mainClassifications', 'subClassifications'));

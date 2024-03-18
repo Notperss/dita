@@ -214,7 +214,7 @@
                   <h4 class="card-title text-center">Input Data Arsip</h4>
                   <div class="col-md-4 col-4">
                     <div class="form-group">
-                      <label for="number_app">Nomor Aplikasi<code>*</code></label>
+                      <label for="number_app">Nomor Aplikasi <small>(Otomatis)</small></label>
                       <input type="text" id="number_app" name="number_app" class="form-control" readonly>
                       @if ($errors->has('number_app'))
                         <p style="font-style: bold; color: red;">
@@ -572,7 +572,7 @@
         // Retrieve selected values
         var codeDivision = $('#division_id option:selected').data('code');
         var numberContainer = $('#number_container').val();
-        var documentTypeValue = $('#document_type').val();
+        var documentTypeValue = $('#document_type').val() || '';
         var documentType = (documentTypeValue === 'COPY') ? 'C' : ((documentTypeValue === 'ASLI') ? 'A' :
           documentTypeValue);
         var year = $('#year').val();

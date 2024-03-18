@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Classification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\SubClassification;
@@ -20,7 +21,9 @@ class SubClassificationController extends Controller
         if (! Gate::allows('sub_classification_index')) {
             abort(403);
         }
-        $subClassifications = SubClassification::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+
+        $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.classification.sub-classification.index', compact('subClassifications'));
     }
 
@@ -29,7 +32,9 @@ class SubClassificationController extends Controller
      */
     public function create()
     {
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.classification.sub-classification.create', compact('mainClassifications'));
     }
 
@@ -62,9 +67,12 @@ class SubClassificationController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $company_id = Auth::user()->company_id;
 
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
         // If the validation passes, create the Divisi record
-        SubClassification::create($request->all());
+        SubClassification::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.sub-classification.index');
@@ -88,8 +96,10 @@ class SubClassificationController extends Controller
         if (! Gate::allows('sub_classification_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
+
         $subClassifications = SubClassification::find($id);
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
 
         return view('pages.master-data.classification.sub-classification.edit', compact('subClassifications', 'mainClassifications'));
     }

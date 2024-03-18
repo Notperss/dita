@@ -85,9 +85,9 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
     Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 
-    //Management Access
-    Route::resource('type_user', TypeUserController::class);
-    Route::resource('user', UserController::class);
+    // //Management Access
+    // Route::resource('type_user', TypeUserController::class);
+    // Route::resource('user', UserController::class);
 
     //Transaction Archives
     Route::resource('archive-container', ArchiveContainerController::class);
@@ -101,7 +101,7 @@ Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
     Route::resource('dashboard', DashboardController::class)->only('index');
     Route::resource('user', UserManagementController::class)->only('index', 'store', 'update', 'destroy');
     Route::prefix('user')->group(function () {
-        Route::resource('profile', UserProfileController::class)->only('index');
+        Route::resource('profile', UserProfileController::class)->only('index', 'edit');
     });
     Route::resource('setting', SettingController::class)->only('index', 'update');
     Route::resource('contoh', SettingController::class)->only('index', 'update');

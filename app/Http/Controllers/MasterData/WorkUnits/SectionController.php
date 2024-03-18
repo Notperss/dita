@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MasterData\WorkUnits;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Section;
@@ -20,7 +21,8 @@ class SectionController extends Controller
         if (! Gate::allows('section_index')) {
             abort(403);
         }
-        $sections = Section::with('division', 'department')->orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+        $sections = Section::where('company_id', $company_id)->with('division', 'department')->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.section.index', compact('sections'));
     }
 
@@ -32,7 +34,8 @@ class SectionController extends Controller
         if (! Gate::allows('section_create')) {
             abort(403);
         }
-        $divisions = Division::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.section.create', compact('divisions', ));
     }
 
@@ -62,9 +65,12 @@ class SectionController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $company_id = Auth::user()->company_id;
 
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
         // If the validation passes, create the Divisi record
-        Section::create($request->all());
+        Section::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.section.index');
@@ -87,8 +93,10 @@ class SectionController extends Controller
         if (! Gate::allows('section_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
+
         $sections = Section::find($id);
-        $divisions = Division::orderBy('name', 'asc')->get();
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $departments = Department::where('division_id', $sections->division_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.section.edit', compact('divisions', 'departments', 'sections'));
     }

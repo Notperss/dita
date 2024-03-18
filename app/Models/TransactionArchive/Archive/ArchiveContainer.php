@@ -2,15 +2,17 @@
 
 namespace App\Models\TransactionArchive\Archive;
 
+use Illuminate\Database\Eloquent\Model;
+use App\Models\MasterData\Company\Company;
 use App\Models\MasterData\WorkUnits\Division;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class ArchiveContainer extends Model
 {
     use HasFactory;
     protected $fillable = [
         'division_id',//
+        'company_id',//
         'number_container',//
         'main_location',//
         'sub_location',//
@@ -45,6 +47,11 @@ class ArchiveContainer extends Model
         'content_file',
     ];
 
+    public function company()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(Company::class, 'company_id');
+    }
     public function division()
     {
         // 2 parameter (path model, field foreign key)

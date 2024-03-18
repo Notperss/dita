@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -27,10 +28,16 @@ class ArchiveContainerController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('archive_container_index')) {
+            abort(403);
+        }
+
         if (request()->ajax()) {
 
+            $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
-            $archiveContainers = ArchiveContainer::with('division');
+
+            $archiveContainers = ArchiveContainer::where('company_id', $company_id)->with('division');
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
@@ -65,10 +72,6 @@ class ArchiveContainerController extends Controller
                 ->rawColumns(['action',])
                 ->toJson();
         }
-
-        if (! Gate::allows('archive_container_index')) {
-            abort(403);
-        }
         // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
         return view('pages.transaction-archive.archive-container.index');
     }
@@ -81,12 +84,13 @@ class ArchiveContainerController extends Controller
         if (! Gate::allows('archive_container_create')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
         $id = $request->id;
         $archiveContainersId = ArchiveContainer::find($id);
-        $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
-        $divisions = Division::orderBy('id', 'asc')->get();
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $archiveContainers = ArchiveContainer::where('company_id', $company_id)->orderBy('id', 'asc')->get();
+        $divisions = Division::where('company_id', $company_id)->orderBy('id', 'asc')->get();
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         // $numberContainers = ContainerLocation::with('mainLocation')->where('division_id', $archiveContainersId->division_id)->get();
         // $divisions = Division::orderBy('id', 'asc')->get();
         // $sections = Section::orderBy('id', 'asc')->get();
@@ -94,7 +98,7 @@ class ArchiveContainerController extends Controller
         $lastArchiveContainer = ArchiveContainer::latest()->first();
 
         if ($lastArchiveContainer) {
-            $numberContainers = ContainerLocation::with('mainLocation')
+            $numberContainers = ContainerLocation::where('company_id', $company_id)->with('mainLocation')
                 ->where('division_id', $lastArchiveContainer->division_id)
                 ->get();
         } else {
@@ -152,7 +156,7 @@ class ArchiveContainerController extends Controller
             'number_container' => 'required|string',
             'year' => 'required|string',
             'subseries' => 'required|string',
-            'file' => 'required|file|mimes:pdf|max:100',
+            'file' => 'required|file|mimes:pdf|max:290',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
@@ -219,8 +223,12 @@ class ArchiveContainerController extends Controller
             DB::beginTransaction();
 
             try {
+                $company_id = Auth::user()->company_id;
+
+                // Merge the company_id into the request data
+                $requestData = array_merge($data, ['company_id' => $company_id]);
                 // Store to database
-                ArchiveContainer::create($data);
+                ArchiveContainer::create($requestData);
 
                 // Commit the transaction if everything is successful
                 DB::commit();
@@ -321,6 +329,10 @@ class ArchiveContainerController extends Controller
      */
     public function show($id)
     {
+        if (! Gate::allows('archive_container_show')) {
+            abort(403);
+        }
+
         $archiveContainers = ArchiveContainer::find($id);
 
         $filepath = storage_path($archiveContainers->file);
@@ -331,9 +343,7 @@ class ArchiveContainerController extends Controller
                 'fileName',
             ));
 
-        if (! Gate::allows('archive_container_show')) {
-            abort(403);
-        }
+
     }
 
 
@@ -342,10 +352,12 @@ class ArchiveContainerController extends Controller
      */
     public function edit($id)
     {
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
         $archiveContainers = ArchiveContainer::find($id);
-        $divisions = Division::orderBy('id', 'asc')->get();
+        $divisions = Division::where('company_id', $company_id)->orderBy('id', 'asc')->get();
         $locationContainers = ContainerLocation::where('division_id', $archiveContainers->division_id)->orderBy('id', 'asc')->get();
-        $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $subClassifications = SubClassification::where('main_classification_id', $archiveContainers->main_classification_id)->get();
         $retentions = RetentionArchives::where('sub_classification_id', $archiveContainers->sub_classification_id)->get();
         // $divisions = Division::orderBy('id', 'asc')->get();
@@ -370,6 +382,10 @@ class ArchiveContainerController extends Controller
      */
     public function update(Request $request, ArchiveContainer $archiveContainer)
     {
+        if (! Gate::allows('archive_container_edit')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'main_location' => 'required|string',
             'sub_location' => 'required|string',
@@ -492,10 +508,6 @@ class ArchiveContainerController extends Controller
             // Provide feedback to the user or redirect with an error message
             alert()->error('Error', 'Failed to process the file. Please try again.');
             return redirect()->back()->withInput();
-        }
-
-        if (! Gate::allows('archive_container_edit')) {
-            abort(403, 'Unauthorized action.');
         }
     }
 

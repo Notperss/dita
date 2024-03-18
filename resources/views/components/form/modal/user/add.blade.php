@@ -24,8 +24,19 @@
           </div>
 
           <div class="mb-3">
+            <label for="company_id" class="form-label">Perusahaan</label>
+            <select class="form-control choices" id="company_id" placeholder="Guard Name" name="company_id">
+              <option value="" selected disabled>Choose</option>
+              @foreach ($companies as $company)
+                <option value="{{ $company->id }}">{{ $company->name }}</option>
+              @endforeach
+            </select>
+            <x-form.validation.error name="company_id" />
+          </div>
+
+          <div class="mb-3">
             <label for="role" class="form-label">Role Name</label>
-            <select class="form-control" id="role" name="role" data-choices data-choices-removeItem>
+            <select class="form-control choices" id="role" name="role">
               @foreach ($roles as $role)
                 <option value="{{ $role->name }}">{{ $role->name }}</option>
               @endforeach

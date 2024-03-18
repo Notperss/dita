@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\WorkUnits;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
@@ -19,7 +20,8 @@ class DivisionController extends Controller
         if (! Gate::allows('division_index')) {
             abort(403);
         }
-        $divisions = Division::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.division.index', compact('divisions'));
     }
 
@@ -61,8 +63,14 @@ class DivisionController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $company_id = Auth::user()->company_id;
+
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
+        // If the validation passes, create the MainLocation record
+
         // If the validation passes, create the Divisi record
-        Division::create($request->all());
+        Division::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.division.index');

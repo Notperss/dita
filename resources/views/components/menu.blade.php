@@ -46,8 +46,8 @@
         </div>
         <div class="sidebar-menu">
           <ul class="menu">
-            <li class="sidebar-title">Menu</li>
-            {{-- Dashboard --}}
+            {{-- <li class="sidebar-title">Menu</li> --}}
+            {{-- Dashboard
             <li
               class="sidebar-item  {{ request()->is('backsite/dashboard') || request()->is('backsite/dashboard/*') || request()->is('backsite/*/dashboard') || request()->is('backsite/*/dashboard/*') ? 'active' : '' }}">
               <a href="{{ route('backsite.dashboard.index') }}" class='sidebar-link'>
@@ -66,9 +66,8 @@
               </a>
             </li>
 
-
             <li class="sidebar-title">Master Data</li>
-            {{-- Company --}}
+            Company
             <li
               class="sidebar-item  {{ request()->is('backsite/company') || request()->is('backsite/company/*') || request()->is('backsite/*/company') || request()->is('backsite/*/company/*') ? 'active' : '' }} ">
               <a href="{{ route('backsite.company.index') }}" class='sidebar-link'>
@@ -77,7 +76,7 @@
               </a>
             </li>
 
-            {{-- Location --}}
+            Location
             <li
               class="sidebar-item  has-sub {{ request()->is('backsite/main-location') || request()->is('backsite/sub-location') || request()->is('backsite/detail-location') || request()->is('backsite/container-location') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
@@ -109,7 +108,7 @@
               </ul>
             </li>
 
-            {{-- Work Unit --}}
+            Work Unit
             <li
               class="sidebar-item  has-sub {{ request()->is('backsite/division') || request()->is('backsite/department') || request()->is('backsite/section') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
@@ -136,7 +135,7 @@
               </ul>
             </li>
 
-            {{-- Classification --}}
+            Classification
             <li
               class="sidebar-item  has-sub {{ request()->is('backsite/main-classification') || request()->is('backsite/sub-classification') ? 'active' : '' }}">
               <a href="#" class='sidebar-link'>
@@ -159,7 +158,7 @@
               </ul>
             </li>
 
-            {{-- Retention --}}
+            Retention
             <li
               class="sidebar-item  {{ request()->is('backsite/retention') || request()->is('backsite/retention/*') || request()->is('backsite/*/retention') || request()->is('backsite/*/retention/*') ? 'active' : '' }} ">
               <a href="{{ route('backsite.retention.index') }}" class='sidebar-link'>
@@ -169,7 +168,7 @@
             </li>
 
             <li class="sidebar-title">Management User</li>
-            {{-- User  --}}
+            User 
             <li
               class="sidebar-item  {{ request()->is('backsite/user') || request()->is('backsite/user/*') || request()->is('backsite/*/user') || request()->is('backsite/*/user/*') ? 'active' : '' }} ">
               <a href="{{ route('backsite.user.index') }}" class='sidebar-link'>
@@ -178,26 +177,16 @@
               </a>
             </li>
 
-            {{-- Type User --}}
+            Type User
             <li
               class="sidebar-item  {{ request()->is('backsite/type_user') || request()->is('backsite/type_user/*') || request()->is('backsite/*/type_user') || request()->is('backsite/*/type_user/*') ? 'active' : '' }} ">
               <a href="{{ route('backsite.type_user.index') }}" class='sidebar-link'>
                 <i class="bi bi-file-earmark-richtext"></i>
                 <span>Type User</span>
               </a>
-            </li>
+            </li> --}}
 
-            {{-- Log Out --}}
-            <li class="sidebar-item  ">
-              <a class='sidebar-link' href="{{ route('logout') }}"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="bi bi-arrow-bar-left"></i>
-                <span>Logout</span>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                  @csrf
-                </form>
-              </a>
-            </li>
+
 
             @foreach ($menus as $menu)
               @can($menu->permission_name)
@@ -217,6 +206,21 @@
               @endcan
               <!-- end can menu -->
             @endforeach
+
+            <li class="sidebar-title">Log Out</li>
+
+            {{-- Log Out --}}
+            <li class="sidebar-item  ">
+              <a class='sidebar-link' href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="bi bi-arrow-bar-left"></i>
+                <span>Logout</span>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                  @csrf
+                </form>
+              </a>
+            </li>
+
           </ul>
         </div>
       </div>

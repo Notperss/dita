@@ -7,6 +7,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Models\MasterData\Company\Company;
 use App\Services\UserService;
 
 class UserManagementController extends Controller
@@ -29,7 +30,9 @@ class UserManagementController extends Controller
             ->paginate(10);
         $roles = Role::orderBy('name')->get();
 
-        return view('pages.management-access.user.index', compact('users', 'roles'));
+        $companies = Company::orderBy('name')->get();
+
+        return view('pages.management-access.user.index', compact('users', 'roles', 'companies'));
     }
 
     /**

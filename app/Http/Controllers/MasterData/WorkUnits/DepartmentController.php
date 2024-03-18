@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\WorkUnits;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
@@ -20,7 +21,8 @@ class DepartmentController extends Controller
         if (! Gate::allows('department_index')) {
             abort(403);
         }
-        $departments = Department::with('division')->orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+        $departments = Department::where('company_id', $company_id)->with('division')->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.department.index', compact('departments'));
     }
 
@@ -32,7 +34,8 @@ class DepartmentController extends Controller
         if (! Gate::allows('department_create')) {
             abort(403);
         }
-        $divisions = Division::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.department.create', compact('divisions'));
     }
 
@@ -59,9 +62,13 @@ class DepartmentController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $company_id = Auth::user()->company_id;
 
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
+        // If the validation passes, create the MainLocation record
         // If the validation passes, create the Divisi record
-        Department::create($request->all());
+        Department::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.department.index');
@@ -84,8 +91,9 @@ class DepartmentController extends Controller
         if (! Gate::allows('department_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
         $departments = Department::find($id);
-        $divisions = Division::orderBy('name', 'asc')->get();
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.work-units.department.edit', compact('departments', 'divisions'));
     }
 

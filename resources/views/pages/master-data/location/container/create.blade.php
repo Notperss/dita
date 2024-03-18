@@ -36,12 +36,24 @@
                 enctype="multipart/form-data" id=myForm>
                 @csrf
                 <div class="row ">
-                  @php
-                    $latestReport = DB::table('location_containers')->whereNotNull('number_container')->latest()->first();
+                  {{-- @php
+                    // Get the company_id associated with the authenticated user
+                    $company_id = auth()->user()->company_id;
 
+                    // Query the latest report for the current company
+                    $latestReport = DB::table('location_containers')
+                        ->where('company_id', $company_id)
+                        ->whereNotNull('number_container')
+                        ->latest()
+                        ->first();
+
+                    // Determine the next number for the container within the current company
                     $nextNumber = $latestReport ? $latestReport->number_container + 1 : 1;
+
+                    // Format the next number with leading zeros
                     $formattedNextNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-                  @endphp
+                  @endphp --}}
+
                   <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
                       <label for="main_location_id">Nama Lokasi Utama <code>*</code></label>

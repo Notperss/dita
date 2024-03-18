@@ -4,7 +4,9 @@ namespace App\Http\Controllers\MasterData\Location;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
@@ -23,7 +25,9 @@ class ContainerLocationController extends Controller
         if (! Gate::allows('container_location_index')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
         $containerLocations = ContainerLocation::
+            where('company_id', $company_id)->
             with('mainLocation',
                 'subLocation',
                 'detailLocation')
@@ -41,9 +45,23 @@ class ContainerLocationController extends Controller
         if (! Gate::allows('container_location_create')) {
             abort(403);
         }
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
-        $divisions = Division::orderBy('name', 'asc')->get();
-        return view('pages.master-data.location.container.create', compact('mainLocations', 'divisions'));
+        $company_id = auth()->user()->company_id;
+
+        $latestReport = DB::table('location_containers')
+            ->where('company_id', $company_id)
+            ->whereNotNull('number_container')
+            ->latest()
+            ->first();
+
+        // Determine the next number for the container within the current company
+        $nextNumber = $latestReport ? $latestReport->number_container + 1 : 1;
+
+        // Format the next number with leading zeros
+        $formattedNextNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+        $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        return view('pages.master-data.location.container.create', compact('mainLocations', 'divisions', 'formattedNextNumber'));
     }
 
     /**
@@ -75,9 +93,12 @@ class ContainerLocationController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $company_id = Auth::user()->company_id;
 
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
         // If the validation passes, create the MainLocation record
-        ContainerLocation::create($request->all());
+        ContainerLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.container-location.index');
@@ -99,9 +120,11 @@ class ContainerLocationController extends Controller
         if (! Gate::allows('container_location_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
+
         $containerLocations = ContainerLocation::find($id);
-        $divisions = Division::orderBy('name', 'asc')->get();
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $subLocations = SubLocation::where('main_location_id', $containerLocations->main_location_id)->orderBy('name', 'asc')->get();
         $detailLocations = DetailLocation::where('sub_location_id', $containerLocations->sub_location_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.container.edit', compact('mainLocations', 'subLocations', 'detailLocations', 'containerLocations', 'divisions'));

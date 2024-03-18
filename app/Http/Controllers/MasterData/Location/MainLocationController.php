@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData\Location;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +23,9 @@ class MainLocationController extends Controller
             abort(403);
         }
 
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+
+        $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.main-location.index', compact('mainLocations'));
     }
 
@@ -59,9 +62,13 @@ class MainLocationController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+        $company_id = Auth::user()->company_id;
 
-        // If the validation passes, create the MainLocation record
-        MainLocation::create($request->all());
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
+
+        // Create the MainLocation record with the merged request data
+        MainLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.main-location.index');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MasterData\Location;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Location\SubLocation;
@@ -20,7 +21,9 @@ class DetailLocationController extends Controller
         if (! Gate::allows('detail_location_index')) {
             abort(403);
         }
-        $detailLocations = DetailLocation::orderBy('name', 'asc')->get();
+
+        $company_id = auth()->user()->company_id;
+        $detailLocations = DetailLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         // $detailLocations = DetailLocation::with('mainLocation', 'subLocation')->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.detail-location.index', compact('detailLocations'));
     }
@@ -33,8 +36,10 @@ class DetailLocationController extends Controller
         if (! Gate::allows('detail_location_create')) {
             abort(403);
         }
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
-        $subLocations = SubLocation::orderBy('name', 'asc')->get();
+        $company_id = auth()->user()->company_id;
+
+        $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $subLocations = SubLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.detail-location.create', compact('mainLocations', 'subLocations'));
     }
 
@@ -66,8 +71,13 @@ class DetailLocationController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $company_id = Auth::user()->company_id;
+
+        // Merge the company_id into the request data
+        $requestData = array_merge($request->all(), ['company_id' => $company_id]);
+
         // If the validation passes, create the MainLocation record
-        DetailLocation::create($request->all());
+        DetailLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.detail-location.index');
@@ -91,8 +101,9 @@ class DetailLocationController extends Controller
         if (! Gate::allows('detail_location_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
         $detailLocations = DetailLocation::find($id);
-        $mainLocations = MainLocation::orderBy('name', 'asc')->get();
+        $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $subLocations = SubLocation::where('main_location_id', $detailLocations->main_location_id)->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.detail-location.edit', compact('mainLocations', 'subLocations', 'detailLocations'));
     }
