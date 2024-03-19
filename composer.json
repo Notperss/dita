@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "ext-gd": "*",
         "guzzlehttp/guzzle": "^7.2",
         "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^10.10",
@@ -19,6 +20,7 @@
         "livewire/livewire": "^3.0",
         "meilisearch/meilisearch-php": "^1.6",
         "realrashid/sweet-alert": "^7.1",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.4",
         "spatie/pdf-to-text": "^1.52",
         "tightenco/ziggy": "^2.0",

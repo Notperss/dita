@@ -65,40 +65,55 @@
               <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="user-menu d-flex">
                   <div class="user-name text-end me-3">
-                    <h6 class="mb-0 text-gray-600">{{ Auth::user()->name }}</h6>
-                    <p class="mb-0 text-sm text-gray-600">{{ Auth::user()->getRoleNames()[0] }}</p>
+                    <h6 class="mb-0 text-gray-600">{{ Auth::user()->name ?? '' }}</h6>
+                    @if (Auth::check())
+                      <p class="mb-0 text-sm text-gray-600">{{ Auth::user()->getRoleNames()->first() ?? '' }}</p>
+                    @else
+                      <p class="mb-0 text-sm text-gray-600">Guest</p>
+                    @endif
                   </div>
                   <div class="user-img d-flex align-items-center">
                     <div class="avatar avatar-md">
-                      <img
-                        src="{{ Auth::user()->profile_photo_path ? asset('storage/' . Auth::user()->profile_photo_path) : asset('./assets/compiled/jpg/1.jpg') }}"
-                        alt="avatar">
+                      @if (Auth::check() && Auth::user()->profile_photo_path)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="avatar">
+                      @else
+                        <img src="{{ asset('./assets/compiled/jpg/1.jpg') }}" alt="avatar">
+                      @endif
+
                     </div>
                   </div>
                 </div>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton"
                 style="min-width: 11rem;">
-                <li>
-                  <h6 class="dropdown-header">Hello, {{ Auth::user()->name }}</h6>
-                </li>
-                <li><a class="dropdown-item" href="{{ route('profile.index') }}"><i
-                      class="icon-mid bi bi-person me-2"></i> My
-                    Profile</a></li>
-                {{-- <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
+                @if (Auth::check())
+                  <li>
+                    <h6 class="dropdown-header">Hello, {{ Auth::user()->name ?? '' }}</h6>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{{ route('profile.index') }}"><i
+                        class="icon-mid bi bi-person me-2"></i> My
+                      Profile</a>
+                  </li>
+                  {{-- <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
                     Settings</a></li> --}}
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="icon-mid bi bi-box-arrow-left me-2"></i>
-                    <span>Logout</span>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                      @csrf
-                    </form>
-                  </a>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{{ route('logout') }}"
+                      onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                      <i class="icon-mid bi bi-box-arrow-left me-2"></i>
+                      <span>Logout</span>
+                      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                      </form>
+                    </a>
+                  @else
+                  <li>
+                    <h6 class="dropdown-header">Hello, Guest!</h6>
+                  </li>
+                @endif
               </ul>
             </div>
           </div>

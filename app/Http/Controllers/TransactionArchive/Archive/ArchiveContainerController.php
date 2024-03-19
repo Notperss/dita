@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\MasterData\WorkUnits\Section;
 use App\Models\MasterData\WorkUnits\Division;
 use App\Models\MasterData\Location\ContainerLocation;
@@ -43,8 +44,10 @@ class ArchiveContainerController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
                     return '
-             <a type="button" title="Tambah File" class="btn icon btn-sm btn-info" onclick=""><i
-                      class="bi bi-files"></i></a>
+             <a href="#mymodal" data-remote="' . route('backsite.showBarcodeContainer', $item->id) . '" data-toggle="modal"
+                        data-target="#mymodal" data-title="Detail Data" class="btn icon btn-info">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </a>
                   <div class="btn-group mb-1">
                     <div class="dropdown">
                       <button class="btn btn-primary btn-sm dropdown-toggle me-1" type="button" id="dropdownMenuButton"
@@ -179,10 +182,14 @@ class ArchiveContainerController extends Controller
 
                 if ($files->getClientOriginalExtension() == 'pdf') {
                     // Specify the path to pdftotext executable
-                    $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+                    // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                    // Use spatie/pdf-to-text to extract text from the PDF
-                    $text = (new Pdf($pdftotextPath))
+                    // // Use spatie/pdf-to-text to extract text from the PDF
+                    // $text = (new Pdf($pdftotextPath))
+                    //     ->setPdf($files->getRealPath())
+                    //     ->text();
+
+                    $text = (new Pdf())
                         ->setPdf($files->getRealPath())
                         ->text();
 
@@ -329,9 +336,6 @@ class ArchiveContainerController extends Controller
      */
     public function show($id)
     {
-        if (! Gate::allows('archive_container_show')) {
-            abort(403);
-        }
 
         $archiveContainers = ArchiveContainer::find($id);
 
@@ -429,13 +433,15 @@ class ArchiveContainerController extends Controller
 
                 if ($files->getClientOriginalExtension() == 'pdf') {
                     // Specify the path to pdftotext executable
-                    $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+                    // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                    // Use spatie/pdf-to-text to extract text from the PDF
-                    $text = (new Pdf($pdftotextPath))
+                    // // Use spatie/pdf-to-text to extract text from the PDF
+                    // $text = (new Pdf($pdftotextPath))
+                    //     ->setPdf($files->getRealPath())
+                    //     ->text();
+                    $text = (new Pdf())
                         ->setPdf($files->getRealPath())
                         ->text();
-
                     // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
                     // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
                     $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
@@ -587,5 +593,14 @@ class ArchiveContainerController extends Controller
         });
 
         return response()->json($formattedDetailLocations);
+    }
+
+    public function showBarcode($id)
+    {
+        // $decrypt_id = decrypt($id);
+        // $barang = Barang::find($decrypt_id);
+        $archiveContainer = ArchiveContainer::find($id);
+        $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('qr-container', $id));
+        return view('components.qr-code.show-barcode-container', compact('archiveContainer', 'qr'));
     }
 }

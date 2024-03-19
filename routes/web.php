@@ -46,6 +46,10 @@ use App\Http\Controllers\MasterData\Classification\MainClassificationController;
 // Route::get('/', function () {
 //     return view('pages.dashboard.index');
 // });
+Route::get('/qr/{id}', [ContainerLocationController::class, 'show'])->name('show-qr');
+
+Route::get('/qr-cont/{id}', [ArchiveContainerController::class, 'show'])->name('qr-container');
+
 
 Route::get('/', function () {
     // cek apakah sudah login atau belum
@@ -66,9 +70,13 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::resource('main-location', MainLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::resource('sub-location', SubLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::resource('detail-location', DetailLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
-    Route::resource('container-location', ContainerLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('container-location', ContainerLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy', 'show');
     Route::get('/get-sub-location', [DetailLocationController::class, 'getSubLocations'])->name('getSubLocations');
     Route::get('/get-container', [DetailLocationController::class, 'getContainers'])->name('getContainers');
+
+    Route::get('/show-qr/{id}', [ContainerLocationController::class, 'showBarcode'])->name('showBarcode');
+
+
 
     //WorkUnits
     Route::resource('division', DivisionController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
@@ -94,6 +102,9 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::get('form_upload', [ArchiveContainerController::class, 'form_upload'])->name('form_upload');
     Route::get('/get-number-container', [ArchiveContainerController::class, 'getNumberContainer'])->name('getNumberContainer');
     Route::get('/get-data-container', [ArchiveContainerController::class, 'getDataContainer'])->name('getDataContainer');
+
+    Route::get('/show-qr-container/{id}', [ArchiveContainerController::class, 'showBarcode'])->name('showBarcodeContainer');
+
 
 });
 
