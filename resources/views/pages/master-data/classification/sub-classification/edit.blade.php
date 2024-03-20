@@ -46,7 +46,7 @@
                         @foreach ($mainClassifications as $mainClassification)
                           <option
                             value="{{ $mainClassification->id }}"{{ $mainClassification->id == $subClassifications->id ? 'selected' : '' }}>
-                            {{ $mainClassification->name }}</option>
+                            {{ $mainClassification->name }} => {{ $mainClassification->code }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('sub_classification_id'))

@@ -43,7 +43,8 @@
                         name="main_classification_id" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($mainClassifications as $mainClassification)
-                          <option value="{{ $mainClassification->id }}">{{ $mainClassification->name }}</option>
+                          <option value="{{ $mainClassification->id }}">{{ $mainClassification->name }} =>
+                            {{ $mainClassification->code }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('main_classification_id'))

@@ -10,14 +10,47 @@
         padding: 0.0rem;
         /* Adjust the padding as needed */
       }
+
+      table .text-center.no-margin {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      @media print {
+        body {
+          margin: 5mm;
+        }
+
+        .description-cell {
+          width: 20px;
+          /* Set the width of the cell */
+          padding: -3mm;
+          margin: -3mm;
+          /* Adjust padding to reduce space inside the cell */
+          font-size: 10pt;
+          /* Optionally adjust font size for print */
+          text-align: center;
+        }
+
+        .container {
+          width: auto;
+          /* Adjust width for print if necessary */
+          padding: 0;
+          /* Adjust padding for print if necessary */
+        }
+
+        .btn {
+          display: none;
+          /* Hide buttons on print */
+        }
+      }
     </style>
 
 
     <table class="table table-borderless text-left table-no-gap ">
       <tr>
-        <th class="text-center">{{ $qr }} </th>
+        <th class="text-center no-margin">{{ $qr }} </th>
         <td>
-
           <div class="row">Lokasi Utama</div>
           <div class="row mb-3">
             <strong>
@@ -36,7 +69,12 @@
               {{ isset($location_container->detailLocation->name) ? $location_container->detailLocation->name : 'N/A' }}
             </strong>
           </div>
-
+          <div class="row">Divisi</div>
+          <div class="row">
+            <strong>
+              {{ isset($location_container->division->name) ? $location_container->division->name : 'N/A' }}
+            </strong>
+          </div>
         </td>
       </tr>
       <tr>
@@ -45,10 +83,10 @@
         </th>
       </tr>
       <tr>
-        <th class="text-center">
+        <td class="text-center description-cell">
           {{ isset($location_container->description) ? $location_container->description : 'N/A' }}
           <a href="{{ route('show-qr', $location_container->id) }}">.</a>
-        </th>
+        </td>
       </tr>
     </table>
 

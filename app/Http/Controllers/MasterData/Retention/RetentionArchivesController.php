@@ -25,7 +25,7 @@ class RetentionArchivesController extends Controller
         $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
         $retentions = RetentionArchives::where('company_id', $company_id)
-            ->orderBy('sub_series', 'asc')
+            ->orderBy('code', 'asc')
             ->get();
         $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
@@ -60,6 +60,7 @@ class RetentionArchivesController extends Controller
             'sub_classification_id' => ['required'],
             // 'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')],
             'sub_series' => ['required', 'max:255'],
+            'code' => ['required', 'max:255'],
             'period_active' => ['required',],
             'period_inactive' => ['required',],
 
@@ -71,6 +72,7 @@ class RetentionArchivesController extends Controller
             'sub_series.required' => 'Sub Series harus diisi.',
             'period_active.required' => 'Masa Aktif harus diisi.',
             'period_inactive.required' => 'Masa Inaktif harus diisi.',
+            'code.required' => 'Kode harus diisi.',
             'sub_series.max' => 'Sub Series tidak boleh lebih dari :max karakter.',
             // 'sub_series.unique' => 'Sub Series sudah digunakan.',
 
@@ -130,6 +132,7 @@ class RetentionArchivesController extends Controller
             'sub_classification_id' => ['required'],
             // 'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')->ignore($retention->id)],
             'sub_series' => ['required', 'max:255'],
+            'code' => ['required', 'max:255'],
             'period_active' => ['required',],
             'period_inactive' => ['required',],
 
@@ -141,6 +144,7 @@ class RetentionArchivesController extends Controller
             'sub_series.required' => 'Sub Series harus diisi.',
             'period_active.required' => 'Masa Aktif harus diisi.',
             'period_inactive.required' => 'Masa Inaktif harus diisi.',
+            'code.required' => 'Code harus diisi.',
             'sub_series.max' => 'Sub Series tidak boleh lebih dari :max karakter.',
             // 'sub_series.unique' => 'Sub Series sudah digunakan.',
 

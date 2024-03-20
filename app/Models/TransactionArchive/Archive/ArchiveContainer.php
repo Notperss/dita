@@ -2,6 +2,8 @@
 
 namespace App\Models\TransactionArchive\Archive;
 
+use App\Models\MasterData\Classification\MainClassification;
+use App\Models\MasterData\Classification\SubClassification;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use App\Models\MasterData\WorkUnits\Division;
@@ -56,5 +58,15 @@ class ArchiveContainer extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(Division::class, 'division_id');
+    }
+    public function mainClassification()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(MainClassification::class, 'main_classification_id');
+    }
+    public function subClassification()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(SubClassification::class, 'sub_classification_id');
     }
 }

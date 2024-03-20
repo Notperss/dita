@@ -109,9 +109,19 @@
                         @csrf
                       </form>
                     </a>
-                  @else
+                  </li>
+                @else
                   <li>
                     <h6 class="dropdown-header">Hello, Guest!</h6>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{{ route('login') }}">
+                      <i class="icon-mid bi bi-box-arrow-right me-2"></i> Login
+                    </a>
+                    </a>
                   </li>
                 @endif
               </ul>

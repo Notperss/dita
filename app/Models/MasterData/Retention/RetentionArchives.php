@@ -16,6 +16,7 @@ class RetentionArchives extends Model
         'main_classification_id',
         'sub_classification_id',
         'company_id',
+        'code',
         'sub_series',
         'period_active',
         'description_active',

@@ -46,9 +46,9 @@ use App\Http\Controllers\MasterData\Classification\MainClassificationController;
 // Route::get('/', function () {
 //     return view('pages.dashboard.index');
 // });
-Route::get('/qr/{id}', [ContainerLocationController::class, 'show'])->name('show-qr');
+Route::get('/qr/{id}', [ContainerLocationController::class, 'detailContainer'])->name('show-qr');
 
-Route::get('/qr-cont/{id}', [ArchiveContainerController::class, 'show'])->name('qr-container');
+Route::get('/qr-cont/{id}', [ArchiveContainerController::class, 'detailArchive'])->name('qr-archive');
 
 
 Route::get('/', function () {

@@ -207,19 +207,21 @@
               <!-- end can menu -->
             @endforeach
 
-            <li class="sidebar-title">Log Out</li>
 
-            {{-- Log Out --}}
-            <li class="sidebar-item  ">
-              <a class='sidebar-link' href="{{ route('logout') }}"
-                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="bi bi-arrow-bar-left"></i>
-                <span>Logout</span>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                  @csrf
-                </form>
-              </a>
-            </li>
+            @if (Auth::check())
+              <li class="sidebar-title">Log Out</li>
+              {{-- Log Out --}}
+              <li class="sidebar-item  ">
+                <a class='sidebar-link' href="{{ route('logout') }}"
+                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                  <i class="bi bi-arrow-bar-left"></i>
+                  <span>Logout</span>
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                  </form>
+                </a>
+              </li>
+            @endif
 
           </ul>
         </div>

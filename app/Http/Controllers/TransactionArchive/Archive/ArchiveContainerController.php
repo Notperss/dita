@@ -45,7 +45,7 @@ class ArchiveContainerController extends Controller
                 ->addColumn('action', function ($item) {
                     return '
              <a href="#mymodal" data-remote="' . route('backsite.showBarcodeContainer', $item->id) . '" data-toggle="modal"
-                        data-target="#mymodal" data-title="Detail Data" class="btn icon btn-info">
+                        data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
                         <i class="bi bi-qr-code-scan"></i>
                     </a>
                   <div class="btn-group mb-1">
@@ -153,7 +153,7 @@ class ArchiveContainerController extends Controller
             'amount' => 'required|string',
             'archive_in' => 'required|date',
             // 'expiration_date' => 'required',
-            'number_app' => 'required|string',
+            'number_app' => 'required|string|unique:archive_containers',
             'number_catalog' => 'required|string',
             'number_document' => 'required|string',
             'number_container' => 'required|string',
@@ -184,7 +184,7 @@ class ArchiveContainerController extends Controller
                     // Specify the path to pdftotext executable
                     // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                    // // Use spatie/pdf-to-text to extract text from the PDF
+                    // Use spatie/pdf-to-text to extract text from the PDF
                     // $text = (new Pdf($pdftotextPath))
                     //     ->setPdf($files->getRealPath())
                     //     ->text();
@@ -600,7 +600,24 @@ class ArchiveContainerController extends Controller
         // $decrypt_id = decrypt($id);
         // $barang = Barang::find($decrypt_id);
         $archiveContainer = ArchiveContainer::find($id);
-        $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('qr-container', $id));
-        return view('components.qr-code.show-barcode-container', compact('archiveContainer', 'qr'));
+        $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('qr-archive', $id));
+        return view('components.qr-code.archive-qr.show-barcode-archive', compact('archiveContainer', 'qr'));
+    }
+
+    public function detailArchive($id)
+    {
+        // $id = $request->id;
+        // $decrypt_id = decrypt($id);
+        $archiveContainers = ArchiveContainer::findOrFail($id);
+        // if ($barang) {
+        //     // Perform actions based on the selected asset, such as refreshing the page
+        //     // For demonstration purposes, let's assume you want to display the selected asset's details
+        //    return response()->json(['redirectUrl' => route('detailBarang', ['id' => $barang->id])]); // Adjust with your desired route
+        // } else {
+        //     // Handle the case where the asset with the provided ID is not found
+        //     abort(404);
+        // }
+        // $assets = ArchiveContainer::orderBy('created_at', 'asc')->get();
+        return view('components.qr-code.archive-qr.detail-qr-archive', compact('archiveContainers'));
     }
 }

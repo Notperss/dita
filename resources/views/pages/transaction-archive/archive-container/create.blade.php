@@ -35,6 +35,7 @@
               <form class="form" method="POST" action="{{ route('backsite.archive-container.store') }}"
                 enctype="multipart/form-data" id=myForm>
                 @csrf
+                {{-- <input type="text" id="container-id" value="{{  }}"> --}}
                 <div class="row ">
                   <div class="col-md-4 col-4">
                     <h4 class="card-title">Pilih Kontainer</h4>
@@ -45,6 +46,7 @@
                         <option value="" disabled selected>Choose</option>
                         @foreach ($divisions as $division)
                           <option value="{{ $division->id }}" data-code={{ $division->code }}
+                            data-id-container={{ DB::table('archive_containers')->latest()->first()->id + 1 }}
                             {{ $division->id == optional(DB::table('archive_containers')->latest()->first())->division_id ?? null ? 'selected' : '' }}>
                             {{ $division->name }}</option>
                         @endforeach
@@ -570,15 +572,16 @@
       // Function to update the number_app field
       function updateNumberApp() {
         // Retrieve selected values
-        var codeDivision = $('#division_id option:selected').data('code');
-        var numberContainer = $('#number_container').val();
+        var codeDivision = $('#division_id option:selected').data('code') || '';
+        var id = $('#division_id option:selected').data('id-container') || '';
+        var numberContainer = $('#number_container').val() || '';
         var documentTypeValue = $('#document_type').val() || '';
         var documentType = (documentTypeValue === 'COPY') ? 'C' : ((documentTypeValue === 'ASLI') ? 'A' :
           documentTypeValue);
         var year = $('#year').val();
 
         // Concatenate the values to form the number_app
-        var numberApp = codeDivision + '/' + numberContainer + '/' + documentType + '/' + year;
+        var numberApp = codeDivision + '/' + numberContainer + '/' + documentType + '/' + year + '/' + id;
 
         // Set the value of the number_app field
         $('#number_app').val(numberApp);

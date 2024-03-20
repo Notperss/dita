@@ -54,7 +54,7 @@ class ContainerLocationController extends Controller
                 ->addColumn('action', function ($item) {
                     return '
                     <a href="#mymodal" data-remote="' . route('backsite.showBarcode', $item->id) . '" data-toggle="modal"
-                        data-target="#mymodal" data-title="Detail Data" class="btn icon btn-info">
+                        data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
                         <i class="bi bi-qr-code-scan"></i>
                     </a>
 
@@ -291,6 +291,23 @@ class ContainerLocationController extends Controller
         // $barang = Barang::find($decrypt_id);
         $location_container = ContainerLocation::find($id);
         $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('show-qr', $id));
-        return view('components.qr-code.show-barcode', compact('location_container', 'qr'));
+        return view('components.qr-code.container-qr.show-barcode-container', compact('location_container', 'qr'));
+    }
+
+    public function detailContainer($id)
+    {
+        // $id = $request->id;
+        // $decrypt_id = decrypt($id);
+        $containerLocation = ContainerLocation::findOrFail($id);
+        // if ($barang) {
+        //     // Perform actions based on the selected asset, such as refreshing the page
+        //     // For demonstration purposes, let's assume you want to display the selected asset's details
+        //    return response()->json(['redirectUrl' => route('detailBarang', ['id' => $barang->id])]); // Adjust with your desired route
+        // } else {
+        //     // Handle the case where the asset with the provided ID is not found
+        //     abort(404);
+        // }
+        // $assets = ContainerLocation::orderBy('created_at', 'asc')->get();
+        return view('components.qr-code.container-qr.detail-qr-container', compact('containerLocation'));
     }
 }

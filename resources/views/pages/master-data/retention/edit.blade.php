@@ -45,7 +45,7 @@
                         @foreach ($mainClassifications as $mainClassification)
                           <option
                             value="{{ $mainClassification->id }}"{{ $mainClassification->id == $retentions->main_classification_id ? 'selected' : '' }}>
-                            {{ $mainClassification->name }}</option>
+                            {{ $mainClassification->name }} => {{ $mainClassification->code }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('main_classification_id'))
@@ -61,7 +61,7 @@
                         @foreach ($subClassifications as $subClassification)
                           <option
                             value="{{ $subClassification->id }}"{{ $subClassification->id == $retentions->sub_classification_id ? 'selected' : '' }}>
-                            {{ $subClassification->name }}</option>
+                            {{ $subClassification->name }} => {{ $subClassification->code }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('sub_classification_id'))
@@ -70,9 +70,18 @@
                       @endif
                     </div>
                     <div class="form-group">
+                      <label for="code">Kode Sub Series <code>*</code></label>
+                      <input type="text" id="code" class="form-control" placeholder="Kode" name="code"
+                        value="{{ old('code', $retentions->code) }}" required>
+                      @if ($errors->has('code'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('code') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
                       <label for="sub_series">Nama Sub Series <code>*</code></label>
-                      <input type="text" id="sub_series" class="form-control" placeholder="Sub Series"
-                        name="sub_series" value="{{ old('sub_series', $retentions->sub_series) }}" required>
+                      <input type="text" id="sub_series" class="form-control" placeholder="Nama" name="sub_series"
+                        value="{{ old('sub_series', $retentions->sub_series) }}" required>
                       @if ($errors->has('sub_series'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('sub_series') }}</p>
@@ -173,6 +182,7 @@
               $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
               $.each(data, function(key, value) {
                 $('#sub_classification_id').append('<option value="' + value.id + '">' + value.name +
+                  ' => ' + value.code +
                   '</option>');
               });
 

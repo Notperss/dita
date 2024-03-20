@@ -14,31 +14,36 @@
     <table class="table table-borderless text-left table-no-gap ">
       <tr>
         <th class="text-center">{{ $qr }}</th>
+        <td>
+          <div class="row">Nomor Aplikasi</div>
+          <div class="row mb-3"><strong>
+              {{ isset($archiveContainer->number_app) ? $archiveContainer->number_app : '' }}</th>
+            </strong>
+          </div>
+          <div class="row">Nomor Katalog</div>
+          <div class="row mb-3"><strong>
+              {{ isset($archiveContainer->number_catalog) ? $archiveContainer->number_catalog : '' }}</th>
+            </strong>
+          </div>
+          <div class="row">Nomor Dokumen</div>
+          <div class="row mb-3"><strong>
+              {{ isset($archiveContainer->number_document) ? $archiveContainer->number_document : '' }}</th>
+            </strong>
+          </div>
+          <div class="row">Nomor Arsip</div>
+          <div class="row mb-3"><strong>
+              {{ isset($archiveContainer->number_archive) ? $archiveContainer->number_archive : '' }}</th>
+            </strong>
+          </div>
+        </td>
       </tr>
       <tr>
         <th class="text-center" style="font-size: 130%;">
           {{ isset($archiveContainer->number_container) ? str_pad($archiveContainer->number_container, 3, '0', STR_PAD_LEFT) : 'N/A' }}
         </th>
       </tr>
-      <tr>
-        <th class="text-center">
-          {{ isset($archiveContainer->main_location) ? $archiveContainer->main_location : 'N/A' }}</th>
-      </tr>
-      <tr>
-        <th class="text-center">
-          {{ isset($archiveContainer->sub_location) ? $archiveContainer->sub_location : 'N/A' }}</th>
-      </tr>
-      <tr>
-        <th class="text-center">
-          {{ isset($archiveContainer->detail_location) ? $archiveContainer->detail_location : 'N/A' }}
-        </th>
-      </tr>
-      <tr>
-        <th class="text-center">
-          {{ isset($archiveContainer->division->name) ? $archiveContainer->division->name : 'N/A' }}</th>
-      </tr>
     </table>
-    <a href="{{ route('show-qr', $archiveContainer->id) }}">.</a>
+    <a href="{{ route('qr-archive', $archiveContainer->id) }}">.</a>
   </div>
 </div>
 <div class="row justify-content-center mt-1">
