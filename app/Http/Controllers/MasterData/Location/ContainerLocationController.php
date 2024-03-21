@@ -46,8 +46,7 @@ class ContainerLocationController extends Controller
                 with('mainLocation',
                     'subLocation',
                     'detailLocation',
-                    'division')
-                ->orderBy('number_container', 'desc');
+                    'division');
 
             return DataTables::of($containerLocations)
                 ->addIndexColumn()

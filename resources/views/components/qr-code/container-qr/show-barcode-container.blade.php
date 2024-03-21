@@ -85,13 +85,13 @@
       <tr>
         <td class="text-center description-cell">
           {{ isset($location_container->description) ? $location_container->description : 'N/A' }}
-          <a href="{{ route('show-qr', $location_container->id) }}">.</a>
         </td>
       </tr>
     </table>
 
   </div>
 </div>
+<a href="{{ route('show-qr', $location_container->id) }}">.</a>
 <div class="row justify-content-center mt-1">
   <button class="btn btn-info text-center" value='Print' onclick='printDiv();'>Print</button>
 </div>

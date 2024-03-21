@@ -31,6 +31,7 @@ use App\Http\Controllers\MasterData\Retention\RetentionArchivesController;
 use App\Http\Controllers\MasterData\Classification\SubClassificationController;
 use App\Http\Controllers\TransactionArchive\Archive\ArchiveContainerController;
 use App\Http\Controllers\MasterData\Classification\MainClassificationController;
+use App\Http\Controllers\TransactionArchive\LendingArchive\LendingArchiveController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,17 +94,27 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
     Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 
-    // //Management Access
+    //Management Access
     // Route::resource('type_user', TypeUserController::class);
     // Route::resource('user', UserController::class);
 
     //Transaction Archives
     Route::resource('archive-container', ArchiveContainerController::class);
-    Route::get('form_upload', [ArchiveContainerController::class, 'form_upload'])->name('form_upload');
-    Route::get('/get-number-container', [ArchiveContainerController::class, 'getNumberContainer'])->name('getNumberContainer');
-    Route::get('/get-data-container', [ArchiveContainerController::class, 'getDataContainer'])->name('getDataContainer');
+    Route::controller(ArchiveContainerController::class)->group(function () {
+        Route::get('form_upload', 'form_upload')->name('form_upload');
+        Route::get('/get-number-container', 'getNumberContainer')->name('getNumberContainer');
+        Route::get('/get-data-container', 'getDataContainer')->name('getDataContainer');
+        Route::get('/show-qr-container/{id}', 'showBarcode')->name('showBarcodeContainer');
+    });
 
-    Route::get('/show-qr-container/{id}', [ArchiveContainerController::class, 'showBarcode'])->name('showBarcodeContainer');
+
+    //Lending Archive
+    Route::resource('lending-archive', LendingArchiveController::class);
+    // Route::controller(LendingArchiveController::class)->group(function(){
+
+    // });
+
+
 
 
 });

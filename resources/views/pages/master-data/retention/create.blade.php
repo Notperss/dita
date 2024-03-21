@@ -36,15 +36,16 @@
                 enctype="multipart/form-data" id=myForm>
                 @csrf
                 <div class="row ">
-                  <div class="col-md-8 col-12 mx-auto">
+                  <div class="col-md-6 col-6 mx-auto">
                     <div class="form-group">
                       <label for="main_classification_id">Nama Klasifikasi <code>*</code></label>
                       <select type="text" id="main_classification_id" class="form-control choices"
                         name="main_classification_id" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($mainClassifications as $mainClassification)
-                          <option value="{{ $mainClassification->id }}">{{ $mainClassification->name }} =>
-                            {{ $mainClassification->code }}</option>
+                          <option value="{{ $mainClassification->id }}">{{ $mainClassification->name }}
+                            ({{ $mainClassification->code }})
+                          </option>
                         @endforeach
                       </select>
                       @if ($errors->has('main_classification_id'))
@@ -84,6 +85,20 @@
                           {{ $errors->first('sub_series') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="type_document">Tipe Dokumen<code>*</code></label>
+                      <select id="type_document" class="form-control choices" name="type_document" required>
+                        <option value="" disabled selected>Choose</option>
+                        <option value="MUSNAH">Musnah</option>
+                        <option value="PERMANEN">Permanen</option>
+                      </select>
+                      @if ($errors->has('type_document'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('type_document') }}</p>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-6 mx-auto">
                     <div class="form-group">
                       <label for="period_active">Masa aktif<code>*</code></label>
                       <select type="year" id="period_active" class="form-control choices" name="period_active"
@@ -174,7 +189,7 @@
               $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
               $.each(data, function(key, value) {
                 $('#sub_classification_id').append('<option value="' + value.id + '">' + value.name +
-                  ' => ' + value.code +
+                  ' (' + value.code + ')' +
                   '</option>');
               });
 

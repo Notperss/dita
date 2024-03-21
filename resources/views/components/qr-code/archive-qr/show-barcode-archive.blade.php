@@ -43,9 +43,9 @@
         </th>
       </tr>
     </table>
-    <a href="{{ route('qr-archive', $archiveContainer->id) }}">.</a>
   </div>
 </div>
+<a href="{{ route('qr-archive', $archiveContainer->id) }}">.</a>
 <div class="row justify-content-center mt-1">
   <button class="btn btn-info text-center" value='Print' onclick='printDiv();'>Print</button>
 </div>

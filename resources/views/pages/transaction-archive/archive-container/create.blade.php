@@ -44,9 +44,13 @@
                       <select type="text" id="division_id" class="form-control select2" style="width: 100%"
                         name="division_id" required>
                         <option value="" disabled selected>Choose</option>
+                        @php
+                          $latestRecord = DB::table('archive_containers')->latest()->first();
+                          $dataIdContainer = $latestRecord ? $latestRecord->id + 1 : '1';
+                        @endphp
                         @foreach ($divisions as $division)
                           <option value="{{ $division->id }}" data-code={{ $division->code }}
-                            data-id-container={{ DB::table('archive_containers')->latest()->first()->id + 1 }}
+                            data-id-container="{{ $dataIdContainer }}"
                             {{ $division->id == optional(DB::table('archive_containers')->latest()->first())->division_id ?? null ? 'selected' : '' }}>
                             {{ $division->name }}</option>
                         @endforeach
@@ -137,8 +141,8 @@
                     </div>
                     <div class="form-group">
                       <label for="sub_classificatio_id">Sub Klasifikasi Arsip <code>*</code></label>
-                      <select type="text" id="sub_classification_id" class="form-control select2" style="width: 100%"
-                        name="sub_classification_id" required>
+                      <select type="text" id="sub_classification_id" class="form-control select2"
+                        style="width: 100%" name="sub_classification_id" required>
                         <option value="" disabled selected>Choose</option>
 
                       </select>

@@ -38,7 +38,7 @@ class ArchiveContainerController extends Controller
             $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
 
-            $archiveContainers = ArchiveContainer::where('company_id', $company_id)->with('division');
+            $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division');
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
@@ -182,16 +182,16 @@ class ArchiveContainerController extends Controller
 
                 if ($files->getClientOriginalExtension() == 'pdf') {
                     // Specify the path to pdftotext executable
-                    // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+                    $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
                     // Use spatie/pdf-to-text to extract text from the PDF
-                    // $text = (new Pdf($pdftotextPath))
-                    //     ->setPdf($files->getRealPath())
-                    //     ->text();
-
-                    $text = (new Pdf())
+                    $text = (new Pdf($pdftotextPath))
                         ->setPdf($files->getRealPath())
                         ->text();
+
+                    // $text = (new Pdf())
+                    //     ->setPdf($files->getRealPath())
+                    //     ->text();
 
                     // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
                     // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
@@ -609,15 +609,6 @@ class ArchiveContainerController extends Controller
         // $id = $request->id;
         // $decrypt_id = decrypt($id);
         $archiveContainers = ArchiveContainer::findOrFail($id);
-        // if ($barang) {
-        //     // Perform actions based on the selected asset, such as refreshing the page
-        //     // For demonstration purposes, let's assume you want to display the selected asset's details
-        //    return response()->json(['redirectUrl' => route('detailBarang', ['id' => $barang->id])]); // Adjust with your desired route
-        // } else {
-        //     // Handle the case where the asset with the provided ID is not found
-        //     abort(404);
-        // }
-        // $assets = ArchiveContainer::orderBy('created_at', 'asc')->get();
         return view('components.qr-code.archive-qr.detail-qr-archive', compact('archiveContainers'));
     }
 }

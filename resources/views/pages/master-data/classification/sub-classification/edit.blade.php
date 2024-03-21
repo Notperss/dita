@@ -44,9 +44,9 @@
                         name="main_classification_id" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($mainClassifications as $mainClassification)
-                          <option
-                            value="{{ $mainClassification->id }}"{{ $mainClassification->id == $subClassifications->id ? 'selected' : '' }}>
-                            {{ $mainClassification->name }} => {{ $mainClassification->code }}</option>
+                          <option value="{{ $mainClassification->id }}"
+                            {{ $subClassifications->main_classification_id == $mainClassification->id ? 'selected' : '' }}>
+                            {{ $mainClassification->name }} ({{ $mainClassification->code }})</option>
                         @endforeach
                       </select>
                       @if ($errors->has('sub_classification_id'))
