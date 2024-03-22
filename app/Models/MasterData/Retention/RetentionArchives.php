@@ -18,7 +18,7 @@ class RetentionArchives extends Model
         'company_id',
         'code',
         'sub_series',
-        'type_document',
+        'document_type',
         'period_active',
         'description_active',
         'period_inactive',

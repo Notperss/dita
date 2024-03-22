@@ -84,12 +84,27 @@
                   @endif
                 </td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.retention.edit', $retention->id) }}" class="btn icon btn-primary"
-                    title="Edit"><i class="bi bi-pencil"></i></a>
-                  <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $retention->id }}')"
-                    {{-- @if (DB::table('departments')->where('retention_id', $retention->id)->exists()) style="display: none;" @endif --}}>
-                    <i class="bi bi-x-lg"></i>
-                  </a>
+                  <div class="btn-group mb-1">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle me-1" type="button" id="dropdownMenuButtonIcon"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonIcon">
+                        <a href="#mymodal" data-remote="{{ route('backsite.retention.show', $retention->id) }}"
+                          data-toggle="modal" data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
+                          <i class="bi bi-eye"></i> Show
+                        </a>
+                        <a href="{{ route('backsite.retention.edit', $retention->id) }}" class="dropdown-item"
+                          title="Edit"><i class="bi bi-pencil"></i> Edit</a>
+                        <a class="dropdown-item" title="Delete" onclick="showSweetAlert('{{ $retention->id }}')"
+                          {{-- @if (DB::table('departments')->where('retention_id', $retention->id)->exists()) style="display: none;" @endif --}}>
+                          <i class="bi bi-x-lg"> Delete</i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
 
                   <form id="deleteForm_{{ $retention->id }}"
                     action="{{ route('backsite.retention.destroy', encrypt($retention->id)) }}" method="POST">
@@ -105,6 +120,9 @@
     </div>
 
   </section>
+
+@endsection
+@push('after-script')
   <script>
     function showSweetAlert(retentionId) {
       Swal.fire({
@@ -120,5 +138,31 @@
         }
       });
     }
+    jQuery(document).ready(function($) {
+      console.log('Document is ready');
+
+      $('#mymodal').on('show.bs.modal', function(e) {
+        var button = $(e.relatedTarget);
+        var modal = $(this);
+
+        modal.find('.modal-body').load(button.data("remote"));
+        modal.find('.modal-title').html(button.data("title"));
+      });
+    });
   </script>
-@endsection
+  <div class="modal fade" id="mymodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button class="btn close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <i class="fa fa-spinner fa spin"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+@endpush

@@ -71,7 +71,7 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::resource('main-location', MainLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::resource('sub-location', SubLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::resource('detail-location', DetailLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
-    Route::resource('container-location', ContainerLocationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy', 'show');
+    Route::resource('container-location', ContainerLocationController::class);
     Route::get('/get-sub-location', [DetailLocationController::class, 'getSubLocations'])->name('getSubLocations');
     Route::get('/get-container', [DetailLocationController::class, 'getContainers'])->name('getContainers');
 
@@ -90,7 +90,7 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::resource('sub-classification', SubClassificationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
 
     //Retention
-    Route::resource('retention', RetentionArchivesController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::resource('retention', RetentionArchivesController::class);
     Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
     Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 

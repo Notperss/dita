@@ -50,18 +50,18 @@ class ArchiveContainerController extends Controller
                     </a>
                   <div class="btn-group mb-1">
                     <div class="dropdown">
-                      <button class="btn btn-primary btn-sm dropdown-toggle me-1" type="button" id="dropdownMenuButton"
+                      <button class="btn btn-primary btn dropdown-toggle me-1" type="button" id="dropdownMenuButton"
                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Action
+                        <i class="bi bi-three-dots-vertical"></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                        <a href="#mymodal" data-remote="' . route('backsite.archive-container.show', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
-                        Show
+                         <i class="bi bi-eye"></i> Show
                     </a>
                         <a class="dropdown-item"
-                          href="' . route('backsite.archive-container.edit', $item->id) . '">Edit</a>
-                        <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')">Delete</a>
+                          href="' . route('backsite.archive-container.edit', $item->id) . '"><i class="bi bi-pencil"></i> Edit</a>
+                        <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')"><i class="bi bi-x-lg"></i> Delete</a>
                       </div>
                     </div>
                   </div>

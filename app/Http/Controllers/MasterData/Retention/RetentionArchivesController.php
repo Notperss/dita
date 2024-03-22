@@ -99,9 +99,15 @@ class RetentionArchivesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(RetentionArchives $retentionArchives)
+    public function show($id)
     {
-        return abort('404');
+        if (! Gate::allows('retention_index')) {
+            abort(403);
+        }
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
+        $retentions = RetentionArchives::find($id);
+        return view('pages.master-data.retention.show', compact('retentions', ));
     }
 
     /**

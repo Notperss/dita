@@ -88,17 +88,17 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="type_document">Tipe Dokumen<code>*</code></label>
-                      <select id="type_document" class="form-control choices" name="type_document" required>
+                      <label for="document_type">Tipe Dokumen<code>*</code></label>
+                      <select id="document_type" class="form-control choices" name="document_type" required>
                         <option value="" disabled selected>Choose</option>
-                        <option value="MUSNAH" {{ $retentions->type_document == 'MUSNAH' ? 'selected' : '' }}>Musnah
+                        <option value="MUSNAH" {{ $retentions->document_type == 'MUSNAH' ? 'selected' : '' }}>Musnah
                         </option>
-                        <option value="PERMANEN"{{ $retentions->type_document == 'PERMANEN' ? 'selected' : '' }}>Permanen
+                        <option value="PERMANEN"{{ $retentions->document_type == 'PERMANEN' ? 'selected' : '' }}>Permanen
                         </option>
                       </select>
-                      @if ($errors->has('type_document'))
+                      @if ($errors->has('document_type'))
                         <p style="font-style: bold; color: red;">
-                          {{ $errors->first('type_document') }}</p>
+                          {{ $errors->first('document_type') }}</p>
                       @endif
                     </div>
                   </div>
