@@ -5,7 +5,7 @@
 
 
 <!-- Need: Apexcharts -->
-<script src="{{ asset('/assets/extensions/apexcharts/apexcharts.min.js') }}"></script>
+{{-- <script src="{{ asset('/assets/extensions/apexcharts/apexcharts.min.js') }}"></script> --}}
 <script src="{{ asset('/assets/static/js/pages/dashboard.js') }}"></script>
 
 <script src="{{ asset('/assets/extensions/simple-datatables/umd/simple-datatables.js') }}"></script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TransactionArchive\LendingArchive;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\MasterData\WorkUnits\Division;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\TransactionArchive\LendingArchive\Lending;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,11 @@ class LendingArchiveController extends Controller
      */
     public function index()
     {
+        $id = auth()->user()->id;
         $archiveContainers = ArchiveContainer::orderBy('number_archive', 'asc')->get();
-        return view('pages.transaction-archive.lending-archive.index', compact('archiveContainers'));
+        $divisions = Division::orderBy('name', 'asc')->get();
+        $lendings = Lending::where('user_id', $id)->orderBy('created_at', 'asc')->get();
+        return view('pages.transaction-archive.lending-archive.index', compact('archiveContainers', 'divisions', 'lendings'));
     }
 
     /**
@@ -56,7 +60,20 @@ class LendingArchiveController extends Controller
         // Merge the user_id into the request data
         $requestData = array_merge($request->all(), ['user_id' => $user_id]);
         // If the validation passes, create the Divisi record
-        Lending::create($requestData);
+        $lending = Lending::create($requestData);
+        $lending_id = $lending->id;
+
+        if (! empty ($request->inputs)) {
+            foreach ($request->inputs as $value) {
+                LendingArchive::create([
+                    'lending_id' => $lending_id,
+                    'archive_container_id' => $value['archive_container_id'],
+                    'status' => '1',
+                    // 'internet_access' => $value['internet_access'],
+                    // 'gateway' => $value['gateway'],
+                ]);
+            }
+        }
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.lending-archive.index');
@@ -66,9 +83,11 @@ class LendingArchiveController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(LendingArchive $lendingArchive)
+    public function show($id)
     {
-        //
+        $ids = auth()->user()->id;
+        $lendings = Lending::where('user_id', $ids)->find($id);
+        return view('pages.transaction-archive.lending-archive.show', compact('lendings'));
     }
 
     /**
@@ -93,5 +112,24 @@ class LendingArchiveController extends Controller
     public function destroy(LendingArchive $lendingArchive)
     {
         //
+    }
+
+    // get show_file software
+    public function show_file(Request $request)
+    {
+        if ($request->ajax()) {
+            $id = $request->id;
+
+            $lending_archive = LendingArchive::where('lending_id', $id)->get();
+            $data = [
+                'lending_archives' => $lending_archive,
+            ];
+
+            $msg = [
+                'data' => view('pages.transaction-archive.lending-archive.detail-lending-archive', $data)->render(),
+            ];
+
+            return response()->json($msg);
+        }
     }
 }

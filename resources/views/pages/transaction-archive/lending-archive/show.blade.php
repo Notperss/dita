@@ -1,0 +1,77 @@
+<table class="table table-bordered">
+  <input type="hidden" name="id" id="id" value="{{ $lendings->id }}">
+  <tr>
+    <th>Nomor Peminjaman</th>
+    <td>{{ isset($lendings->lending_number) ? $lendings->lending_number : 'N/A' }}
+    </td>
+  </tr>
+  <tr>
+    <th>Divisi</th>
+    <td>{{ isset($lendings->divisi) ? $lendings->divisi : 'N/A' }}</td>
+  </tr>
+  <tr>
+    <th>Tanggal Pinjam</th>
+    <td>
+      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
+    </td>
+  </tr>
+  <tr>
+    <th>Tanggal Dikembalikan</th>
+    <td>
+      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
+    </td>
+  </tr>
+  <tr>
+    <th>Catatan</th>
+    <td>{!! isset($lendings->description) ? $lendings->description : 'N/A' !!}</td>
+  </tr>
+  <tr>
+    <th>Status</th>
+    <td>
+      @if ($lendings->approval === 1)
+        <span class="badge bg-light-success">Disetujui</span>
+      @elseif ($lendings->approval === 0)
+        <span class="badge bg-light-danger">Ditolak</span>
+      @else
+        <span class="badge bg-light-warning">Proses</span>
+      @endif
+    </td>
+  </tr>
+</table>
+<table class="table table-bordered tampildata">
+</table>
+
+<script>
+  function tampilDataFile() {
+    $.ajaxSetup({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+
+    let id = $('#id').val();
+    $.ajax({
+      type: "get",
+      url: "{{ route('backsite.show_file') }}",
+      data: {
+        id: id
+      },
+      dataType: "json",
+      beforeSend: function() {
+        $('.tampildata').html('<i class="bx bx-balloon bx-flasing"></i>');
+      },
+      success: function(response) {
+        if (response.data) {
+          $('.tampildata').html(response.data);
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+      }
+    });
+  }
+
+  $(document).ready(function() {
+    tampilDataFile();
+  });
+</script>

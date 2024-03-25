@@ -23,7 +23,13 @@ class SubClassificationController extends Controller
         }
         $company_id = auth()->user()->company_id;
 
-        $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        // $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $subClassifications = SubClassification::where('classification_subs.company_id', $company_id)->leftJoin('classification_mains', 'classification_subs.main_classification_id', '=', 'classification_mains.id')
+            ->select('classification_subs.*')
+            ->orderBy('classification_mains.name')
+            ->orderBy('classification_subs.name', 'asc')
+            ->get();
+
         return view('pages.master-data.classification.sub-classification.index', compact('subClassifications'));
     }
 

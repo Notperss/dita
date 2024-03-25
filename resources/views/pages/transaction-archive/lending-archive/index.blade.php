@@ -99,64 +99,42 @@
           <div class="card-content">
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-striped mb-0">
+                <table class="table table-striped mb-0" id="table1">
                   <thead>
                     <tr>
-                      <th>Nomor Arsip</th>
+                      <th>Nomor Peminjaman</th>
                       <th>Tahun</th>
                       <th>Bentuk Dokumen</th>
                       <th>Tgl Pinjam</th>
                       <th>Tgl Dikembalikan</th>
                       <th>Status</th>
-                      {{-- <th>Action</th> --}}
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td class="text-bold-500">Michael Right</td>
-                      <td>$15/hr</td>
-                      <td class="text-bold-500">UI/UX</td>
-                      <td>Remote</td>
-                      <td>Austin,Taxes</td>
-                      <td><a href="#"><i class="badge-circle badge-circle-light-secondary font-medium-1"
-                            data-feather="mail"></i></a></td>
-                    </tr>
-                    <tr>
-                      <td class="text-bold-500">Morgan Vanblum</td>
-                      <td>$13/hr</td>
-                      <td class="text-bold-500">Graphic concepts</td>
-                      <td>Remote</td>
-                      <td>Shangai,China</td>
-                      <td><a href="#"><i class="badge-circle badge-circle-light-secondary font-medium-1"
-                            data-feather="mail"></i></a></td>
-                    </tr>
-                    <tr>
-                      <td class="text-bold-500">Tiffani Blogz</td>
-                      <td>$15/hr</td>
-                      <td class="text-bold-500">Animation</td>
-                      <td>Remote</td>
-                      <td>Austin,Texas</td>
-                      <td><a href="#"><i class="badge-circle badge-circle-light-secondary font-medium-1"
-                            data-feather="mail"></i></a></td>
-                    </tr>
-                    <tr>
-                      <td class="text-bold-500">Ashley Boul</td>
-                      <td>$15/hr</td>
-                      <td class="text-bold-500">Animation</td>
-                      <td>Remote</td>
-                      <td>Austin,Texas</td>
-                      <td><a href="#"><i class="badge-circle badge-circle-light-secondary font-medium-1"
-                            data-feather="mail"></i></a></td>
-                    </tr>
-                    <tr>
-                      <td class="text-bold-500">Mikkey Mice</td>
-                      <td>$15/hr</td>
-                      <td class="text-bold-500">Animation</td>
-                      <td>Remote</td>
-                      <td>Austin,Texas</td>
-                      <td><a href="#"><i class="badge-circle badge-circle-light-secondary font-medium-1"
-                            data-feather="mail"></i></a></td>
-                    </tr>
+                    @foreach ($lendings as $lending)
+                      <tr>
+                        <td class="text-bold-500">{{ $lending->lending_number }}</td>
+                        <td>{{ $lending->division }}</td>
+                        <td class="text-bold-500">{{ $lending->description }}</td>
+                        <td>Remote</td>
+                        <td>Austin,Taxes</td>
+                        <td>
+                          @if ($lending->approval === 1)
+                            <span class="badge bg-light-success">Disetujui</span>
+                          @elseif ($lending->approval === 0)
+                            <span class="badge bg-light-danger">Ditolak</span>
+                          @else
+                            <span class="badge bg-light-warning">Proses</span>
+                          @endif
+                        </td>
+                        <td> <a href="#detailLending"
+                            data-remote="{{ route('backsite.lending-archive.show', $lending->id) }}" data-toggle="modal"
+                            data-target="#detailLending" data-title="Detail Peminjaman" class="dropdown-item">
+                            Show
+                          </a></td>
+                      </tr>
+                    @endforeach
                   </tbody>
                 </table>
               </div>
@@ -191,7 +169,12 @@
                 </div>
                 <div class="form-group">
                   <label for="division">Divisi</label>
-                  <input type="text" id="division" class="form-control" name="division">
+                  <select type="text" id="division" class="form-control choices" name="division">
+                    <option value="" selected disabled>Choose</option>
+                    @foreach ($divisions as $division)
+                      <option value="{{ $division->name }}">{{ $division->name }}</option>
+                    @endforeach
+                  </select>
                 </div>
                 <div class="form-group">
                   <label for="description">keterangan</label>
@@ -206,15 +189,15 @@
             {{-- APlikasi --}}
             <div class="form-group row">
               <div class="col-md-4">
-                <button type="button" id="add-archive" class="btn btn-success addRow mb-1">Tambah Arsip</button>
+                <button type="button" id="add-archive" class="btn btn-success addRow mb-1">Cari Arsip</button>
               </div>
               <table id="table-archive" class=" table col-md-12">
                 <thead>
                   <tr>
                     <th class="text-center">No</th>
-                    <th class="text-center">Nama Aplikasi</th>
-                    <th class="text-center">Versi</th>
-                    <th class="text-center">Product</th>
+                    <th class="text-center" style="width: 35%">Nomor Arsip/Nomor Dokumen</th>
+                    <th class="text-center">Perihal</th>
+                    <th class="text-center">Divisi</th>
                     <th style="text-align:center; width:10px;">Action</th>
                   </tr>
                 </thead>
@@ -227,40 +210,70 @@
       </div>
     </div>
   </div>
+
+  <div class="viewmodal" style="display: none;"></div>
+
 @endsection
 @push('after-script')
   <script>
     $(document).ready(function() {
-      // Set to store selected names
-      var selectApp = new Set();
-      let a = 0;
+      // Array to store selected IDs
+      let selectedIds = [];
+
+      // Event listener for change event on select element
+      $(document).on('change', 'select[name^="inputs["]', function() {
+        // Get the selected ID
+        let selectedId = $(this).val();
+
+        // Check if the selected ID already exists in the array
+        if (selectedIds.includes(selectedId)) {
+          alert("This ID is already selected. Please choose a different one.");
+          $(this).val(""); // Clear the selected value
+          return; // Exit function
+        }
+
+        // Add the selected ID to the array
+        selectedIds.push(selectedId);
+
+        // Disable the option with the selected ID in all other select elements
+        $('select[name^="inputs["').not(this).find('option').prop('disabled', function() {
+          return $(this).val() === selectedId;
+        });
+      });
 
       $('#add-archive').click(function() {
         // Increment index for unique IDs
-        a++;
+        let a = selectedIds.length + 1;
 
         // Append a new row
         $('#table-archive').append(`
-        <tr>
-          <td class="text-center text-primary">${a}</td>
-          <td>
-            <select name="inputs[${a}][archive_container_id]" class="form-control select2" style="width: 100%">
-              <option value="" disabled selected>Choose</option>
-              @foreach ($archiveContainers as $app)
-                <option value="{{ $app->id }}" data-value="{{ $app->version }}" data-value2="{{ $app->product }}" data-app="{{ $app->id }}" >{{ $app->number_archive }}</option>
-              @endforeach
-            </select>
-          </td>
-          <td><input type="text" class="form-control version" id="version_${a}" readonly></td>
-          <td><input type="text" class="form-control product" id="product_${a}" readonly></td>
-          <td><button type="button" class="btn btn-danger remove-table-row">Remove</button></td>
-        </tr>
-      `);
-
+      <tr>
+        <td class="text-center text-primary">${a}</td>
+        <td>
+          <select name="inputs[${a}][archive_container_id]" class="form-control select2 choices" style="width: 100%">
+            <option value="" disabled selected>Choose</option>
+            @foreach ($archiveContainers as $app)
+              <option value="{{ $app->id }}" data-value="{{ $app->regarding }}" data-value2="{{ $app->division->name }}" data-app="{{ $app->id }}">{{ $app->number_archive }} -> {{ $app->number_document }}</option>
+            @endforeach
+          </select>
+        </td>
+        <td><input type="text" class="form-control version" id="version_${a}" readonly></td>
+        <td><input type="text" class="form-control product" id="product_${a}" readonly></td>
+        <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
+      </tr>
+    `);
         // Initialize Select2 for the newly added select element
         $('.select2').select2({
           dropdownParent: $("#mymodal"),
           theme: 'classic', // Apply the 'classic-dark' theme
+        });
+
+        // Disable options that have been selected in other rows
+        $('select[name^="inputs["]').each(function() {
+          let selectedId = $(this).val();
+          $(this).find('option').prop('disabled', function() {
+            return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
+          });
         });
       });
 
@@ -271,52 +284,61 @@
         var productValue = selectedOption.data('value2') || '';
         var appValue = selectedOption.data('app') || '';
 
-        // Check if the name value is unique among selected names
-        if (!selectApp.has(appValue)) {
-          // Update corresponding input fields based on the selected option
-          var $row = $(this).closest('tr');
-          $row.find('.version').val(versionValue);
-          $row.find('.product').val(productValue);
-
-          // Disable the selected option for both parent and child
-          disableOptionWithName(appValue, this);
-
-          // Add the name to the set of selected names
-          selectApp.add(appValue);
-        } else {
-          // Reset the select or take other actions for validation error
-          $(this).val('').trigger('change');
-          alert('Name value must be unique. Please choose a valid option.');
-        }
+        // Update corresponding input fields based on the selected option
+        $(this).closest('tr').find('.version').val(versionValue);
+        $(this).closest('tr').find('.product').val(productValue);
       });
 
-      $(document).on('click', '.remove-table-row', function() {
-        // Enable the disabled options before removing the row
-        var removedName = $(this).closest('tr').find('select').data('app') || '';
-        enableOptionWithName(removedName);
 
-        // Remove the name from the set of selected names
-        selectApp.delete(removedName);
+      $(document).on('click', '.remove-row', function() {
+        // Get the removed ID
+        let removedId = $(this).closest('tr').find('select').val();
+
+        // Remove the ID from the array
+        selectedIds = selectedIds.filter(id => id !== removedId);
 
         // Remove the entire row when the "Remove" button is clicked
         $(this).closest('tr').remove();
-      });
 
-      // Function to disable options with a specific name value
-      function disableOptionWithName(appValue, currentSelect) {
-        $('select[name^="inputs["]').not(currentSelect).each(function() {
-          $(this).find(`option[data-app="${appValue}"]`).prop('disabled', true);
-        });
-      }
-
-      // Function to enable options with a specific name value
-      function enableOptionWithName(appValue) {
+        // Enable the option with the removed ID in all other select elements
+        $('select[name^="inputs["]').find('option').prop('disabled', false);
         $('select[name^="inputs["]').each(function() {
-          $(this).find(`option[data-app="${appValue}"]`).prop('disabled', false);
+          let selectedId = $(this).val();
+          $(this).find('option').prop('disabled', function() {
+            return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
+          });
         });
-      }
+      });
     });
   </script>
+
+  <script>
+    jQuery(document).ready(function($) {
+      $('#detailLending').on('show.bs.modal', function(e) {
+        var button = $(e.relatedTarget);
+        var modal = $(this);
+
+        modal.find('.modal-body').load(button.data("remote"));
+        modal.find('.modal-title').html(button.data("title"));
+      });
+    });
+  </script>
+
+  <div class="modal fade" id="detailLending" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button class="btn close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <i class="fa fa-spinner fa spin"></i>
+        </div>
+      </div>
+    </div>
+  </div>
 @endpush
 @push('after-style')
   <style>

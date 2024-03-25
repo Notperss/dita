@@ -306,3 +306,6 @@
     </section>
   </div>
 @endsection
+<script src="{{ asset('/assets/extensions/apexcharts/apexcharts.min.js') }}"></script>
+@push('after-script')
+@endpush

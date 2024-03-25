@@ -72,7 +72,7 @@
                     <div class="form-group">
                       <label for="code">Kode Sub Series <code>*</code></label>
                       <input type="text" id="code" class="form-control" placeholder="Kode" name="code"
-                        value="{{ old('code', $retentions->code) }}" required>
+                        value="{{ old('code', $retentions->code) }}" required readonly>
                       @if ($errors->has('code'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('code') }}</p>
@@ -197,7 +197,8 @@
               $('#sub_classification_id').empty();
               $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
               $.each(data, function(key, value) {
-                $('#sub_classification_id').append('<option value="' + value.id + '">' + value.name +
+                $('#sub_classification_id').append('<option value="' + value.id + '" data-value="' +
+                  value.code + '">' + value.name +
                   ' => ' + value.code +
                   '</option>');
               });
@@ -211,6 +212,12 @@
           $('#sub_classification_id').empty();
           $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
         }
+        // Handle change event of number_container
+        $('#sub_classification_id').on('change', function() {
+          var selectedOption = $(this).find(':selected');
+          var mainLocationValue = selectedOption.data('value');
+          $('#code').val(mainLocationValue);
+        });
       });
     });
   </script>

@@ -24,11 +24,19 @@ class RetentionArchivesController extends Controller
         }
         $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
-        $retentions = RetentionArchives::where('company_id', $company_id)
-            ->orderBy('sub_series', 'asc')
+        $retentions = RetentionArchives::where('retention_archives.company_id', $company_id)
+            ->leftJoin('classification_mains', 'retention_archives.main_classification_id', '=', 'classification_mains.id')
+            ->leftJoin('classification_subs', 'retention_archives.sub_classification_id', '=', 'classification_subs.id')
+            ->select('retention_archives.*')
+            ->orderBy('classification_mains.name')
+            ->orderBy('classification_subs.name')
+            ->orderBy('retention_archives.sub_series', 'asc')
             ->get();
+
+
         $subClassifications = SubClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+
         return view('pages.master-data.retention.index', compact('subClassifications', 'mainClassifications', 'retentions'));
     }
 
