@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Setting;
-use App\Http\Requests\SettingRequest;
-use Spatie\Permission\Models\Role;
+use Illuminate\Http\Request;
 use App\Services\SettingService;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\SettingRequest;
 
 class SettingController extends Controller
 {
@@ -15,6 +16,9 @@ class SettingController extends Controller
      */
     public function index()
     {
+        if (! Gate::allows('route_index')) {
+            abort(403);
+        }
         $setting = Setting::first();
         $roles = Role::all();
         $data = json_decode($setting->data);
@@ -27,6 +31,9 @@ class SettingController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('route_create')) {
+            abort(403);
+        }
         return view('pages.management-access.setting.create');
     }
 
@@ -43,6 +50,9 @@ class SettingController extends Controller
      */
     public function show(string $id)
     {
+        if (! Gate::allows('route_show')) {
+            abort(403);
+        }
         return view('pages.management-access.setting.show');
     }
 
@@ -51,6 +61,9 @@ class SettingController extends Controller
      */
     public function edit(string $id)
     {
+        if (! Gate::allows('route_edit')) {
+            abort(403);
+        }
         return view('pages.management-access.setting.edit');
     }
 

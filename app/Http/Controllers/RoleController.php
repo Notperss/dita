@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\StoreRoleRequest;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -14,6 +15,9 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        if (! Gate::allows('role_index')) {
+            abort(403);
+        }
         $roles = Role::query()
             ->when(! blank($request->search), function ($query) use ($request) {
                 return $query
@@ -35,6 +39,9 @@ class RoleController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('role_create')) {
+            abort(403);
+        }
         return view('pages.management-access.role.create');
     }
 
@@ -54,6 +61,9 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
+        if (! Gate::allows('role_index')) {
+            abort(403);
+        }
         return view('pages.management-access.role.show');
     }
 
@@ -62,6 +72,9 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
+        if (! Gate::allows('role_update')) {
+            abort(403);
+        }
         return view('pages.management-access.role.edit');
     }
 

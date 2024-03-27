@@ -84,7 +84,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="main_location">Lokasi Utama<code>*</code></label>
+                      <label for="main_location">Lokasi Utama</label>
                       <input type="text" id="main_location" name="main_location"
                         value="{{ DB::table('archive_containers')->latest()->first()->main_location ?? '' }}"
                         class="form-control" readonly>
@@ -94,7 +94,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="sub_location">Sub Lokasi<code>*</code></label>
+                      <label for="sub_location">Sub Lokasi</label>
                       <input type="text" id="sub_location" name="sub_location"
                         value="{{ DB::table('archive_containers')->latest()->first()->sub_location ?? '' }}"
                         class="form-control" readonly>
@@ -104,7 +104,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="detail_location">Detail Lokasi<code>*</code></label>
+                      <label for="detail_location">Detail Lokasi</label>
                       <input type="text" id="detail_location" name="detail_location"
                         value="{{ DB::table('archive_containers')->latest()->first()->detail_location ?? '' }}"
                         class="form-control" readonly>
@@ -167,7 +167,7 @@
                   <div class="col-md-4 col-4">
                     <h4 class="card-title">Masa Retensi</h4>
                     <div class="form-group">
-                      <label for="period_active">Masa Aktif<code>*</code></label>
+                      <label for="period_active">Masa Aktif</label>
                       <input type="text" id="period_actives" class="form-control" name="period_active" required
                         readonly>
                       <input type="text" id="period_active" class="form-control" name="expiration_active" hidden>
@@ -177,7 +177,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description_active">keterangan Masa Aktif<code>*</code></label>
+                      <label for="description_active">keterangan Masa Aktif</label>
                       <textarea type="text" id="description_active" class="form-control" name="description_active" required readonly></textarea>
                       @if ($errors->has('description_active'))
                         <p style="font-style: bold; color: red;">
@@ -185,7 +185,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="period_inactive">Masa Inaktif<code>*</code></label>
+                      <label for="period_inactive">Masa Inaktif</label>
                       <input type="text" id="period_inactives" class="form-control" name="period_inactive" required
                         readonly>
                       <input type="text" id="period_inactive" class="form-control" name="expiration_inactive"
@@ -196,7 +196,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description_inactive">Keterangan Masa Inaktif<code>*</code></label>
+                      <label for="description_inactive">Keterangan Masa Inaktif</label>
                       <textarea type="text" id="description_inactive" class="form-control" name="description_inactive" required
                         readonly></textarea>
                       @if ($errors->has('description_inactive'))
@@ -205,7 +205,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description_retention">Keterangan Tambahan<code>*</code></label>
+                      <label for="description_retention">Keterangan Tambahan</label>
                       <textarea type="text" id="description_retention" class="form-control" name="description_retention" required
                         readonly></textarea>
                       @if ($errors->has('description_retention'))
@@ -228,7 +228,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_catalog">Nomor Katalog<code>*</code></label>
+                      <label for="number_catalog">Nomor Katalog</label>
                       <input type="text" id="number_catalog" name="number_catalog"
                         value="{{ old('number_catalog') }}" class="form-control">
                       @if ($errors->has('number_catalog'))
@@ -237,7 +237,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_document">Nomor Dokumen<code>*</code></label>
+                      <label for="number_document">Nomor Dokumen</label>
                       <input type="text" id="number_document" name="number_document"
                         value="{{ old('number_document') }}" class="form-control">
                       @if ($errors->has('number_document'))
@@ -246,7 +246,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_archive">Nomor Arsip<code>*</code></label>
+                      <label for="number_archive">Nomor Arsip</label>
                       <input type="text" id="number_archive" name="number_archive"
                         value="{{ old('number_archive') }}" class="form-control">
                       @if ($errors->has('number_archive'))
@@ -277,7 +277,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="regarding">Perihal<code>*</code></label>
+                      <label for="regarding">Perihal</label>
                       <textarea type="text" id="regarding" class="form-control" name="regarding" required></textarea>
                       @if ($errors->has('regarding'))
                         <p style="font-style: bold; color: red;">
@@ -285,7 +285,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="tag">Tag<code>*</code></label>
+                      <label for="tag">Tag</label>
                       <textarea type="text" id="tag" class="form-control" name="tag" required></textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
@@ -322,7 +322,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="amount">Jumlah & Satuan<code>*</code></label>
+                      <label for="amount">Jumlah & Satuan</label>
                       <input type="text" id="amount" name="amount" value="{{ old('amount') }}"
                         class="form-control">
                       @if ($errors->has('amount'))
@@ -346,7 +346,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="file">File<code>*</code></label>
+                      <label for="file">File</label>
                       <input type="file" id="name" name="file" class="basic-filepond">
                       @if ($errors->has('file'))
                         <p style="font-style: bold; color: red;">

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
+use App\Services\UserService;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Gate;
+use App\Models\MasterData\Company\Company;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Models\MasterData\Company\Company;
-use App\Services\UserService;
 
 class UserManagementController extends Controller
 {
@@ -17,6 +18,9 @@ class UserManagementController extends Controller
      */
     public function index(Request $request)
     {
+        if (! Gate::allows('user_index')) {
+            abort(403);
+        }
         $users = User::query()
             ->when(! blank($request->search), function ($query) use ($request) {
                 return $query
@@ -40,6 +44,9 @@ class UserManagementController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('user_store')) {
+            abort(403);
+        }
         return view('pages.management-access.user.create');
     }
 
@@ -66,6 +73,9 @@ class UserManagementController extends Controller
      */
     public function edit(string $id)
     {
+        if (! Gate::allows('user_update')) {
+            abort(403);
+        }
         return view('pages.management-access.user.edit');
     }
 

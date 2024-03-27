@@ -209,7 +209,7 @@
 
 
             @if (Auth::check())
-              <li class="sidebar-title">Log Out</li>
+              <li class="sidebar-title"></li>
               {{-- Log Out --}}
               <li class="sidebar-item  ">
                 <a class='sidebar-link' href="{{ route('logout') }}"

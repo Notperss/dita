@@ -284,7 +284,8 @@
                         name="division_id" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($divisions as $division)
-                          <option value="{{ $division->id }}"
+                          <option value="{{ $division->id }}" data-code={{ $division->code }}
+                            data-id-container="{{ $archiveContainers->id }}"
                             {{ $division->id == $archiveContainers->division_id ? 'selected' : '' }}>
                             {{ $division->name }}</option>
                         @endforeach
@@ -300,12 +301,10 @@
                         name="number_container" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($locationContainers as $locationContainer)
-                          <?php
-                          $paddedNumber = str_pad($locationContainer->number_container, 3, '0', STR_PAD_LEFT);
-                          ?>
-                          <option value="{{ $paddedNumber }}"
-                            {{ $paddedNumber == $archiveContainers->number_container ? 'selected' : '' }}>
-                            {{ $paddedNumber }}
+                          <option value="{{ str_pad($archiveContainers->number_container, 3, '0', STR_PAD_LEFT) }}"
+                            {{ $archiveContainers->number_container == $archiveContainers->number_container ? 'selected' : '' }}>
+                            {{-- {{ str_pad($archiveContainers->number_container, 3, '0', STR_PAD_LEFT) }} --}}
+                            {{ str_pad($archiveContainers->number_container, 3, '0', STR_PAD_LEFT) }}
                           </option>
                         @endforeach
                       </select>
@@ -315,7 +314,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="main-location">Lokasi Utama<code>*</code></label>
+                      <label for="main-location">Lokasi Utama</label>
                       <input type="text" id="main_location" name="main_location" class="form-control"
                         value="{{ old('main_location', $archiveContainers->main_location) }}" readonly>
                       @if ($errors->has('main_location'))
@@ -324,7 +323,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="sub-location">Sub Lokasi<code>*</code></label>
+                      <label for="sub-location">Sub Lokasi</label>
                       <input type="text" id="sub_location" name="sub_location" class="form-control"
                         value="{{ old('sub_location', $archiveContainers->sub_location) }}" readonly>
                       @if ($errors->has('sub_location'))
@@ -333,7 +332,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="detail_location">Detail Lokasi<code>*</code></label>
+                      <label for="detail_location">Detail Lokasi</label>
                       <input type="text" id="detail_location" name="detail_location" class="form-control"
                         value="{{ old('detail_location', $archiveContainers->detail_location) }}" readonly>
                       @if ($errors->has('detail_location'))
@@ -406,7 +405,7 @@
                   <div class="col-md-4 col-4">
                     <h4 class="card-title">Masa Aktif</h4>
                     <div class="form-group">
-                      <label for="period_active">Masa Aktif<code>*</code></label>
+                      <label for="period_active">Masa Aktif</label>
                       <input type="text" id="period_actives" class="form-control" name="period_active"
                         value="{{ old('period_active', $archiveContainers->period_active) }}" required readonly>
                       <input type="text" id="period_active" class="form-control" name="expiration_active"
@@ -417,7 +416,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description_active">keterangan Masa Aktif<code>*</code></label>
+                      <label for="description_active">keterangan Masa Aktif</label>
                       <textarea type="text" id="description_active" class="form-control" name="description_active" required readonly>{{ $archiveContainers->description_active }}</textarea>
                       @if ($errors->has('description_active'))
                         <p style="font-style: bold; color: red;">
@@ -425,7 +424,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="period_inactive">Masa Inaktif<code>*</code></label>
+                      <label for="period_inactive">Masa Inaktif</label>
                       <input type="text" id="period_inactives" class="form-control" name="period_inactive"
                         value="{{ old('period_inactive', $archiveContainers->period_inactive) }}" required readonly>
                       <input type="text" id="period_inactive" class="form-control" name="expiration_inactive"
@@ -436,7 +435,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description_inactive">keterangan Masa Inaktif<code>*</code></label>
+                      <label for="description_inactive">keterangan Masa Inaktif</label>
                       <textarea type="text" id="description_inactive" class="form-control" name="description_inactive" required
                         readonly>{{ $archiveContainers->description_inactive }}</textarea>
                       @if ($errors->has('description_inactive'))
@@ -445,7 +444,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="description_retention">keterangan Tambahan<code>*</code></label>
+                      <label for="description_retention">keterangan Tambahan</label>
                       <textarea type="text" id="description_retention" class="form-control" name="description_retention" required
                         readonly>{{ $archiveContainers->description_retention }}</textarea>
                       @if ($errors->has('description_retention'))
@@ -460,16 +459,16 @@
                   <h4 class="card-title text-center">Input Data Arsip</h4>
                   <div class="col-md-4 col-4">
                     <div class="form-group">
-                      <label for="number_app">Nomor Aplikasi<code>*</code></label>
+                      <label for="number_app">Nomor Aplikasi<code>*</code><small>Otomatis</small></label>
                       <input type="text" id="number_app" name="number_app"
-                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control">
+                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control" readonly>
                       @if ($errors->has('number_app'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('number_app') }}</p>
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_catalog">Nomor Katalog<code>*</code></label>
+                      <label for="number_catalog">Nomor Katalog</label>
                       <input type="text" id="number_catalog" name="number_catalog"
                         value="{{ old('number_catalog', $archiveContainers->number_catalog) }}" class="form-control">
                       @if ($errors->has('number_catalog'))
@@ -478,7 +477,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_document">Nomor Document<code>*</code></label>
+                      <label for="number_document">Nomor Document</label>
                       <input type="text" id="number_document" name="number_document"
                         value="{{ old('number_document', $archiveContainers->number_document) }}" class="form-control">
                       @if ($errors->has('number_document'))
@@ -487,7 +486,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_archive">Nomor Arsip<code>*</code></label>
+                      <label for="number_archive">Nomor Arsip</label>
                       <input type="text" id="number_archive" name="number_archive"
                         value="{{ old('number_archive', $archiveContainers->number_archive) }}" class="form-control">
                       @if ($errors->has('number_archive'))
@@ -519,7 +518,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="regarding">Perihal<code>*</code></label>
+                      <label for="regarding">Perihal</label>
                       <textarea type="text" id="regarding" class="form-control" name="regarding" required readonly>{{ $archiveContainers->regarding }}</textarea>
                       @if ($errors->has('regarding'))
                         <p style="font-style: bold; color: red;">
@@ -527,7 +526,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="tag">keterangan Tag<code>*</code></label>
+                      <label for="tag">keterangan Tag</label>
                       <textarea type="text" id="tag" class="form-control" name="tag" required readonly>{{ $archiveContainers->tag }}</textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
@@ -568,7 +567,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="amount">Jumlah & Satuan<code>*</code></label>
+                      <label for="amount">Jumlah & Satuan</label>
                       <input type="text" id="amount" name="amount"
                         value="{{ old('amount', $archiveContainers->amount) }}" class="form-control">
                       @if ($errors->has('amount'))
@@ -594,7 +593,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="file">File<code>*</code></label>
+                      <label for="file">File</label>
                       <input type="file" id="name" name="file" class="basic-filepond">
                       @if ($archiveContainers->file)
                         <p>Latest File
@@ -698,6 +697,35 @@
 
 @endsection
 @push('after-script')
+  <script>
+    $(document).ready(function() {
+      // Function to update the number_app field
+      function updateNumberApp() {
+        // Retrieve selected values
+        var codeDivision = $('#division_id option:selected').data('code') || '';
+        var id = $('#division_id option:selected').data('id-container') || '';
+        var numberContainer = $('#number_container').val() || '';
+        var documentTypeValue = $('#document_type').val() || '';
+        var documentType = (documentTypeValue === 'COPY') ? 'C' : ((documentTypeValue === 'ASLI') ? 'A' :
+          documentTypeValue);
+        var year = $('#year').val();
+
+        // Concatenate the values to form the number_app
+        var numberApp = codeDivision + '/' + numberContainer + '/' + documentType + '/' + year + '/' + id;
+
+        // Set the value of the number_app field
+        $('#number_app').val(numberApp);
+      }
+
+      // Call the function when any related field changes
+      $('#division_id, #number_container, #document_type, #year').change(function() {
+        updateNumberApp();
+      });
+
+      // Call the function initially to set the initial value
+      updateNumberApp();
+    });
+  </script>
   <script>
     // fancybox
     Fancybox.bind('[data-fancybox]', {

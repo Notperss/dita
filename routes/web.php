@@ -110,10 +110,11 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
 
     //Lending Archive
     Route::resource('lending-archive', LendingArchiveController::class);
-    Route::get('/detail-lending', [LendingArchiveController::class, 'show_file'])->name('show_file');
-    // Route::controller(LendingArchiveController::class)->group(function () {
-    //     Route::get('lending-archive', 'show_file')->name('show_file');
-    // });
+    // Route::get('/detail-lending', [LendingArchiveController::class, 'show_file'])->name('show_file');
+    Route::controller(LendingArchiveController::class)->group(function () {
+        Route::get('/detail-lending', 'show_file')->name('show_file');
+        Route::put('/approval', 'approval')->name('approval');
+    });
 
 
 

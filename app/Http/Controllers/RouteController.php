@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Route;
-use Illuminate\Support\Facades\Route as FacadesRoute;
-use Spatie\Permission\Models\Permission;
-use App\Http\Requests\StoreRouteRequest;
+use Illuminate\Http\Request;
 use App\Services\RouteService;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\StoreRouteRequest;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Route as FacadesRoute;
 
 
 class RouteController extends Controller
@@ -17,6 +18,9 @@ class RouteController extends Controller
      */
     public function index(Request $request)
     {
+        if (! Gate::allows('route_index')) {
+            abort(403);
+        }
         $routes = Route::query()
             ->when(! blank($request->search), function ($query) use ($request) {
                 return $query
@@ -37,6 +41,9 @@ class RouteController extends Controller
      */
     public function create()
     {
+        if (! Gate::allows('route_store')) {
+            abort(403);
+        }
         return view('pages.management-access.route.create');
     }
 
@@ -55,6 +62,9 @@ class RouteController extends Controller
      */
     public function show(string $id)
     {
+        if (! Gate::allows('route_index')) {
+            abort(403);
+        }
         return view('pages.management-access.route.show');
     }
 
@@ -63,6 +73,9 @@ class RouteController extends Controller
      */
     public function edit(string $id)
     {
+        if (! Gate::allows('route_update')) {
+            abort(403);
+        }
         return view('pages.management-access.route.edit');
     }
 

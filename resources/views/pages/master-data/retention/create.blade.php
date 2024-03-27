@@ -67,7 +67,7 @@
                           {{ $errors->first('sub_classification_id') }}</p>
                       @endif
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" hidden>
                       <label for="code">Kode Sub Series <code>*</code></label>
                       <input type="text" id="code" class="form-control" placeholder="Kode" name="code"
                         value="{{ old('code') }}" required readonly>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\TransactionArchive\Archive;
 use Spatie\PdfToText\Pdf;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -140,26 +141,27 @@ class ArchiveContainerController extends Controller
 
         // Validate the form data
         $request->validate([
-            'main_location' => 'required|string',
-            'sub_location' => 'required|string',
-            'detail_location' => 'required|string',
+            // 'main_location' => 'required|string',
+            // 'sub_location' => 'required|string',
+            // 'detail_location' => 'required|string',
             // 'description_location' => 'required|string',
-            'number_archive' => 'required|string',
+            // 'number_archive' => 'required|string',
             'main_classification_id' => 'required|string',
             'sub_classification_id' => 'required|string',
             // 'retention' => 'required|string',
             'document_type' => 'required|string',
             'archive_type' => 'required|string',
-            'amount' => 'required|string',
+            // 'amount' => 'required|string',
             'archive_in' => 'required|date',
             // 'expiration_date' => 'required',
             'number_app' => 'required|string|unique:archive_containers',
-            'number_catalog' => 'required|string',
-            'number_document' => 'required|string',
+            // 'number_catalog' => 'required|string',
+            // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
             'subseries' => 'required|string',
-            'file' => 'required|file|mimes:pdf|max:290',
+            // 'file' => 'required|file|mimes:pdf|max:290',
+            'file' => 'file|mimes:pdf|max:290',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
@@ -171,97 +173,61 @@ class ArchiveContainerController extends Controller
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
         ]);
         // dd($request->all());
-        try {
-            // Retrieve form data
-            $data = $request->all();
 
-            // Process file upload
-            if ($request->hasFile('file')) {
-                $files = $request->file('file');
+        // Retrieve form data
+        $data = $request->all();
 
+        // Process file upload only if a file is uploaded
+        if ($request->hasFile('file')) {
+            $files = $request->file('file');
 
-                if ($files->getClientOriginalExtension() == 'pdf') {
-                    // Specify the path to pdftotext executable
-                    $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+            if ($files->getClientOriginalExtension() == 'pdf') {
+                // Specify the path to pdftotext executable
+                // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                    // Use spatie/pdf-to-text to extract text from the PDF
-                    $text = (new Pdf($pdftotextPath))
-                        ->setPdf($files->getRealPath())
-                        ->text();
+                // // Use spatie/pdf-to-text to extract text from the PDF
+                // $text = (new Pdf($pdftotextPath))
+                //     ->setPdf($files->getRealPath())
+                //     ->text();
+                $text = (new Pdf())
+                    ->setPdf($files->getRealPath())
+                    ->text();
 
-                    // $text = (new Pdf())
-                    //     ->setPdf($files->getRealPath())
-                    //     ->text();
+                // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
+                $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
-                    // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-                    // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
-                    $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+                // Get the first 100 characters from the filtered text
+                $first200Chars = substr($filteredText, 0, 180);
 
-                    // Get the first 100 characters from the filtered text
-                    $first200Chars = substr($filteredText, 0, 180);
+                // Store the filtered text in the 'content_file' column
+                $data['content_file'] = $filteredText;
+            }
 
-                    // Store the filtered text in the 'content_file' column
-                    $data['content_file'] = $filteredText;
-                }
+            $file = $files->getClientOriginalName();
+            $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+            $extension = $files->getClientOriginalExtension();
+            $fullname = $basename . '.' . $extension;
 
-                $file = $files->getClientOriginalName();
-                $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
-                $extension = $files->getClientOriginalExtension();
-                $fullname = $basename . '.' . $extension;
+            // Store the file in the specified directory
+            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
 
-                // Store the file in the specified directory
-                $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
-
-                if ($data['file'] === false) {
-                    // Handle the error
-                    alert()->error('Error', 'Failed to upload file');
-                    return redirect()->back()->withInput();
-                }
-            } else {
-                // Handle the case where no file was uploaded
-                // You may want to return an error message or redirect back to the form
-                alert()->error('Error', 'No file uploaded. Please upload a file.');
+            if ($data['file'] === false) {
+                // Handle the error
+                alert()->error('Error', 'Failed to upload file');
                 return redirect()->back()->withInput();
             }
-            // dd($data);
-            // ArchiveContainer::create($data);
-
-            // Start a database transaction
-            DB::beginTransaction();
-
-            try {
-                $company_id = Auth::user()->company_id;
-
-                // Merge the company_id into the request data
-                $requestData = array_merge($data, ['company_id' => $company_id]);
-                // Store to database
-                ArchiveContainer::create($requestData);
-
-                // Commit the transaction if everything is successful
-                DB::commit();
-
-                alert()->success('Success', 'Data successfully added');
-                return redirect()->back()->withInput();
-                // return redirect()->route('backsite.archive-container.index');
-            } catch (\Exception $e) {
-                // Rollback the transaction in case of an error
-                DB::rollBack();
-
-                // Log the error
-                Log::error("Database transaction error: " . $e->getMessage());
-
-                // Provide feedback to the user or redirect with an error message
-                alert()->error('Error', 'Failed to add data. Please try again.');
-                return redirect()->back()->withInput();
-            }
-        } catch (\Exception $e) {
-            // Log the error
-            Log::error("File upload or text extraction error: " . $e->getMessage());
-
-            // Provide feedback to the user or redirect with an error message
-            alert()->error('Error', 'Failed to process the file. Please try again.');
-            return redirect()->back()->withInput();
         }
+        $company_id = Auth::user()->company_id;
+
+        // Merge the company_id into the request data
+        $requestData = array_merge($data, ['company_id' => $company_id]);
+        // Store to database
+        ArchiveContainer::create($requestData);
+
+        alert()->success('Success', 'Data successfully added');
+        return redirect()->back()->withInput();
+
+
 
         // try {
         //     // Retrieve form data
@@ -270,45 +236,71 @@ class ArchiveContainerController extends Controller
         //     // Process file upload
         //     if ($request->hasFile('file')) {
         //         $files = $request->file('file');
-        //         $file = $files->getClientOriginalName();
-        //         $basename = pathinfo($file, PATHINFO_FILENAME) . '-' . Str::random(5);
-        //         $extension = $files->getClientOriginalExtension();
-        //         $fullname = $basename . '.' . $extension;
 
-        //         // Check if the uploaded file is a PDF
+
         //         if ($files->getClientOriginalExtension() == 'pdf') {
-        //             // Extract text from the PDF
-        //             $text = (new Pdf())
+        //             // Specify the path to pdftotext executable
+        //             $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+
+        //             // Use spatie/pdf-to-text to extract text from the PDF
+        //             $text = (new Pdf($pdftotextPath))
         //                 ->setPdf($files->getRealPath())
         //                 ->text();
 
-        //             // Filter out non-alphanumeric characters from the extracted text
-        //             $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+        //             // $text = (new Pdf())
+        //             //     ->setPdf($files->getRealPath())
+        //             //     ->text();
+
+        //             // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
+        //             // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+        //             $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+
+        //             // Get the first 100 characters from the filtered text
+        //             $first200Chars = substr($filteredText, 0, 180);
 
         //             // Store the filtered text in the 'content_file' column
         //             $data['content_file'] = $filteredText;
         //         }
 
+        //         $file = $files->getClientOriginalName();
+        //         $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+        //         $extension = $files->getClientOriginalExtension();
+        //         $fullname = $basename . '.' . $extension;
+
         //         // Store the file in the specified directory
         //         $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+
+        //         if ($data['file'] === false) {
+        //             // Handle the error
+        //             alert()->error('Error', 'Failed to upload file');
+        //             return redirect()->back()->withInput();
+        //         }
         //     } else {
         //         // Handle the case where no file was uploaded
+        //         // You may want to return an error message or redirect back to the form
         //         alert()->error('Error', 'No file uploaded. Please upload a file.');
         //         return redirect()->back()->withInput();
         //     }
+        //     // dd($data);
+        //     // ArchiveContainer::create($data);
 
         //     // Start a database transaction
         //     DB::beginTransaction();
 
         //     try {
-        //         // Store data to the database
-        //         ArchiveContainer::create($data);
+        //         $company_id = Auth::user()->company_id;
+
+        //         // Merge the company_id into the request data
+        //         $requestData = array_merge($data, ['company_id' => $company_id]);
+        //         // Store to database
+        //         ArchiveContainer::create($requestData);
 
         //         // Commit the transaction if everything is successful
         //         DB::commit();
 
         //         alert()->success('Success', 'Data successfully added');
         //         return redirect()->back()->withInput();
+        //         // return redirect()->route('backsite.archive-container.index');
         //     } catch (\Exception $e) {
         //         // Rollback the transaction in case of an error
         //         DB::rollBack();
@@ -391,26 +383,31 @@ class ArchiveContainerController extends Controller
         }
 
         $request->validate([
-            'main_location' => 'required|string',
-            'sub_location' => 'required|string',
-            'detail_location' => 'required|string',
+            // 'main_location' => 'required|string',
+            // 'sub_location' => 'required|string',
+            // 'detail_location' => 'required|string',
             // 'description_location' => 'required|string',
-            'number_archive' => 'required|string',
+            // 'number_archive' => 'required|string',
             'main_classification_id' => 'required|string',
             'sub_classification_id' => 'required|string',
             // 'retention' => 'required|string',
             'document_type' => 'required|string',
             'archive_type' => 'required|string',
-            'amount' => 'required|string',
+            // 'amount' => 'required|string',
             'archive_in' => 'required|date',
             // 'expiration_date' => 'required',
-            'number_app' => 'required|string',
-            'number_catalog' => 'required|string',
-            'number_document' => 'required|string',
+            'number_app' => [
+                'required',
+                'string',
+                Rule::unique('archive_containers')->ignore($archiveContainer->id),
+            ],
+            // 'number_catalog' => 'required|string',
+            // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
             'subseries' => 'required|string',
-            'file' => 'file|mimes:pdf|max:100',
+            // 'file' => 'required|file|mimes:pdf|max:290',
+            'file' => 'file|mimes:pdf|max:290',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
@@ -421,100 +418,158 @@ class ArchiveContainerController extends Controller
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
         ]);
         // dd($request->all());
-        try {
-            // Retrieve form data
-            $data = $request->all();
 
-            $path_file = $archiveContainer['file'];
+        // Retrieve form data
+        $data = $request->all();
 
-            // Process file upload
-            if ($request->hasFile('file')) {
-                $files = $request->file('file');
+        $path_file = $archiveContainer['file'];
+        // Process file upload only if a file is uploaded
+        if ($request->hasFile('file')) {
+            $files = $request->file('file');
 
-                if ($files->getClientOriginalExtension() == 'pdf') {
-                    // Specify the path to pdftotext executable
-                    // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+            if ($files->getClientOriginalExtension() == 'pdf') {
+                // Specify the path to pdftotext executable
+                // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                    // // Use spatie/pdf-to-text to extract text from the PDF
-                    // $text = (new Pdf($pdftotextPath))
-                    //     ->setPdf($files->getRealPath())
-                    //     ->text();
-                    $text = (new Pdf())
-                        ->setPdf($files->getRealPath())
-                        ->text();
-                    // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-                    // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
-                    $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+                // // Use spatie/pdf-to-text to extract text from the PDF
+                // $text = (new Pdf($pdftotextPath))
+                //     ->setPdf($files->getRealPath())
+                //     ->text();
+                $text = (new Pdf())
+                    ->setPdf($files->getRealPath())
+                    ->text();
 
-                    // Get the first 100 characters from the filtered text
-                    $first200Chars = substr($filteredText, 0, 180);
+                // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
+                $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
-                    // Store the filtered text in the 'content_file' column
-                    $data['content_file'] = $filteredText;
-                }
+                // Get the first 100 characters from the filtered text
+                $first200Chars = substr($filteredText, 0, 180);
 
-                $file = $files->getClientOriginalName();
-                $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
-                $extension = $files->getClientOriginalExtension();
-                $fullname = $basename . '.' . $extension;
-
-                // Store the file in the specified directory
-                $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
-
-                if ($path_file != null || $path_file != '') {
-                    Storage::delete($path_file);
-                }
-
-                if ($data['file'] === false) {
-                    // Handle the error
-                    alert()->error('Error', 'Failed to upload file');
-                    return redirect()->back()->withInput();
-                }
-            } else {
-                $data['file'] = $path_file;
+                // Store the filtered text in the 'content_file' column
+                $data['content_file'] = $filteredText;
             }
-            // else {
-            //     // Handle the case where no file was uploaded
-            //     // You may want to return an error message or redirect back to the form
-            //     alert()->error('Error', 'No file uploaded. Please upload a file.');
-            //     return redirect()->back()->withInput();
-            // }
 
-            // Start a database transaction
-            DB::beginTransaction();
+            $file = $files->getClientOriginalName();
+            $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+            $extension = $files->getClientOriginalExtension();
+            $fullname = $basename . '.' . $extension;
 
-            try {
-                // Store to database
-                // get all request from frontsite
+            // Store the file in the specified directory
+            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
 
-                $archiveContainer->update($data);
-
-
-                // Commit the transaction if everything is successful
-                DB::commit();
-
-                alert()->success('Success', 'Data successfully Updated');
-                // return redirect()->back()->withInput();
-                return redirect()->route('backsite.archive-container.index');
-            } catch (\Exception $e) {
-                // Rollback the transaction in case of an error
-                DB::rollBack();
-
-                // Log the error
-                Log::error("Database transaction error: " . $e->getMessage());
-
-                // Provide feedback to the user or redirect with an error message
-                alert()->error('Error', 'Failed to add data. Please try again.');
+            if ($data['file'] === false) {
+                // Handle the error
+                alert()->error('Error', 'Failed to upload file');
                 return redirect()->back()->withInput();
             }
-        } catch (\Exception $e) {
-            // Log the error
-            Log::error("File upload or text extraction error: " . $e->getMessage());
 
-            // Provide feedback to the user or redirect with an error message
-            alert()->error('Error', 'Failed to process the file. Please try again.');
-            return redirect()->back()->withInput();
+            // hapus file
+            if ($path_file != null || $path_file != '') {
+                Storage::delete($path_file);
+            }
         }
+
+        $archiveContainer->update($data);
+
+        alert()->success('Success', 'Data successfully added');
+        return redirect()->back()->withInput();
+
+
+
+        // try {
+        //     // Retrieve form data
+        //     $data = $request->all();
+
+        //     $path_file = $archiveContainer['file'];
+
+        //     // Process file upload
+        //     if ($request->hasFile('file')) {
+        //         $files = $request->file('file');
+
+        //         if ($files->getClientOriginalExtension() == 'pdf') {
+        //             // Specify the path to pdftotext executable
+        //             // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+
+        //             // // Use spatie/pdf-to-text to extract text from the PDF
+        //             // $text = (new Pdf($pdftotextPath))
+        //             //     ->setPdf($files->getRealPath())
+        //             //     ->text();
+        //             $text = (new Pdf())
+        //                 ->setPdf($files->getRealPath())
+        //                 ->text();
+        //             // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
+        //             // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
+        //             $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+
+        //             // Get the first 100 characters from the filtered text
+        //             $first200Chars = substr($filteredText, 0, 180);
+
+        //             // Store the filtered text in the 'content_file' column
+        //             $data['content_file'] = $filteredText;
+        //         }
+
+        //         $file = $files->getClientOriginalName();
+        //         $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+        //         $extension = $files->getClientOriginalExtension();
+        //         $fullname = $basename . '.' . $extension;
+
+        //         // Store the file in the specified directory
+        //         $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+
+        //         if ($path_file != null || $path_file != '') {
+        //             Storage::delete($path_file);
+        //         }
+
+        //         if ($data['file'] === false) {
+        //             // Handle the error
+        //             alert()->error('Error', 'Failed to upload file');
+        //             return redirect()->back()->withInput();
+        //         }
+        //     } else {
+        //         $data['file'] = $path_file;
+        //     }
+        //     // else {
+        //     //     // Handle the case where no file was uploaded
+        //     //     // You may want to return an error message or redirect back to the form
+        //     //     alert()->error('Error', 'No file uploaded. Please upload a file.');
+        //     //     return redirect()->back()->withInput();
+        //     // }
+
+        //     // Start a database transaction
+        //     DB::beginTransaction();
+
+        //     try {
+        //         // Store to database
+        //         // get all request from frontsite
+
+        //         $archiveContainer->update($data);
+
+
+        //         // Commit the transaction if everything is successful
+        //         DB::commit();
+
+        //         alert()->success('Success', 'Data successfully Updated');
+        //         // return redirect()->back()->withInput();
+        //         return redirect()->route('backsite.archive-container.index');
+        //     } catch (\Exception $e) {
+        //         // Rollback the transaction in case of an error
+        //         DB::rollBack();
+
+        //         // Log the error
+        //         Log::error("Database transaction error: " . $e->getMessage());
+
+        //         // Provide feedback to the user or redirect with an error message
+        //         alert()->error('Error', 'Failed to add data. Please try again.');
+        //         return redirect()->back()->withInput();
+        //     }
+        // } catch (\Exception $e) {
+        //     // Log the error
+        //     Log::error("File upload or text extraction error: " . $e->getMessage());
+
+        //     // Provide feedback to the user or redirect with an error message
+        //     alert()->error('Error', 'Failed to process the file. Please try again.');
+        //     return redirect()->back()->withInput();
+        // }
     }
 
     /**

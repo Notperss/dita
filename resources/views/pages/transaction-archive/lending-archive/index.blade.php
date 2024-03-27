@@ -94,7 +94,7 @@
           Pinjam Arsip</a>
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">List Data Arsip Dalam Proses Persetujuan</h4>
+            <h4 class="card-title">List Data Peminjaman Arsip</h4>
           </div>
           <div class="card-content">
             <div class="card-body">
@@ -104,10 +104,9 @@
                     <tr>
                       <th>Nomor Peminjaman</th>
                       <th>Tahun</th>
-                      <th>Bentuk Dokumen</th>
                       <th>Tgl Pinjam</th>
                       <th>Tgl Dikembalikan</th>
-                      <th>Status</th>
+                      <th>Keterangan</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -116,23 +115,52 @@
                       <tr>
                         <td class="text-bold-500">{{ $lending->lending_number }}</td>
                         <td>{{ $lending->division }}</td>
+                        <td>{{ $lending->start_date ?? 'N/A' }}</td>
+                        <td>{{ $lending->end_date ?? 'N/A' }}</td>
                         <td class="text-bold-500">{{ $lending->description }}</td>
-                        <td>Remote</td>
-                        <td>Austin,Taxes</td>
-                        <td>
+                        {{-- <td>
                           @if ($lending->approval === 1)
-                            <span class="badge bg-light-success">Disetujui</span>
+                            <span class="badge bg-light-success">Selesai</span>
                           @elseif ($lending->approval === 0)
-                            <span class="badge bg-light-danger">Ditolak</span>
+                            <span class="badge bg-light-danger">Proses</span>
                           @else
                             <span class="badge bg-light-warning">Proses</span>
                           @endif
-                        </td>
-                        <td> <a href="#detailLending"
+                        </td> --}}
+                        <td>
+                          <a href="" class="btn btn-info">Close</a>
+                          {{-- <a href="#detailLending"
                             data-remote="{{ route('backsite.lending-archive.show', $lending->id) }}" data-toggle="modal"
-                            data-target="#detailLending" data-title="Detail Peminjaman" class="dropdown-item">
-                            Show
-                          </a></td>
+                            data-target="#detailLending" data-title="Detail Peminjaman" class="btn btn-success">
+                            a
+                          </a> --}}
+
+                          <div class="btn-group mb-1">
+                            <div class="dropdown">
+                              <button class="btn btn-primary btn dropdown-toggle me-1" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                </i>
+                              </button>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a href="#detailLending"
+                                  data-remote="{{ route('backsite.lending-archive.show', $lending->id) }}"
+                                  data-toggle="modal" data-target="#detailLending" data-title="Detail Peminjaman"
+                                  class="dropdown-item">
+                                  <i class="bi bi-eye"></i> Show
+                                </a>
+                                <a class="dropdown-item" onclick="showSweetAlert({{ $lending->id }})"><i
+                                    class="bi bi-x-lg"></i> Delete</a>
+                              </div>
+                            </div>
+                          </div>
+                          <form id="deleteForm_{{ $lending->id }}"
+                            action="{{ route('backsite.lending-archive.destroy', $lending->id) }}" method="POST">
+                            @method('DELETE')
+                            @csrf
+                          </form>
+
+                        </td>
                       </tr>
                     @endforeach
                   </tbody>
@@ -148,7 +176,7 @@
 
   {{-- Modal --}}
   <div class="modal fade" id="mymodal" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Create Data</h5>
@@ -158,17 +186,23 @@
         </div>
         <div class="modal-body">
           <i class="fa fa-spinner fa spin"></i>
+          <p>Isi input <code>Required (*)</code>, Sebelum menekan tombol submit. </p>
           <form class="form" method="POST" action="{{ route('backsite.lending-archive.store') }}"
             enctype="multipart/form-data" id=myForm>
             @csrf
             <div class="row">
               <div class="col-md-6 col-12 mx-auto">
                 <div class="form-group">
-                  <label for="lending_number">Nomor Peminjaman</label>
+                  <label for="lending_number">Nomor Peminjaman <code>*</code></label>
                   <input type="text" id="lending_number" class="form-control" name="lending_number">
                 </div>
+                <div class="form-group" hidden>
+                  <label for="start_date">Tanggal <code>*</code></label>
+                  <input type="text" id="start_date" class="form-control" name="start_date"
+                    value="{{ now()->toDateString() }}">
+                </div>
                 <div class="form-group">
-                  <label for="division">Divisi</label>
+                  <label for="division">Divisi <code>*</code></label>
                   <select type="text" id="division" class="form-control choices" name="division">
                     <option value="" selected disabled>Choose</option>
                     @foreach ($divisions as $division)
@@ -183,28 +217,28 @@
               </div>
               <div class="col-12 d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>
-                <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                <button type="button" class="btn btn-light-secondary me-1 mb-1" data-dismiss="modal">Cancel</button>
               </div>
-            </div>
-            {{-- APlikasi --}}
-            <div class="form-group row">
-              <div class="col-md-4">
-                <button type="button" id="add-archive" class="btn btn-success addRow mb-1">Cari Arsip</button>
+              {{-- APlikasi --}}
+              <div class="form-group row">
+                <div class="col-md-4">
+                  <button type="button" id="add-archive" class="btn btn-success addRow mb-1">Cari Arsip</button>
+                </div>
+                <table id="table-archive" class=" table col-md-12">
+                  <thead>
+                    <tr>
+                      <th class="text-center">No</th>
+                      <th class="text-center" style="width: 25%">Nomor Arsip/Nomor Dokumen <code>*</code></th>
+                      <th class="text-center">Perihal</th>
+                      <th class="text-center">Divisi</th>
+                      <th class="text-center">Tipe Dokumen <code>*</code></th>
+                      <th style="text-align:center; width:10px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
               </div>
-              <table id="table-archive" class=" table col-md-12">
-                <thead>
-                  <tr>
-                    <th class="text-center">No</th>
-                    <th class="text-center" style="width: 35%">Nomor Arsip/Nomor Dokumen</th>
-                    <th class="text-center">Perihal</th>
-                    <th class="text-center">Divisi</th>
-                    <th style="text-align:center; width:10px;">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-            </div>
           </form>
         </div>
       </div>
@@ -213,8 +247,26 @@
 
   <div class="viewmodal" style="display: none;"></div>
 
+
 @endsection
 @push('after-script')
+  <script>
+    function showSweetAlert(lendingId) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // If the user clicks "Yes, delete it!", submit the corresponding form
+          document.getElementById('deleteForm_' + lendingId).submit();
+        }
+      });
+    }
+  </script>
+
   <script>
     $(document).ready(function() {
       // Array to store selected IDs
@@ -236,7 +288,7 @@
         selectedIds.push(selectedId);
 
         // Disable the option with the selected ID in all other select elements
-        $('select[name^="inputs["').not(this).find('option').prop('disabled', function() {
+        $('select[name^="inputs["]').not(this).find('option').prop('disabled', function() {
           return $(this).val() === selectedId;
         });
       });
@@ -257,9 +309,15 @@
             @endforeach
           </select>
         </td>
-        <td><input type="text" class="form-control version" id="version_${a}" readonly></td>
-        <td><input type="text" class="form-control product" id="product_${a}" readonly></td>
-        <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
+        <td><textarea type="text" class="form-control version" id="version_${a}" readonly></textarea></td>
+        <td><textarea type="text" class="form-control product" id="product_${a}" readonly></textarea></td>
+        <td><select type="text" class="form-control" name="inputs[${a}][type_document]" readonly>
+          <option value="" selected disabled>Choose</option>
+          <option value="FISIK">Fisik</option>
+          <option value="DIGITAL">Digital</option>
+          </select></td>
+        <td>
+          <button type="button" class="btn btn-danger remove-row">Remove</button></td>
       </tr>
     `);
         // Initialize Select2 for the newly added select element
@@ -277,17 +335,15 @@
         });
       });
 
-      $(document).on('change', 'select[name^="inputs["]', function() {
-        // Get the values from the selected option
+      $(document).on('change', 'select[name^="inputs["]:not([name$="[type_document]"])', function() {
         var selectedOption = $(this).find(':selected');
         var versionValue = selectedOption.data('value') || '';
         var productValue = selectedOption.data('value2') || '';
-        var appValue = selectedOption.data('app') || '';
 
-        // Update corresponding input fields based on the selected option
         $(this).closest('tr').find('.version').val(versionValue);
         $(this).closest('tr').find('.product').val(productValue);
       });
+
 
 
       $(document).on('click', '.remove-row', function() {
@@ -312,6 +368,7 @@
     });
   </script>
 
+  {{-- modal --}}
   <script>
     jQuery(document).ready(function($) {
       $('#detailLending').on('show.bs.modal', function(e) {
@@ -324,7 +381,15 @@
     });
   </script>
 
-  <div class="modal fade" id="detailLending" tabindex="-1" role="dialog">
+  {{-- Fancybox --}}
+  <script>
+    Fancybox.bind('[data-fancy]', {
+      infinite: false,
+      zIndex: 2100
+    });
+  </script>
+
+  <div class="modal fade " data-backdrop="false" id="detailLending" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -342,6 +407,16 @@
 @endpush
 @push('after-style')
   <style>
+    #detailLending {
+      z-index: 1001;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    /* .modal-backdrop {
+                                                                                                z-index: 991;
+                                                                                                display: none;
+                                                                                              } */
+
     /* Dark theme for Select2 with hover effect */
     html[data-bs-theme="dark"] .select2-container--classic .select2-selection--single,
     html[data-bs-theme="dark"] .select2-container--classic .select2-selection--multiple {

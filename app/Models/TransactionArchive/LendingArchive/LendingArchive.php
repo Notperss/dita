@@ -12,10 +12,13 @@ class LendingArchive extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'lending_id',
         'archive_container_id',
         'status',
         'approval',
+        'period',
+        'type_document',
     ];
 
     public function lending()

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\MenuGroup;
+use Illuminate\Http\Request;
+use App\Services\MenuGroupService;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\StoreMenuGroupRequest;
-use App\Services\MenuGroupService;
 
 class MenuGroupController extends Controller
 {
@@ -15,6 +16,10 @@ class MenuGroupController extends Controller
      */
     public function index(Request $request)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_index')) {
+            abort(403);
+        }
         $menuGroups = MenuGroup::query()
             ->when(! blank($request->search), function ($query) use ($request) {
                 return $query
@@ -33,6 +38,10 @@ class MenuGroupController extends Controller
      */
     public function create()
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_index')) {
+            abort(403);
+        }
         return view('pages.management-access.menu.create');
     }
 
@@ -51,6 +60,10 @@ class MenuGroupController extends Controller
      */
     public function show(string $id)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_index')) {
+            abort(403);
+        }
         return view('pages.management-access.menu.show');
     }
 
@@ -59,6 +72,10 @@ class MenuGroupController extends Controller
      */
     public function edit(string $id)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_index')) {
+            abort(403);
+        }
         return view('pages.management-access.menu.edit');
     }
 

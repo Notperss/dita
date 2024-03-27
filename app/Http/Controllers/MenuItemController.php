@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\Route;
-use App\Models\MenuGroup;
 use App\Models\MenuItem;
-use App\Http\Requests\StoreMenuitemRequest;
+use App\Models\MenuGroup;
+use Illuminate\Http\Request;
 use App\Services\MenuItemService;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Permission;
+use App\Http\Requests\StoreMenuitemRequest;
 
 
 class MenuItemController extends Controller
@@ -18,6 +19,10 @@ class MenuItemController extends Controller
      */
     public function index(Request $request, MenuGroup $menu)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_item_index')) {
+            abort(403);
+        }
         $menuItems = $menu->items()
             ->when(! blank($request->search), function ($query) use ($request) {
                 return $query
@@ -37,6 +42,10 @@ class MenuItemController extends Controller
      */
     public function create()
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_item_index')) {
+            abort(403);
+        }
         return view('pages.management-access.menu.item.create');
     }
 
@@ -55,6 +64,10 @@ class MenuItemController extends Controller
      */
     public function show(string $id)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_item_index')) {
+            abort(403);
+        }
         return view('pages.management-access.menu.item.show');
     }
 
@@ -63,6 +76,10 @@ class MenuItemController extends Controller
      */
     public function edit(string $id)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('menu_item_index')) {
+            abort(403);
+        }
         return view('pages.management-access.menu.item.edit');
     }
 

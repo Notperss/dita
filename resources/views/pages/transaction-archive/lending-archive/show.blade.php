@@ -22,16 +22,16 @@
     </td>
   </tr>
   <tr>
-    <th>Catatan</th>
+    <th>Keterangan</th>
     <td>{!! isset($lendings->description) ? $lendings->description : 'N/A' !!}</td>
   </tr>
   <tr>
     <th>Status</th>
     <td>
       @if ($lendings->approval === 1)
-        <span class="badge bg-light-success">Disetujui</span>
+        <span class="badge bg-light-success">Selesai</span>
       @elseif ($lendings->approval === 0)
-        <span class="badge bg-light-danger">Ditolak</span>
+        <span class="badge bg-light-danger">Proses</span>
       @else
         <span class="badge bg-light-warning">Proses</span>
       @endif

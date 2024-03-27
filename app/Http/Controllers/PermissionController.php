@@ -15,6 +15,11 @@ class PermissionController extends Controller
      */
     public function index(Request $request)
     {
+        // If user is not authorized, abort
+        if (! Gate::allows('permission_index')) {
+            abort(403);
+        }
+
         $permissions = Permission::query()
             ->when(! blank($request->search), function ($query) use ($request) {
                 return $query
@@ -32,10 +37,6 @@ class PermissionController extends Controller
             abort(403, 'No roles found.');
         }
 
-        // If user is not authorized, abort
-        if (! Gate::allows('permission_index')) {
-            abort(403);
-        }
         // dd($$permissions->links());
 
         return view('pages.management-access.permission.index', compact('permissions', 'roles'));
