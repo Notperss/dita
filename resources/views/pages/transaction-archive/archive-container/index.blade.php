@@ -218,8 +218,8 @@
       });
     });
   </script>
-  <div class="modal fade" id="mymodal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
+  <div class="modal fade" data-backdrop="false" id="mymodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title"></h5>
@@ -230,7 +230,20 @@
         <div class="modal-body">
           <i class="fa fa-spinner fa spin"></i>
         </div>
+        <div style="text-align: right;">
+          <button class="btn btn-warning mb-2 mx-2" style="width: 10%" type="button" data-dismiss="modal"
+            aria-label="Close">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <style>
+    #mymodal {
+      z-index: 1001;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  </style>
 @endpush

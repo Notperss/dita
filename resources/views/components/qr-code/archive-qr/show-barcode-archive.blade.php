@@ -1,5 +1,5 @@
-<div class="container" id='DivIdToPrint'>
-  <div class="col-md-12">
+<div class="container justify-content-center" id='DivIdToPrint'>
+  <div class="col-md-7 mx-auto">
     <style>
       .table-no-gap {
         border-collapse: collapse;
@@ -17,22 +17,22 @@
         <td>
           <div class="row">Nomor Aplikasi</div>
           <div class="row mb-3"><strong>
-              {{ isset($archiveContainer->number_app) ? $archiveContainer->number_app : '' }}</th>
+              {{ isset($archiveContainer->number_app) ? $archiveContainer->number_app : '-' }}</th>
             </strong>
           </div>
           <div class="row">Nomor Katalog</div>
           <div class="row mb-3"><strong>
-              {{ isset($archiveContainer->number_catalog) ? $archiveContainer->number_catalog : '' }}</th>
+              {{ isset($archiveContainer->number_catalog) ? $archiveContainer->number_catalog : '-' }}</th>
             </strong>
           </div>
           <div class="row">Nomor Dokumen</div>
           <div class="row mb-3"><strong>
-              {{ isset($archiveContainer->number_document) ? $archiveContainer->number_document : '' }}</th>
+              {{ isset($archiveContainer->number_document) ? $archiveContainer->number_document : '-' }}</th>
             </strong>
           </div>
           <div class="row">Nomor Arsip</div>
           <div class="row mb-3"><strong>
-              {{ isset($archiveContainer->number_archive) ? $archiveContainer->number_archive : '' }}</th>
+              {{ isset($archiveContainer->number_archive) ? $archiveContainer->number_archive : '-' }}</th>
             </strong>
           </div>
         </td>

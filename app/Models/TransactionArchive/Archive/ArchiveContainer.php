@@ -76,4 +76,5 @@ class ArchiveContainer extends Model
         // 2 parameter (path model, field foreign key)
         return $this->hasMany(LendingArchive::class, 'lending_id', 'id');
     }
+
 }

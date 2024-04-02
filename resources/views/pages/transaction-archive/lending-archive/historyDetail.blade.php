@@ -1,36 +1,36 @@
 <table class="table table-bordered">
-  <input type="hidden" name="id" id="id" value="{{ $lendings->id }}">
+  <input type="hidden" name="id" id="id" value="{{ $lendingArchives->lending_id }}">
   <tr>
     <th>Nomor Peminjaman</th>
-    <td>{{ isset($lendings->lending_number) ? $lendings->lending_number : 'N/A' }}
+    <td>{{ isset($lendingArchives->lending->lending_number) ? $lendingArchives->lending->lending_number : 'N/A' }}
     </td>
   </tr>
   <tr>
     <th>Divisi</th>
-    <td>{{ isset($lendings->divisi) ? $lendings->divisi : 'N/A' }}</td>
+    <td>{{ isset($lendingArchives->lending->divisi) ? $lendingArchives->lending->divisi : 'N/A' }}</td>
   </tr>
   <tr>
     <th>Tanggal Pinjam</th>
     <td>
-      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
+      {{ isset($lendingArchives->lending->start_date) ? Carbon\Carbon::parse($lendingArchives->lending->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
     </td>
   </tr>
   <tr>
     <th>Tanggal Dikembalikan</th>
     <td>
-      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
+      {{ isset($lendingArchives->lending->start_date) ? Carbon\Carbon::parse($lendingArchives->lending->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
     </td>
   </tr>
   <tr>
     <th>Keterangan</th>
-    <td>{!! isset($lendings->description) ? $lendings->description : 'N/A' !!}</td>
+    <td>{!! isset($lendingArchives->lending->description) ? $lendingArchives->lending->description : 'N/A' !!}</td>
   </tr>
   <tr>
     <th>Status</th>
     <td>
-      @if ($lendings->status === 1)
+      @if ($lendingArchives->lending->status === 1)
         <span class="badge bg-light-success">Selesai</span>
-      @elseif ($lendings->approval === 0)
+      @elseif ($lendingArchives->lending->status === 0)
         <span class="badge bg-light-danger">Proses</span>
       @else
         <span class="badge bg-light-warning">Proses</span>

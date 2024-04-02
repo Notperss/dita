@@ -58,7 +58,7 @@ class ArchiveContainerController extends Controller
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                        <a href="#mymodal" data-remote="' . route('backsite.archive-container.show', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
-                         <i class="bi bi-eye"></i> Show
+                         <i class="bi bi-eye"></i> Detail
                     </a>
                         <a class="dropdown-item"
                           href="' . route('backsite.archive-container.edit', $item->id) . '"><i class="bi bi-pencil"></i> Edit</a>
@@ -171,11 +171,23 @@ class ArchiveContainerController extends Controller
             'max' => 'Nama :attribute terlalu panjang (maks 100 karakter).',
             'mimes' => 'File :attribute harus berformat PDF.',
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
+            'unique' => 'Data :attribute sudah ada.',
         ]);
         // dd($request->all());
 
         // Retrieve form data
         $data = $request->all();
+
+        // Assuming you have a 'division_id' field in your data
+        if (isset($data['division_id'])) {
+            // Retrieve data related to the division
+            $divisionData = Division::findOrFail($data['division_id'])->code;
+            // Here, 'code' is the attribute you want to retrieve from the Division model
+
+            // Now, you can use $divisionData as needed
+            // For example, you can attach it to the $data array
+            $data['division_code'] = $divisionData;
+        }
 
         // Process file upload only if a file is uploaded
         if ($request->hasFile('file')) {
@@ -209,7 +221,7 @@ class ArchiveContainerController extends Controller
             $fullname = $basename . '.' . $extension;
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname);
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -455,7 +467,7 @@ class ArchiveContainerController extends Controller
             $fullname = $basename . '.' . $extension;
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
+            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname);
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -581,6 +593,14 @@ class ArchiveContainerController extends Controller
         // $decrypt_id = decrypt($id);
         $archiveContainer = ArchiveContainer::find($id);
         // dd($archiveContainer);
+
+        // cari old photo
+        $path_file = $archiveContainer['file'];
+
+        // hapus file
+        if ($path_file != null || $path_file != '') {
+            Storage::delete($path_file);
+        }
         // hapus location
         $archiveContainer->forceDelete();
 

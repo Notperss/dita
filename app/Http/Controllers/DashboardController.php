@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -11,6 +12,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        if (auth()->check() && auth()->user()->hasRole('Peminjam')) {
+            // If the user has the role "Peminjam", redirect to the lending page
+            return redirect()->route('backsite.lending-archive.index');
+        }
         return view('pages.dashboard.index');
     }
 
