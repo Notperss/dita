@@ -47,7 +47,7 @@
 </div>
 <a href="{{ route('qr-archive', $archiveContainer->id) }}">.</a>
 <div class="row justify-content-center mt-1">
-  <button class="btn btn-info text-center" value='Print' onclick='printDiv();'>Print</button>
+  <button class="btn btn-info text-center " style="width: 20%" value='Print' onclick='printDiv();'>Print</button>
 </div>
 <script>
   function printDiv() {

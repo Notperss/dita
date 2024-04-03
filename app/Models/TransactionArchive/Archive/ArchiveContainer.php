@@ -48,6 +48,7 @@ class ArchiveContainer extends Model
         'year',
         'file',
         'content_file',
+        'status',
     ];
 
     public function company()
@@ -74,7 +75,7 @@ class ArchiveContainer extends Model
     public function lendingArchive()
     {
         // 2 parameter (path model, field foreign key)
-        return $this->hasMany(LendingArchive::class, 'lending_id', 'id');
+        return $this->hasMany(LendingArchive::class, 'archive_container_id', 'id');
     }
 
 }

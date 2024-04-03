@@ -38,9 +38,9 @@
             <tr>
               <th class="text-center">#</th>
               <th class="text-center">No. Container</th>
+              <th class="text-center">Nomor Dokumen</th>
+              <th class="text-center">Perihal</th>
               <th class="text-center">Divisi</th>
-              <th class="text-center">Lokasi Utama</th>
-              <th class="text-center">Sub Lokasi</th>
               <th class="text-center">Detail Lokasi</th>
               {{-- <th class="text-center">keterangan</th> --}}
               <th class="text-center">Action</th>
@@ -114,7 +114,7 @@
       $('#container-table').DataTable({
         processing: true,
         serverSide: true,
-        ordering: true,
+        ordering: false,
         lengthMenu: [
           [10, 25, 50, -1],
           [10, 25, 50, 'All']
@@ -154,16 +154,16 @@
             name: 'number_container',
           },
           {
+            data: 'number_document',
+            name: 'number_document',
+          },
+          {
+            data: 'regarding',
+            name: 'regarding',
+          },
+          {
             data: 'division.name',
             name: 'division.name',
-          },
-          {
-            data: 'main_location',
-            name: 'main_location',
-          },
-          {
-            data: 'sub_location',
-            name: 'sub_location',
           },
           {
             data: 'detail_location',

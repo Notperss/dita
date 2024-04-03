@@ -31,9 +31,17 @@ class LendingArchiveController extends Controller
             $lendings = Lending::where('status', null)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
         }
         $newLendingNumber = Lending::generateLendingNumber();
-        $archiveContainers = ArchiveContainer::orderBy('number_archive', 'asc')->get();
+        $archiveContainers = ArchiveContainer::where('status', 1)->orderBy('number_document', 'asc')->get();
+        $lendingArchives = LendingArchive::where('approval', 1)->get();
         $divisions = Division::orderBy('name', 'asc')->get();
-        return view('pages.transaction-archive.lending-archive.index', compact('archiveContainers', 'divisions', 'lendings', 'newLendingNumber'));
+        return view('pages.transaction-archive.lending-archive.index',
+            compact(
+                'archiveContainers',
+                'divisions',
+                'lendings',
+                'newLendingNumber',
+                'lendingArchives',
+            ));
     }
 
     /**
@@ -92,8 +100,12 @@ class LendingArchiveController extends Controller
                     'type_document' => $value['type_document'],
                     'status' => '1',
                 ]);
+
+                $archiveContainer = ArchiveContainer::find($value['archive_container_id']);
+                $archiveContainer->update(['status' => 2]);
             }
         }
+
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.lending-archive.index');
@@ -158,9 +170,17 @@ class LendingArchiveController extends Controller
     public function destroy($id)
     {
         $lending = Lending::findOrFail($id);
-        // dd($lending);
+
+        $lendingArchives = $lending->lendingArchive;
+        foreach ($lendingArchives as $lendingArchive) {
+            $idContainer = $lendingArchive->archive_container_id;
+            $archiveStatus = ArchiveContainer::find($idContainer);
+            $archiveStatus->update(['status' => 1]);
+        }
+
         $lending->forceDelete();
 
+        // Delete associated LendingArchive records
         LendingArchive::where('lending_id', $id)->forceDelete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
@@ -186,7 +206,7 @@ class LendingArchiveController extends Controller
         }
     }
 
-    public function approval(Request $request)
+    public function approval(Request $request, LendingArchive $lendingArchive)
     {
         // $validator = Validator::make($request->all(), [
         //     'approval' => 'required|array|min:1', // Ensure 'approval' is present, is an array, and has at least one element
@@ -205,7 +225,9 @@ class LendingArchiveController extends Controller
         // }
 
         // Get the IDs of the lending archive records to be updated
-        $approvedIds = $request->input('approval') ?? 0;
+        // $approvedIds = $request->input('approval') ?? 0;
+
+        $approvedIds = $lendingArchive->id;
 
         $period = Carbon::now()->addDays(14)->toDateString();
 

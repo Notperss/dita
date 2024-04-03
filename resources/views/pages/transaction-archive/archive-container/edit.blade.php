@@ -519,7 +519,7 @@
                     </div>
                     <div class="form-group">
                       <label for="regarding">Perihal</label>
-                      <textarea type="text" id="regarding" class="form-control" name="regarding" required readonly>{{ $archiveContainers->regarding }}</textarea>
+                      <textarea type="text" id="regarding" class="form-control" name="regarding">{{ $archiveContainers->regarding }}</textarea>
                       @if ($errors->has('regarding'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('regarding') }}</p>
@@ -527,7 +527,7 @@
                     </div>
                     <div class="form-group">
                       <label for="tag">keterangan Tag</label>
-                      <textarea type="text" id="tag" class="form-control" name="tag" required readonly>{{ $archiveContainers->tag }}</textarea>
+                      <textarea type="text" id="tag" class="form-control" name="tag">{{ $archiveContainers->tag }}</textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('tag') }}</p>

@@ -9,7 +9,7 @@
       <thead>
         <tr>
           <th style="width: 1px;">#</th>
-          <th>Nomor Arsip</th>
+          <th>No.Dokumen</th>
           <th>Perihal</th>
           <th>Divisi</th>
           <th>Tipe</th>
@@ -21,7 +21,7 @@
         @forelse ($lending_archives as $lendings)
           <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $lendings->archiveContainer->number_archive }}</td>
+            <td>{{ $lendings->archiveContainer->number_document }}</td>
             <td>{{ $lendings->archiveContainer->regarding }}</td>
             <td>{{ $lendings->archiveContainer->division->name }}</td>
             <td>

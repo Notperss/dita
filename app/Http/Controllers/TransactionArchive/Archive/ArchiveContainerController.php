@@ -39,7 +39,7 @@ class ArchiveContainerController extends Controller
             $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
 
-            $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division');
+            $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division')->orderBy('created_at', 'desc');
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
@@ -484,7 +484,8 @@ class ArchiveContainerController extends Controller
         $archiveContainer->update($data);
 
         alert()->success('Success', 'Data successfully added');
-        return redirect()->back()->withInput();
+        return redirect()->route('backsite.archive-container.index');
+        // return redirect()->back()->withInput();
 
 
 

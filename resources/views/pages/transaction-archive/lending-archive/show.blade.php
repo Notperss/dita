@@ -12,13 +12,13 @@
   <tr>
     <th>Tanggal Pinjam</th>
     <td>
-      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
+      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y ') : 'N/A' }}
     </td>
   </tr>
   <tr>
     <th>Tanggal Dikembalikan</th>
     <td>
-      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y H:i') : 'N/A' }}
+      {{ isset($lendings->start_date) ? Carbon\Carbon::parse($lendings->start_date)->translatedFormat('l, d F Y ') : 'N/A' }}
     </td>
   </tr>
   <tr>

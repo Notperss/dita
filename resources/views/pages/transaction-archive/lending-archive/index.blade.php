@@ -92,30 +92,13 @@
           </div>
         </div>
       </div>
-      {{-- <div class="col-6 col-lg-3 col-md-6">
-        <div class="card">
-          <div class="card-body px-4 py-4-5">
-            <div class="row">
-              <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
-                <div class="stats-icon red mb-2">
-                  <i class="iconly-boldBookmark"></i>
-                </div>
-              </div>
-              <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                <h6 class="text-muted font-semibold">Saved Post</h6>
-                <h6 class="font-extrabold mb-0">112</h6>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> --}}
     </div>
+    <a href="#mymodal" data-toggle="modal" data-target="#mymodal" class="btn btn-primary my-2"> <i
+        class="bi bi-plus-lg"></i>
+      Pinjam Arsip</a>
 
     <div class="row match-height">
       <div class="col-12">
-        <a href="#mymodal" data-toggle="modal" data-target="#mymodal" class="btn btn-primary my-2"> <i
-            class="bi bi-plus-lg"></i>
-          Pinjam Arsip</a>
         <div class="card">
           <div class="card-header">
             <h4 class="card-title">List Data Peminjaman Arsip</h4>
@@ -139,7 +122,9 @@
                       <tr>
                         <td class="text-bold-500">{{ $lending->lending_number ?? 'N/A' }}</td>
                         <td>{{ $lending->division ?? 'N/A' }}</td>
-                        <td>{{ $lending->start_date ?? 'N/A' }}</td>
+                        <td>
+                          {{ Carbon\Carbon::parse($lending->start_date)->translatedFormat('l, d F Y ') ?? 'N/A' }}
+                        </td>
                         {{-- <td>{{ $lending->end_date ?? 'N/A' }}</td> --}}
                         <td class="text-bold-500">{{ $lending->description }}</td>
                         {{-- <td>
@@ -207,6 +192,73 @@
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row match-height">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-content">
+          <div class="card-body">
+            <h4 class="card-title mb-0">Arsip Yang Disetujui</h4>
+          </div>
+          <div class="card-body">
+            <table class="table table-striped" id="container-table">
+              <thead>
+                <tr>
+                  <th class="text-center">#</th>
+                  <th class="text-center">No.Dokumen</th>
+                  <th class="text-center">Perihal</th>
+                  <th class="text-center">Divisi</th>
+                  <th class="text-center">Tipe</th>
+                  <th class="text-center">Tgl Pengembalian/Berakhir</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach ($lendingArchives as $lendingArchive)
+                  @if (
+                      ($lendingArchive->period && strtotime($lendingArchive->period) >= strtotime('now')) ||
+                          ($lendingArchive->type_document == 'FISIK' && $lendingArchive->lending->status == null))
+                    <tr>
+                      <td class="text-center">{{ $loop->iteration }}</td>
+                      <td class="text-center">{{ $lendingArchive->archiveContainer->number_document ?? 'N/A' }}</td>
+                      <td class="text-center">{{ $lendingArchive->archiveContainer->regarding ?? 'N/A' }}</td>
+                      <td class="text-center">{{ $lendingArchive->archiveContainer->division->name ?? 'N/A' }}</td>
+                      <td class="text-center">
+                        @if ($lendingArchive->type_document === 'DIGITAL')
+                          <span class="badge bg-light-info">Digital</span>
+                        @elseif ($lendingArchive->type_document === 'FISIK')
+                          <span class="badge bg-light-secondary">Fisik</span>
+                        @else
+                          <span class="badge bg-light-warning"> - </span>
+                        @endif
+                      </td>
+                      <td class="text-center">
+                        {{ Carbon\Carbon::parse($lendingArchive->period)->translatedFormat('l, d F Y ') ?? 'N/A' }}
+                      </td>
+                      <td class="text-center">
+                        @if ($lendingArchive->type_document == 'DIGITAL')
+                          <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
+                            data-src="{{ asset('storage/' . $lendingArchive->archiveContainer->file) }}"
+                            class="dropdown-item">
+                            Lihat File
+                          </a>
+                        @else
+                          @if (strtotime($lendingArchive->period) <= strtotime('now'))
+                            <i class="bi bi-exclamation-diamond-fill text-danger"> <br>
+                              sudah melewati masa pinjam</i>
+                          @endif
+                        @endif
+                      </td>
+                    </tr>
+                  @endif
+                @endforeach
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -335,7 +387,7 @@
     let selectedIds = [];
 
     // Event listener for change event on select element
-    $(document).on('change', 'select[name^="inputs["]', function() {
+    $(document).on('change', 'select[name^="inputs["]:not([name$="[type_document]"])', function() {
       // Get the selected ID
       let selectedId = $(this).val();
 
@@ -350,9 +402,10 @@
       selectedIds.push(selectedId);
 
       // Disable the option with the selected ID in all other select elements
-      $('select[name^="inputs["]').not(this).find('option').prop('disabled', function() {
-        return $(this).val() === selectedId;
-      });
+      $('select[name^="inputs["]:not([name$="[type_document]"])').not(this).find('option').prop('disabled',
+        function() {
+          return $(this).val() === selectedId;
+        });
     });
 
     $('#add-archive').click(function() {
