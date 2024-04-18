@@ -381,7 +381,7 @@
   }
 </script>
 
-<script>
+{{-- <script>
   $(document).ready(function() {
     // Array to store selected IDs
     let selectedIds = [];
@@ -442,7 +442,7 @@
       });
 
       // Disable options that have been selected in other rows
-      $('select[name^="inputs["]').each(function() {
+      $('select[name^="inputs["]:not([name$="[type_document]').each(function() {
         let selectedId = $(this).val();
         $(this).find('option').prop('disabled', function() {
           return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
@@ -472,8 +472,125 @@
       $(this).closest('tr').remove();
 
       // Enable the option with the removed ID in all other select elements
-      $('select[name^="inputs["]').find('option').prop('disabled', false);
-      $('select[name^="inputs["]').each(function() {
+      $('select[name^="inputs["]:not([name$="[type_document]"])').find('option').prop('disabled', false);
+      $('select[name^="inputs["]:not([name$="[type_document]"])').each(function() {
+        let selectedId = $(this).val();
+        $(this).find('option').prop('disabled', function() {
+          return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
+        });
+      });
+    });
+  });
+</script> --}}
+
+
+<script>
+  $(document).ready(function() {
+    // Array to store selected IDs
+    let selectedIds = [];
+
+    // Event listener for change event on select element
+    $(document).on('change', 'select[name^="inputs["]:not([name$="[type_document]"])', function() {
+      // Get the selected ID
+      let selectedId = $(this).val();
+
+      // Check if the selected ID already exists in the array
+      if (selectedIds.includes(selectedId)) {
+        alert("This ID is already selected. Please choose a different one.");
+        $(this).val(""); // Clear the selected value
+        return; // Exit function
+      }
+
+      // Add the selected ID to the array
+      selectedIds.push(selectedId);
+
+      // Disable the option with the selected ID in all other select elements
+      $('select[name^="inputs["]:not([name$="[type_document]"])').not(this).find('option').prop('disabled',
+        function() {
+          return $(this).val() === selectedId;
+        });
+    });
+
+    $('#add-archive').click(function() {
+      // Check if the select value is filled
+      let selectValueFilled = true;
+      $('select[name^="inputs["]:not([name$="[type_document]"])').each(function() {
+        if ($(this).val() === "") {
+          selectValueFilled = false;
+          return false; // Exit the loop early if any select value is not filled
+        }
+      });
+
+      // If select value is not filled, alert the user and return
+      if (!selectValueFilled) {
+        alert("Please fill all select values before adding more rows.");
+        return;
+      }
+
+      // Increment index for unique IDs
+      let a = selectedIds.length + 1;
+
+      // Append a new row
+      $('#table-archive').append(`
+          <tr>
+            <td class="text-center text-primary">${a}</td>
+            <td>
+               <select name="inputs[${a}][archive_container_id]" class="form-control select2 choices" style="width: 100%">
+            <option value="" disabled selected>Choose</option>
+            @foreach ($archiveContainers as $app)
+              <option value="{{ $app->id }}" data-value="{{ $app->regarding }}" data-value2="{{ $app->division->name }}" data-app="{{ $app->id }}">{{ $app->number_archive }} -> {{ $app->number_document }}</option>
+            @endforeach
+          </select>
+            </td>
+            <td><input type="text" class="form-control version" id="version_${a}" readonly></td>
+            <td><input type="text" class="form-control product" id="product_${a}" readonly></td>
+            <td><select type="text" class="form-control" name="inputs[${a}][type_document]" readonly>
+              <option value="" selected disabled>Choose</option>
+              <option value="FISIK">Fisik</option>
+              <option value="DIGITAL">Digital</option>
+              </select></td>
+            <td>
+              <button type="button" class="btn btn-danger remove-row">Remove</button></td>
+          </tr>
+        `);
+
+      // Initialize Select2 for the newly added select element
+      $('.select2').select2({
+        dropdownParent: $("#mymodal"),
+        theme: 'classic', // Apply the 'classic-dark' theme
+      });
+
+      // Disable options that have been selected in other rows
+      $('select[name^="inputs["]:not([name$="[type_document]"]').each(function() {
+        let selectedId = $(this).val();
+        $(this).find('option').prop('disabled', function() {
+          return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
+        });
+      });
+    });
+
+    $(document).on('change', 'select[name^="inputs["]:not([name$="[type_document]"])', function() {
+      var selectedOption = $(this).find(':selected');
+      var versionValue = selectedOption.data('value') || '';
+      var productValue = selectedOption.data('value2') || '';
+
+      $(this).closest('tr').find('.version').val(versionValue);
+      $(this).closest('tr').find('.product').val(productValue);
+    });
+
+    $(document).on('click', '.remove-row', function() {
+      // Get the removed ID
+      let removedId = $(this).closest('tr').find('select').val();
+
+      // Remove the ID from the array
+      selectedIds = selectedIds.filter(id => id !== removedId);
+
+      // Remove the entire row when the "Remove" button is clicked
+      $(this).closest('tr').remove();
+
+      // Enable the option with the removed ID in all other select elements
+      $('select[name^="inputs["]:not([name$="[type_document]"])').find('option').prop('disabled', false);
+      $('select[name^="inputs["]:not([name$="[type_document]"])').each(function() {
         let selectedId = $(this).val();
         $(this).find('option').prop('disabled', function() {
           return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;

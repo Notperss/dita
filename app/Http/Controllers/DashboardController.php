@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterData\WorkUnits\Division;
+use App\Models\TransactionArchive\Archive\ArchiveContainer;
+use App\Models\TransactionArchive\LendingArchive\LendingArchive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +19,20 @@ class DashboardController extends Controller
             // If the user has the role "Peminjam", redirect to the lending page
             return redirect()->route('backsite.lending-archive.index');
         }
-        return view('pages.dashboard.index');
+
+        $divisions = Division::with('archive_container')->get();
+        $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')->take(10)->get();
+        $lendingArchives = LendingArchive::orderBy('created_at', 'desc')->take(10)->get();
+
+        $currentYear = date('Y'); // Get the current year
+        $monthCounts = [];
+        foreach (range(1, 12) as $month) {
+            $count = ArchiveContainer::whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $month)
+                ->count();
+            $monthCounts[] = $count;
+        }
+        return view('pages.dashboard.index', compact('divisions', 'archiveContainers', 'lendingArchives', 'monthCounts'));
     }
 
     /**

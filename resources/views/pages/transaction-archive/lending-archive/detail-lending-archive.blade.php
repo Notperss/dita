@@ -19,6 +19,7 @@
       </thead>
       <tbody>
         @forelse ($lending_archives as $lendings)
+          <input type="hidden" name="id[]" id="id" value="{{ $lendings->id }}">
           <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $lendings->archiveContainer->number_document }}</td>
@@ -44,6 +45,31 @@
             </td>
             <td>
               @can('approval')
+                {{-- <div class="form-check">
+                  <input class="form-check-input" type="radio" name="approval[{{ $lendings->id }}]"
+                    id="izinkan{{ $lendings->id }}" value="1">
+                  <label class="form-check-label" for="izinkan{{ $lendings->id }}">
+                    Izinkan
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="approval[{{ $lendings->id }}]"
+                    id="tolak{{ $lendings->id }}">
+                  <label class="form-check-label" for="tolak{{ $lendings->id }}">
+                    Tolak
+                  </label>
+                </div> --}}
+                <div class="form-check">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="form-check-input form-check-primary"
+                      name="approval[{{ $lendings->id }}]" id="customColorCheck{{ $loop->index }}"
+                      @if ($lendings->approval == 1) checked @endif>
+                    <label class="form-check-label mx-1" for="customColorCheck{{ $loop->index }}">
+                      Ijinkan
+                    </label>
+                  </div>
+                </div>
+
                 <div class="btn-group">
                   {{-- @if ($lendings->type_document == 'DIGITAL')
                     <div class="form-check form-switch">
@@ -58,19 +84,10 @@
                       </label>
                     </div>
                 @endif --}}
-                  <div class="form-check">
-                    <div class="custom-control custom-checkbox">
-                      <input type="checkbox" class="form-check-input form-check-primary" name="approval[]"
-                        value="{{ $lendings->id }}" id="customColorCheck{{ $loop->index }}">
-                      <label class="form-check-label mx-1" for="customColorCheck{{ $loop->index }}">
-                        @if ($lendings->approval == 1)
-                          Tolak
-                        @else
-                          Ijinkan
-                        @endif
-                      </label>
-                    </div>
-                  </div>
+
+
+
+
                   {{-- @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
                   <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
                     data-src="{{ asset('storage/' . $lendings->archiveContainer->file) }}" class="dropdown-item">
@@ -86,7 +103,7 @@
                         Lihat File
                       </a>
                     @else
-                      <span> "No file found."</span>
+                      <span><small>"No file found."</small> </span>
                     @endif
                   @else
                     @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
@@ -96,7 +113,7 @@
                           Lihat File
                         </a>
                       @else
-                        <span>"No file found."</span>
+                        <span><small>"No file found."</small></span>
                       @endif
                     @endif
                   @endcan

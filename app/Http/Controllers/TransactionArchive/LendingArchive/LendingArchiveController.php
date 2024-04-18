@@ -26,13 +26,17 @@ class LendingArchiveController extends Controller
         $id = auth()->user()->id;
         if (Gate::allows('super_admin')) {
             $lendings = Lending::where('status', null)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('approval', 1)->get();
+
         } else {
 
             $lendings = Lending::where('status', null)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('approval', 1)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+
         }
         $newLendingNumber = Lending::generateLendingNumber();
         $archiveContainers = ArchiveContainer::where('status', 1)->orderBy('number_document', 'asc')->get();
-        $lendingArchives = LendingArchive::where('approval', 1)->get();
+        // $lendingArchives = LendingArchive::where('approval', 1)->get();
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.transaction-archive.lending-archive.index',
             compact(
@@ -194,8 +198,12 @@ class LendingArchiveController extends Controller
             $id = $request->id;
 
             $lending_archive = LendingArchive::where('lending_id', $id)->get();
+            $row = LendingArchive::find($id);
+
             $data = [
                 'lending_archives' => $lending_archive,
+                'id' => $row,
+
             ];
 
             $msg = [
@@ -206,7 +214,7 @@ class LendingArchiveController extends Controller
         }
     }
 
-    public function approval(Request $request, LendingArchive $lendingArchive)
+    public function approval(Request $request)
     {
         // $validator = Validator::make($request->all(), [
         //     'approval' => 'required|array|min:1', // Ensure 'approval' is present, is an array, and has at least one element
@@ -223,36 +231,42 @@ class LendingArchiveController extends Controller
         // if ($validator->fails()) {
         //     return redirect()->back()->withErrors($validator)->withInput();
         // }
+        // Get the IDs from the request
+        $id = $request->input('id');
 
-        // Get the IDs of the lending archive records to be updated
-        // $approvedIds = $request->input('approval') ?? 0;
+        // Convert the ID to an array if it's not already an array
+        $approvedIds = is_array($id) ? $id : [$id];
 
-        $approvedIds = $lendingArchive->id;
-
+        // Get the current date plus 14 days
         $period = Carbon::now()->addDays(14)->toDateString();
 
-        // Ensure $approvedIds is an array
-        if (! is_array($approvedIds)) {
-            $approvedIds = [$approvedIds];
+        // Get the approval values from the request
+        $approvals = $request->input('approval');
+
+        // Update the LendingArchive records for each approval value
+        foreach ($approvedIds as $approvedId) {
+            $approval = isset($approvals[$approvedId]);
+
+            LendingArchive::where('id', $approvedId)->update([
+                'period' => $approval ? $period : null,
+                'status' => $approval ? 2 : 1,
+                'approval' => $approval,
+            ]);
         }
 
-        LendingArchive::whereIn('id', $approvedIds)->update([
-            'period' => DB::raw('CASE WHEN approval = 1 THEN NULL ELSE "' . $period . '" END'),
-            'status' => DB::raw('CASE WHEN approval = 1 THEN 1 ELSE 2 END'),
-            'approval' => DB::raw('CASE WHEN approval = 1 THEN 0 ELSE 1 END'),
-        ]);
 
-        // Get the IDs of the lending archive records where the checkbox is not checked
-        $notApprovedIds = array_diff(
-            LendingArchive::pluck('id')->all(),
-            $approvedIds
-        );
 
-        // Update the lending archive records where the checkbox is not checked
-        LendingArchive::whereIn('id', $notApprovedIds)->update([
-            'status' => 2,  // Assuming status always needs to be updated
-            'approval' => 0,  // Set to 0 if the checkbox is not checked
-        ]);
+        // // Get the IDs of the lending archive records where the checkbox is not checked
+        // $notApprovedIds = array_diff(
+        //     LendingArchive::pluck('id')->all(),
+        //     $approvedIds
+        // );
+
+        // // Update the lending archive records where the checkbox is not checked
+        // LendingArchive::whereIn('id', $notApprovedIds)->update([
+        //     'status' => 2,  // Assuming status always needs to be updated
+        //     'approval' => 0,  // Set to 0 if the checkbox is not checked
+        // ]);
 
         // // Grant access to view the archive if approved and within the permit period
         // $approvedArchives = LendingArchive::whereIn('id', $approvedIds)->where('approval', 1)->get();
@@ -292,6 +306,35 @@ class LendingArchiveController extends Controller
                 'end_date' => now()->toDateString(),  // Set to 1 if the checkbox is not checked
             ]);
         }
+
+        $lendingArchives = $lending->lendingArchive;
+
+        if ($lendingArchives->isNotEmpty()) {
+            // Initialize an array to store archive container IDs
+            $archiveIds = [];
+
+            // Loop through each lending archive
+            foreach ($lendingArchives as $lendingArchive) {
+                // Check if the archive container relationship exists
+                if ($archiveContainer = $lendingArchive->archiveContainer) {
+                    // Store the archive container ID
+                    $archiveIds[] = $archiveContainer->id;
+                }
+            }
+
+            // Update the status for each archive container
+            foreach ($archiveIds as $archiveId) {
+                $archiveContainer = ArchiveContainer::find($archiveId);
+
+                if ($archiveContainer) {
+                    $archiveContainer->update(['status' => 1]);
+                }
+            }
+        }
+
+
+
+
         alert()->success('Success', 'Data updated successfully.');
         return redirect()->back();
     }
