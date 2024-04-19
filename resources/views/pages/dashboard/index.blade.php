@@ -147,7 +147,7 @@
         </div>
 
         <div class="row">
-          <div class="col-12 col-xl-4">
+          <div class="col-12 col-xl-6">
             <div class="card">
               <div class="card-header">
                 <h4>10 Peminjaman Terakhir</h4>
@@ -161,6 +161,7 @@
                           <th scope="col">#</th>
                           <th scope="col">No. Dokumen</th>
                           <th scope="col">Divisi</th>
+                          <th scope="col">Status</th>
                           {{-- <th scope="col">Tipe</th> --}}
                         </tr>
                       </thead>
@@ -170,6 +171,13 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $lending->archiveContainer->number_document }}</td>
                             <td>{{ $lending->archiveContainer->division->name }}</td>
+                            <td>
+                              @if ($lending->archiveContainer->status == 2)
+                                <span class="badge bg-light-warning">Dipinjam</span>
+                              @else
+                                <span class="badge bg-light-info">Dikembalikan</span>
+                              @endif
+                            </td>
                             {{-- <td>{{ $lending->type_document }}</td> --}}
                           </tr>
                         @endforeach
@@ -181,7 +189,7 @@
               </div>
             </div>
           </div>
-          <div class="col-12 col-xl-8">
+          <div class="col-12 col-xl-6">
             <div class="card">
               <div class="card-header">
                 <h4>10 Arsip Terakhir</h4>
@@ -194,7 +202,7 @@
                         <th scope="col">#</th>
                         <th scope="col">No. Dokumen</th>
                         <th scope="col">Divisi</th>
-                        <th scope="col">Perihal</th>
+                        {{-- <th scope="col">Perihal</th> --}}
                       </tr>
                     </thead>
                     <tbody>
@@ -203,7 +211,7 @@
                           <td>{{ $loop->iteration }}</td>
                           <td>{{ $archive->number_document }}</td>
                           <td>{{ $archive->division->name }}</td>
-                          <td>{{ $archive->tag }}</td>
+                          {{-- <td>{{ $archive->tag }}</td> --}}
                         </tr>
                       @endforeach
                     </tbody>

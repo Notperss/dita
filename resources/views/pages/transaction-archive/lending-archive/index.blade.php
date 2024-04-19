@@ -538,7 +538,7 @@
                <select name="inputs[${a}][archive_container_id]" class="form-control select2 choices" style="width: 100%">
             <option value="" disabled selected>Choose</option>
             @foreach ($archiveContainers as $app)
-              <option value="{{ $app->id }}" data-value="{{ $app->regarding }}" data-value2="{{ $app->division->name }}" data-app="{{ $app->id }}">{{ $app->number_archive }} -> {{ $app->number_document }}</option>
+              <option value="{{ $app->id }}" data-value="{{ $app->regarding }}" data-value2="{{ $app->division->name }}" data-app="{{ $app->id }}">{{ $app->number_document }}</option>
             @endforeach
           </select>
             </td>
