@@ -301,13 +301,19 @@
                   value="{{ now()->toDateString() }}">
               </div>
               <div class="form-group">
+                @php
+                  $divisionId = auth()->user()->division_id;
+                  $division = DB::table('divisions')->find($divisionId); // Assuming Division is your model representing divisions
+
+                  if ($division) {
+                      $divisionName = $division->name;
+                  } else {
+                      $divisionName = ''; // Provide a default value or handle the case where the division is not found
+                  }
+                @endphp
                 <label for="division">Divisi <code>*</code></label>
-                <select type="text" id="division" class="form-control choices" name="division">
-                  <option value="" selected disabled>Choose</option>
-                  @foreach ($divisions as $division)
-                    <option value="{{ $division->name }}">{{ $division->name }}</option>
-                  @endforeach
-                </select>
+                <input type="text" id="division" name="division" class="form-control"
+                  value="{{ $divisionName }}" readonly>
               </div>
               <div class="form-group">
                 <label for="description">keterangan</label>

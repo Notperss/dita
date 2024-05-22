@@ -36,7 +36,7 @@
                 enctype="multipart/form-data" id=myForm>
                 @csrf
                 <div class="row ">
-                  <div class="col-md-6 col-12 mx-auto">
+                  <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
                       <label for="main_classification_id">Nama Klasifikasi <code>*</code></label>
                       <select type="text" id="main_classification_id" class="form-control choices"
@@ -72,74 +72,8 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="type_document">Tipe Dokumen<code>*</code></label>
-                      <select id="type_document" class="form-control choices" name="type_document" required>
-                        <option value="" disabled selected>Choose</option>
-                        <option value="MUSNAH">Musnah</option>
-                        <option value="PERMANEN">Permanen</option>
-                      </select>
-                      @if ($errors->has('type_document'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('type_document') }}</p>
-                      @endif
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-12 mx-auto">
-                    <div class="form-group">
-                      <label for="period_active">Masa aktif<code>*</code></label>
-                      <select type="year" id="period_active" class="form-control choices" name="period_active"
-                        required>
-                        <option value="" disabled selected>Choose</option>
-                        <option value="1">1 Tahun</option>
-                        <option value="2">2 Tahun</option>
-                        <option value="3">3 Tahun</option>
-                        <option value="4">4 Tahun</option>
-                        <option value="5">5 Tahun</option>
-                        <option value="PERMANEN">Permanen</option>
-                      </select>
-                      @if ($errors->has('period_active'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('period_active') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="description_active">Keterangan Aktif</label>
-                      <textarea type="text" id="description_active" class="form-control" name="description_active" rows="1"> </textarea>
-                      @if ($errors->has('description_active'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('description_active') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="period_inactive">Masa Inaktif <code>*</code></label>
-                      <select type="year" id="period_inactive" class="form-control choices" name="period_inactive"
-                        required>
-                        <option value="" disabled selected>Choose</option>
-                        <option value="1">1 Tahun</option>
-                        <option value="2">2 Tahun</option>
-                        <option value="3">3 Tahun</option>
-                        <option value="4">4 Tahun</option>
-                        <option value="5">5 Tahun</option>
-                        <option value="PERMANEN">Permanen</option>
-                      </select>
-                      @if ($errors->has('period_inactive'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('period_inactive') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="description_inactive">Keterangan Inaktif</label>
-                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive" rows="1"> </textarea>
-                      @if ($errors->has('description_inactive'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('description_inactive') }}</p>
-                      @endif
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-12 mx-auto">
-                    <div class="form-group">
-                      <label for="description">Keterangan Tambahan</label>
-                      <textarea type="text" id="description" class="form-control" name="description" rows="4"></textarea>
+                      <label for="description">Keterangan</label>
+                      <textarea type="text" id="description" class="form-control" name="description"> </textarea>
                       @if ($errors->has('description'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description') }}</p>

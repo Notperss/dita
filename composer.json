@@ -10,8 +10,10 @@
     "require": {
         "php": "^8.1",
         "ext-gd": "*",
+        "barryvdh/laravel-dompdf": "^2.2",
         "guzzlehttp/guzzle": "^7.2",
         "http-interop/http-factory-guzzle": "^1.2",
+        "kalnoy/nestedset": "^6.0",
         "laravel/framework": "^10.10",
         "laravel/jetstream": "^4.2",
         "laravel/sanctum": "^3.3",
@@ -20,9 +22,11 @@
         "livewire/livewire": "^3.0",
         "meilisearch/meilisearch-php": "^1.6",
         "realrashid/sweet-alert": "^7.1",
+        "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.4",
         "spatie/pdf-to-text": "^1.52",
+        "tecnickcom/tcpdf": "^6.7",
         "tightenco/ziggy": "^2.0",
         "yajra/laravel-datatables": "10.0",
         "yajra/laravel-datatables-oracle": "^10.11"

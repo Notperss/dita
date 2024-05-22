@@ -69,7 +69,7 @@ class RetentionArchivesController extends Controller
             // 'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')],
             'sub_series' => ['required', 'max:255'],
             'type_document' => ['required', 'max:255'],
-            'code' => ['required', 'max:255'],
+            // 'code' => ['required', 'max:255'],
             'period_active' => ['required',],
             'period_inactive' => ['required',],
 
@@ -81,8 +81,8 @@ class RetentionArchivesController extends Controller
             'sub_series.required' => 'Sub Series harus diisi.',
             'period_active.required' => 'Masa Aktif harus diisi.',
             'period_inactive.required' => 'Masa Inaktif harus diisi.',
-            'code.required' => 'Kode harus diisi.',
-            'type_document.required' => 'Kode harus diisi.',
+            // 'code.required' => 'Kode harus diisi.',
+            'type_document.required' => 'Tipe Dokumen harus diisi.',
             'sub_series.max' => 'Sub Series tidak boleh lebih dari :max karakter.',
             // 'sub_series.unique' => 'Sub Series sudah digunakan.',
 
@@ -149,7 +149,7 @@ class RetentionArchivesController extends Controller
             // 'sub_series' => ['required', 'max:255', Rule::unique('retention_archives')->ignore($retention->id)],
             'sub_series' => ['required', 'max:255'],
             'type_document' => ['required', 'max:255'],
-            'code' => ['required', 'max:255'],
+            // 'code' => ['required', 'max:255'],
             'period_active' => ['required',],
             'period_inactive' => ['required',],
 
@@ -161,8 +161,8 @@ class RetentionArchivesController extends Controller
             'sub_series.required' => 'Sub Series harus diisi.',
             'period_active.required' => 'Masa Aktif harus diisi.',
             'period_inactive.required' => 'Masa Inaktif harus diisi.',
-            'code.required' => 'Code harus diisi.',
-            'type_document.required' => 'Code harus diisi.',
+            // 'code.required' => 'Code harus diisi.',
+            'type_document.required' => 'Tipe Dokumen harus diisi.',
             'sub_series.max' => 'Sub Series tidak boleh lebih dari :max karakter.',
             // 'sub_series.unique' => 'Sub Series sudah digunakan.',
 
@@ -203,14 +203,16 @@ class RetentionArchivesController extends Controller
 
     public function getSubClassifications(Request $request)
     {
+        $companies = auth()->user()->company_id;
         $mainClassification = $request->input('main_classification_id');
-        $subClassifications = SubClassification::where('main_classification_id', $mainClassification)->get();
+        $subClassifications = SubClassification::where('company_id', $companies)->where('main_classification_id', $mainClassification)->get();
         return response()->json($subClassifications);
     }
     public function getSeriesClassifications(Request $request)
     {
+        $companies = auth()->user()->company_id;
         $subClassification = $request->input('sub_classification_id');
-        $seriesClassifications = RetentionArchives::where('sub_classification_id', $subClassification)->get();
+        $seriesClassifications = RetentionArchives::where('company_id', $companies)->where('sub_classification_id', $subClassification)->get();
         return response()->json($seriesClassifications);
     }
 }

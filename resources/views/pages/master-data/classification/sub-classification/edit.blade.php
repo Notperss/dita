@@ -37,7 +37,7 @@
                 @csrf
                 @method('PUT')
                 <div class="row ">
-                  <div class="col-md-8 col-12 mx-auto">
+                  <div class="col-md-6 col-12 mx-auto">
                     <div class="form-group">
                       <label for="main_classification_id">Nama Klasifikasi <code>*</code></label>
                       <select type="text" id="main_classification_id" class="form-control choices"
@@ -72,6 +72,86 @@
                           {{ $errors->first('name') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="type_document">Tipe Dokumen<code>*</code></label>
+                      <select id="type_document" class="form-control choices" name="type_document" required>
+                        <option value="" disabled selected>Choose</option>
+                        <option value="MUSNAH" {{ $subClassifications->type_document == 'MUSNAH' ? 'selected' : '' }}>
+                          Musnah
+                        </option>
+                        <option value="PERMANEN"{{ $subClassifications->type_document == 'PERMANEN' ? 'selected' : '' }}>
+                          Permanen
+                        </option>
+                      </select>
+                      @if ($errors->has('type_document'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('type_document') }}</p>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12 mx-auto">
+                    <div class="form-group">
+                      <label for="period_active">Masa aktif<code>*</code></label>
+                      <select type="year" id="period_active" class="form-control choices" name="period_active"
+                        required>
+                        <option value="" disabled selected>Choose</option>
+                        <option value="1" {{ $subClassifications->period_active == 1 ? 'selected' : '' }}>1 Tahun
+                        </option>
+                        <option value="2" {{ $subClassifications->period_active == 2 ? 'selected' : '' }}>2 Tahun
+                        </option>
+                        <option value="3" {{ $subClassifications->period_active == 3 ? 'selected' : '' }}>3 Tahun
+                        </option>
+                        <option value="4" {{ $subClassifications->period_active == 4 ? 'selected' : '' }}>4 Tahun
+                        </option>
+                        <option value="5" {{ $subClassifications->period_active == 5 ? 'selected' : '' }}>5 Tahun
+                        </option>
+                        <option value="PERMANEN">Permanen</option>
+                      </select>
+                      @if ($errors->has('period_active'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('period_active') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description_active">Keterangan Aktif</label>
+                      <textarea type="text" id="description_active" class="form-control" name="description_active"> {{ $subClassifications->description_active }} </textarea>
+                      @if ($errors->has('description_active'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_active') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="period_inactive">Masa Inaktif <code>*</code></label>
+                      <select type="year" id="period_inactive" class="form-control choices" name="period_inactive"
+                        required>
+                        <option value="" disabled selected>Choose</option>
+                        <option value="1" {{ $subClassifications->period_inactive == 1 ? 'selected' : '' }}>1 Tahun
+                        </option>
+                        <option value="2" {{ $subClassifications->period_inactive == 2 ? 'selected' : '' }}>2 Tahun
+                        </option>
+                        <option value="3" {{ $subClassifications->period_inactive == 3 ? 'selected' : '' }}>3 Tahun
+                        </option>
+                        <option value="4" {{ $subClassifications->period_inactive == 4 ? 'selected' : '' }}>4 Tahun
+                        </option>
+                        <option value="5" {{ $subClassifications->period_inactive == 5 ? 'selected' : '' }}>5 Tahun
+                        </option>
+                        <option value="PERMANEN">Permanen</option>
+                      </select>
+                      @if ($errors->has('period_inactive'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('period_inactive') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="description_inactive">Keterangan Inaktif</label>
+                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive">{{ $subClassifications->description_inactive }} </textarea>
+                      @if ($errors->has('description_inactive'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('description_inactive') }}</p>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-12 mx-auto">
                     <div class="form-group">
                       <label for="description">Keterangan</label>
                       <textarea type="text" id="description" class="form-control" name="description"> {{ $subClassifications->description }} </textarea>

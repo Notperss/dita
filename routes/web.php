@@ -31,7 +31,9 @@ use App\Http\Controllers\MasterData\Retention\RetentionArchivesController;
 use App\Http\Controllers\MasterData\Classification\SubClassificationController;
 use App\Http\Controllers\TransactionArchive\Archive\ArchiveContainerController;
 use App\Http\Controllers\MasterData\Classification\MainClassificationController;
+use App\Http\Controllers\TransactionArchive\FolderDivision\FolderDivisionController;
 use App\Http\Controllers\TransactionArchive\LendingArchive\LendingArchiveController;
+use App\Http\Controllers\TransactionArchive\DestructionArchive\DestructionArchiveController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +65,8 @@ Route::get('/', function () {
 Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['auth:sanctum', 'verified']], function () {
     //Dashboard
     Route::resource('dashboard', DashboardController::class)->only('index');
+    Route::get('/division-archive/{id}', [DashboardController::class, 'division_archive'])->name('division-archive');
+
 
     //Company
     Route::resource('company', CompanyController::class);
@@ -121,7 +125,18 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
         Route::put('/closing/{id}', 'closing')->name('closing');
     });
 
+    Route::resource('destruction-archive', DestructionArchiveController::class);
+    Route::put('/approval-destruction', [DestructionArchiveController::class, 'approvalDestruction'])->name('approvalDestruction');
 
+    Route::get('/get-division', [UserManagementController::class, 'getDivisions'])->name('getDivisions');
+
+    Route::resource('folder', FolderDivisionController::class);
+
+    Route::controller(FolderDivisionController::class)->group(function () {
+        Route::post('/folder/form', 'form_upload')->name('folder.form_upload');
+        Route::post('/folder/upload', 'upload')->name('folder.upload');
+        Route::delete('/folder/{id}/delete_file', 'delete_file')->name('folder.delete_file');
+    });
 
 
 });
@@ -129,6 +144,7 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
 Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
     Route::resource('dashboard', DashboardController::class)->only('index');
     Route::resource('user', UserManagementController::class)->only('index', 'store', 'update', 'destroy');
+
     Route::prefix('user')->group(function () {
         Route::resource('profile', UserProfileController::class)->only('index', 'edit');
     });

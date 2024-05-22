@@ -38,8 +38,13 @@ class ArchiveContainerController extends Controller
 
             $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
+            if (Gate::allows('super_admin')) {
+                $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
+            } else {
+                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division')->orderBy('created_at', 'desc');
 
-            $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division')->orderBy('created_at', 'desc');
+            }
+
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
@@ -159,7 +164,7 @@ class ArchiveContainerController extends Controller
             // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
-            'subseries' => 'required|string',
+            // 'subseries' => 'required|string',
             // 'file' => 'required|file|mimes:pdf|max:290',
             'file' => 'file|mimes:pdf|max:290',
             'division_id' => 'required|confirmed',
@@ -195,15 +200,16 @@ class ArchiveContainerController extends Controller
 
             if ($files->getClientOriginalExtension() == 'pdf') {
                 // Specify the path to pdftotext executable
-                // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                // // Use spatie/pdf-to-text to extract text from the PDF
-                // $text = (new Pdf($pdftotextPath))
-                //     ->setPdf($files->getRealPath())
-                //     ->text();
-                $text = (new Pdf())
+                $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+                // Use spatie/pdf-to-text to extract text from the PDF
+                $text = (new Pdf($pdftotextPath))
                     ->setPdf($files->getRealPath())
                     ->text();
+
+                // $text = (new Pdf())
+                //     ->setPdf($files->getRealPath())
+                //     ->text();
 
                 // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
                 $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
@@ -417,7 +423,7 @@ class ArchiveContainerController extends Controller
             // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
-            'subseries' => 'required|string',
+            // 'subseries' => 'required|string',
             // 'file' => 'required|file|mimes:pdf|max:290',
             'file' => 'file|mimes:pdf|max:290',
             'division_id' => 'required|confirmed',
@@ -434,19 +440,32 @@ class ArchiveContainerController extends Controller
         // Retrieve form data
         $data = $request->all();
 
+        // Assuming you have a 'division_id' field in your data
+        if (isset($data['division_id'])) {
+            // Retrieve data related to the division
+            $divisionData = Division::findOrFail($data['division_id'])->code;
+            // Here, 'code' is the attribute you want to retrieve from the Division model
+
+            // Now, you can use $divisionData as needed
+            // For example, you can attach it to the $data array
+            $data['division_code'] = $divisionData;
+        }
+
         $path_file = $archiveContainer['file'];
         // Process file upload only if a file is uploaded
         if ($request->hasFile('file')) {
             $files = $request->file('file');
 
             if ($files->getClientOriginalExtension() == 'pdf') {
-                // Specify the path to pdftotext executable
+                // // Specify the path to pdftotext executable
                 // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
                 // // Use spatie/pdf-to-text to extract text from the PDF
                 // $text = (new Pdf($pdftotextPath))
                 //     ->setPdf($files->getRealPath())
                 //     ->text();
+
+
                 $text = (new Pdf())
                     ->setPdf($files->getRealPath())
                     ->text();

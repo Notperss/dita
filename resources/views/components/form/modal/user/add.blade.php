@@ -1,9 +1,9 @@
 <!-- Modals add menu -->
-<div id="modal-form-add-user" class="modal fade" tabindex="-1" aria-labelledby="modal-form-add-user-label"
+<div id="modal-form-add-user" class="modal fade modal-form-user" tabindex="-1" aria-labelledby="modal-form-add-user-label"
   aria-hidden="true" style="display: none;">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form action="{{ route('user.store') }}" method="post">
+      <form id="modal-form" action="{{ route('user.store') }}" method="post">
         @csrf
 
         <div class="modal-header">
@@ -35,6 +35,17 @@
           </div>
 
           <div class="mb-3">
+            <label for="division" class="form-label">Divisi</label>
+            <select class="form-control" id="division" style="width:100%" placeholder="Guard Name" name="division_id">
+              <option value="" selected disabled>Choose</option>
+              {{-- @foreach ($divisions as $division)
+                <option value="{{ $division->id }}">{{ $division->name }}</option>
+              @endforeach --}}
+            </select>
+            <x-form.validation.error name="division" />
+          </div>
+
+          <div class="mb-3">
             <label for="role" class="form-label">Role Name</label>
             <select class="form-control choices" id="role" name="role">
               @foreach ($roles as $role)
@@ -63,3 +74,34 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+{{-- @push('after-script')
+  <script>
+    $(document).ready(function() {
+      $('#company_id').change(function() {
+        var companyId = $(this).val();
+        if (companyId) {
+          $.ajax({
+            url: "{{ route('backsite.getDivisions') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              company_id: companyId
+            },
+            success: function(data) {
+              $('#division').empty();
+              $('#division').append('<option value="" selected disabled>Choose</option>');
+              $.each(data, function(key, value) {
+                $('#division').append('<option value="' + value.id + '">' + value.name +
+                  '</option>');
+              });
+            }
+          });
+        } else {
+          $('#division').empty();
+          $('#division').append('<option value="" selected disabled>Choose</option>');
+        }
+        // console.log(data);
+      });
+    });
+  </script>
+@endpush --}}

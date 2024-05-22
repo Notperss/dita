@@ -1,5 +1,5 @@
 <!-- Modals add menu -->
-<div id="modal-form-edit-user-{{ $user->id }}" class="modal fade" tabindex="-1"
+<div id="modal-form-edit-user-{{ $user->id }}" class="modal fade modal-form-user-edit" tabindex="-1"
   aria-labelledby="modal-form-edit-user-{{ $user->id }}-label" aria-hidden="true" style="display: none;">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -40,6 +40,19 @@
           </div>
 
           <div class="mb-3">
+            <label for="division_id" class="form-label">Divisi</label>
+            <select class="form-control" id="division_id" placeholder="Guard Name" name="division_id">
+              <option value="" selected disabled>Choose</option>
+              {{-- @foreach ($divisions as $division)
+                <option value="{{ $division->id }}" {{ $division->id == $user->division_id ? 'selected' : '' }}>
+                  {{ $division->name }}
+                </option>
+              @endforeach --}}
+            </select>
+            <x-form.validation.error name="division_id" />
+          </div>
+
+          <div class="mb-3">
             <label for="role" class="form-label">Role Name</label>
             <select class="form-control" id="role" name="role" data-choices data-choices-removeItem>
               @foreach ($roles as $role)
@@ -68,3 +81,39 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<script>
+  $(document).ready(function() {
+    $(document).on('change', '[id^="modal-form-edit-user-"] #company_id', function() {
+      var modalId = $(this).closest('.modal').attr('id');
+      var userId = modalId.split('-').pop(); // Extracting user ID from modal ID
+      var companyId = $(this).val();
+
+      if (companyId) {
+        // AJAX request to fetch divisions for the selected company
+        $.ajax({
+          url: "{{ route('backsite.getDivisions') }}",
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            company_id: companyId
+          },
+          success: function(data) {
+            $('#' + modalId + ' #division_id').empty();
+            $('#' + modalId + ' #division_id').append(
+              '<option value="" selected disabled>Choose</option>');
+            $.each(data, function(key, value) {
+              $('#' + modalId + ' #division_id').append('<option value="' + value.id + '">' + value
+                .name + '</option>');
+            });
+          },
+          error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+          }
+        });
+      } else {
+        $('#' + modalId + ' #division_id').empty();
+        $('#' + modalId + ' #division_id').append('<option value="" selected disabled>Choose</option>');
+      }
+    });
+  });
+</script>

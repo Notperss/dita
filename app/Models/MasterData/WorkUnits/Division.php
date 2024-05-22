@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
+use App\Models\User;
 
 class Division extends Model
 {
@@ -37,5 +38,10 @@ class Division extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->hasMany(ArchiveContainer::class, 'division_id', 'id');
+    }
+    public function user()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->hasMany(User::class, 'division_id', 'id');
     }
 }

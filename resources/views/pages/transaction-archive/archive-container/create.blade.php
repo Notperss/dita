@@ -151,7 +151,7 @@
                           {{ $errors->first('sub_classification_id') }}</p>
                       @endif
                     </div>
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                       <label for="subseries">Sub Series Arsip <code>*</code></label>
                       <select type="text" id="subseries" class="form-control select2" style="width: 100%"
                         name="subseries" required>
@@ -161,7 +161,7 @@
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('subseries') }}</p>
                       @endif
-                    </div>
+                    </div> --}}
                   </div>
 
                   <div class="col-md-4 col-4">
@@ -706,8 +706,20 @@
             success: function(data) {
               $('#sub_classification_id').empty();
               $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
+              // $.each(data, function(key, value) {
+              //   $('#sub_classification_id').append('<option value="' + value.id + '">' + value.name +
+              //     '</option>');
+              // });
+
               $.each(data, function(key, value) {
-                $('#sub_classification_id').append('<option value="' + value.id + '">' + value.name +
+                $('#sub_classification_id').append('<option value="' + value.id +
+                  '" data-value-active="' +
+                  value
+                  .period_active + '" data-value-inactive="' + value.period_inactive +
+                  '" data-description-active="' + value.description_active +
+                  '" data-description-inactive="' + value.description_inactive +
+                  '" data-description="' + value.description + '">' + value
+                  .name +
                   '</option>');
               });
 
@@ -721,45 +733,8 @@
           $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
         }
       });
-    });
-
-    $(document).ready(function() {
-      $('#sub_classification_id').change(function() {
-        var subclassificationId = $(this).val();
-        if (subclassificationId) {
-          $.ajax({
-            url: "{{ route('backsite.getSeriesClassifications') }}",
-            type: 'GET',
-            dataType: 'json',
-            data: {
-              sub_classification_id: subclassificationId
-            },
-            success: function(data) {
-              $('#subseries').empty();
-              $('#subseries').append('<option value="" selected disabled>Choose</option>');
-              $.each(data, function(key, value) {
-                $('#subseries').append('<option value="' + value.sub_series + '" data-value-active="' +
-                  value
-                  .period_active + '" data-value-inactive="' + value.period_inactive +
-                  '" data-description-active="' + value.description_active +
-                  '" data-description-inactive="' + value.description_inactive +
-                  '" data-description="' + value.description + '">' + value
-                  .sub_series +
-                  '</option>');
-              });
-
-
-              // Manually reset the selected option in the department dropdown
-              $('#subseries').val('').trigger('change');
-            }
-          });
-        } else {
-          $('#subseries').empty();
-          $('#subseries').append('<option value="" selected disabled>Choose</option>');
-        }
-      });
       // Handle change event of number_container
-      $('#subseries').on('change', function() {
+      $('#sub_classification_id').on('change', function() {
         var selectedOption = $(this).find(':selected');
 
         function calculateExpiration(retention) {
@@ -792,9 +767,44 @@
         var expiredInactive = selectedOption.data('value-inactive');
         $('#period_inactives').val((expiredInactive !== "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
       });
-
-
     });
+
+    // $(document).ready(function() {
+    //   $('#sub_classification_id').change(function() {
+    //     var subclassificationId = $(this).val();
+    //     if (subclassificationId) {
+    //       $.ajax({
+    //         url: "{{ route('backsite.getSeriesClassifications') }}",
+    //         type: 'GET',
+    //         dataType: 'json',
+    //         data: {
+    //           sub_classification_id: subclassificationId
+    //         },
+    //         success: function(data) {
+    //           $('#subseries').empty();
+    //           $('#subseries').append('<option value="" selected disabled>Choose</option>');
+    //           $.each(data, function(key, value) {
+    //             $('#subseries').append('<option value="' + value.sub_series + '" data-value-active="' +
+    //               value
+    //               .period_active + '" data-value-inactive="' + value.period_inactive +
+    //               '" data-description-active="' + value.description_active +
+    //               '" data-description-inactive="' + value.description_inactive +
+    //               '" data-description="' + value.description + '">' + value
+    //               .sub_series +
+    //               '</option>');
+    //           });
+
+
+    //           // Manually reset the selected option in the department dropdown
+    //           $('#subseries').val('').trigger('change');
+    //         }
+    //       });
+    //     } else {
+    //       $('#subseries').empty();
+    //       $('#subseries').append('<option value="" selected disabled>Choose</option>');
+    //     }
+    //   });
+    // });
   </script>
 @endpush
 @push('after-style')

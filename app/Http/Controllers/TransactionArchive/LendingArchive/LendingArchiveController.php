@@ -24,18 +24,21 @@ class LendingArchiveController extends Controller
     public function index()
     {
         $id = auth()->user()->id;
+        $companies = auth()->user()->company_id;
         if (Gate::allows('super_admin')) {
             $lendings = Lending::where('status', null)->orderBy('created_at', 'desc')->get();
             $lendingArchives = LendingArchive::where('approval', 1)->get();
 
+        } elseif (Gate::allows('admin')) {
+            $lendings = Lending::where('status', null)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('approval', 1)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
         } else {
-
             $lendings = Lending::where('status', null)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
             $lendingArchives = LendingArchive::where('approval', 1)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
-
         }
+
         $newLendingNumber = Lending::generateLendingNumber();
-        $archiveContainers = ArchiveContainer::where('status', 1)->orderBy('number_document', 'asc')->get();
+        $archiveContainers = ArchiveContainer::where('company_id', $companies)->where('status', 1)->orderBy('number_document', 'asc')->get();
         // $lendingArchives = LendingArchive::where('approval', 1)->get();
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.transaction-archive.lending-archive.index',
@@ -88,9 +91,14 @@ class LendingArchiveController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $user_id = Auth::user()->id;
+        $company_id = Auth::user()->company_id;
 
         // Merge the user_id into the request data
-        $requestData = array_merge($request->all(), ['user_id' => $user_id]);
+        $requestData = array_merge($request->all(), [
+            'user_id' => $user_id,
+            'company_id' => $company_id,
+        ]
+        );
         // If the validation passes, create the Divisi record
         $lending = Lending::create($requestData);
         $lending_id = $lending->id;
@@ -99,6 +107,7 @@ class LendingArchiveController extends Controller
             foreach ($request->inputs as $value) {
                 LendingArchive::create([
                     'user_id' => $user_id,
+                    'company_id' => $company_id,
                     'lending_id' => $lending_id,
                     'archive_container_id' => $value['archive_container_id'],
                     'type_document' => $value['type_document'],
@@ -122,8 +131,12 @@ class LendingArchiveController extends Controller
     public function show($id)
     {
         $ids = auth()->user()->id;
+        $company_id = auth()->user()->company_id;
         if (Gate::allows('super_admin')) {
             $lendings = Lending::find($id);
+
+        } elseif (Gate::allows('admin')) {
+            $lendings = Lending::where('company_id', $company_id)->find($id);
         } else {
             $lendings = Lending::where('user_id', $ids)->find($id);
         }
@@ -386,4 +399,20 @@ class LendingArchiveController extends Controller
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }
 
+    // public function addWatermark(Request $request)
+    // {
+    //     $filePath = public_path($request->file_path);
+
+    //     // Load PDF content
+    //     $pdf = PDF::loadFile($filePath);
+
+    //     // Add watermark to PDF
+    //     $pdf->getDomPDF()->getCanvas()->page_text(250, 400, "Watermark Text", null, 12, array(128, 128, 128));
+
+    //     // Save watermarked PDF to a temporary file
+    //     $tempFilePath = tempnam(sys_get_temp_dir(), 'watermarked_pdf_');
+    //     $pdf->save($tempFilePath);
+
+    //     return response()->json($tempFilePath);
+    // }
 }

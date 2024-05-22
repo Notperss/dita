@@ -167,14 +167,16 @@ class DetailLocationController extends Controller
 
     public function getSubLocations(Request $request)
     {
+        $companies = auth()->user()->company_id;
         $mainLocationId = $request->input('main_location_id');
-        $subLocations = SubLocation::where('main_location_id', $mainLocationId)->get();
+        $subLocations = SubLocation::where('company_id', $companies)->where('main_location_id', $mainLocationId)->get();
         return response()->json($subLocations);
     }
     public function getContainers(Request $request)
     {
+        $companies = auth()->user()->company_id;
         $subLocationId = $request->input('sub_location_id');
-        $detailLocations = DetailLocation::where('sub_location_id', $subLocationId)->get();
+        $detailLocations = DetailLocation::where('company_id', $companies)->where('sub_location_id', $subLocationId)->get();
         return response()->json($detailLocations);
     }
 

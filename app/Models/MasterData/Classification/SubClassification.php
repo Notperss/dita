@@ -17,6 +17,11 @@ class SubClassification extends Model
         'company_id',
         'code',
         'name',
+        'type_document',
+        'period_active',
+        'description_active',
+        'period_inactive',
+        'description_inactive',
         'description',
     ];
     public function company()

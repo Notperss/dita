@@ -86,15 +86,15 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="document_type">Tipe Dokumen<code>*</code></label>
-                      <select id="document_type" class="form-control choices" name="document_type" required>
+                      <label for="type_document">Tipe Dokumen<code>*</code></label>
+                      <select id="type_document" class="form-control choices" name="type_document" required>
                         <option value="" disabled selected>Choose</option>
                         <option value="MUSNAH">Musnah</option>
                         <option value="PERMANEN">Permanen</option>
                       </select>
-                      @if ($errors->has('document_type'))
+                      @if ($errors->has('type_document'))
                         <p style="font-style: bold; color: red;">
-                          {{ $errors->first('document_type') }}</p>
+                          {{ $errors->first('type_document') }}</p>
                       @endif
                     </div>
                   </div>

@@ -108,10 +108,11 @@
                   @else
                     @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
                       @if ($lendings->archiveContainer->file)
-                        <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
+                        {{-- <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
                           data-src="{{ asset('storage/' . $lendings->archiveContainer->file) }}" class="dropdown-item">
                           Lihat File
-                        </a>
+                        </a> --}}
+                        <button onclick="downloadWatermarkedPDF()">Download Watermarked PDF</button>
                       @else
                         <span><small>"No file found."</small></span>
                       @endif
@@ -147,3 +148,30 @@
     });
   });
 </script> --}}
+<script>
+  function downloadWatermarkedPDF() {
+    // Make an AJAX request to fetch the watermarked PDF
+    fetch('/download-watermarked-pdf?id={{ $id }}')
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a URL for the PDF blob
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Create a temporary <a> element to trigger the download
+        const a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = 'watermarked-document.pdf';
+
+        // Append the <a> element to the document and trigger the download
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup: remove the <a> element and revoke the URL
+        document.body.removeChild(a);
+        URL.revokeObjectURL(pdfUrl);
+      })
+      .catch(error => {
+        console.error('Error fetching watermarked PDF:', error);
+      });
+  }
+</script>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\MasterData\Company\Company;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Models\MasterData\WorkUnits\Division;
 
 class UserManagementController extends Controller
 {
@@ -21,22 +22,70 @@ class UserManagementController extends Controller
         if (! Gate::allows('user_index')) {
             abort(403);
         }
-        $users = User::query()
-            ->when(! blank($request->search), function ($query) use ($request) {
-                return $query
-                    ->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
-            })
-            ->with('roles', function ($query) {
-                return $query->select('name');
-            })
-            ->latest()
-            ->paginate(10);
-        $roles = Role::orderBy('name')->get();
 
-        $companies = Company::orderBy('name')->get();
+        $company_id = auth()->user()->company_id;
+        if (Gate::allows('super_admin')) {
+            $users = User::query()
+                ->when(! blank($request->search), function ($query) use ($request) {
+                    return $query
+                        ->where('name', 'like', '%' . $request->search . '%')
+                        ->orWhere('email', 'like', '%' . $request->search . '%');
+                })
+                ->with('roles', function ($query) {
+                    return $query->select('name');
+                })
+                ->latest()
+                ->paginate(10);
+            $roles = Role::orderBy('name')->get();
 
-        return view('pages.management-access.user.index', compact('users', 'roles', 'companies'));
+            $companies = Company::orderBy('name')->get();
+
+            // $userCompany = User::orderBy('name')->get();
+            // $companyUser = $userCompany->company_id;
+
+            $divisions = Division::where('company_id', $company_id)->orderBy('name')->get();
+
+        } else {
+
+            $users = User::query()
+                ->when(! blank($request->search), function ($query) use ($request) {
+                    return $query
+                        ->where('name', 'like', '%' . $request->search . '%')
+                        ->orWhere('email', 'like', '%' . $request->search . '%');
+                })
+                ->with('roles', function ($query) {
+                    return $query->select('name');
+                }, 'company')
+                ->latest()
+                ->where('company_id', $company_id)
+                ->paginate(10);
+
+            $roles = Role::orderBy('name')->get();
+
+            $companies = Company::where('id', $company_id)->orderBy('name')->get();
+
+            $divisions = Division::where('company_id', $company_id)->orderBy('name')->get();
+        }
+
+
+        // $users = User::query()
+        //     ->when(! blank($request->search), function ($query) use ($request) {
+        //         return $query
+        //             ->where('name', 'like', '%' . $request->search . '%')
+        //             ->orWhere('email', 'like', '%' . $request->search . '%');
+        //     })
+        //     ->with('roles', function ($query) {
+        //         return $query->select('name');
+        //     })
+        //     ->latest()
+        //     ->paginate(10);
+        // $roles = Role::orderBy('name')->get();
+
+        // $companies = Company::orderBy('name')->get();
+
+        // $divisions = Division::orderBy('name')->get();
+
+        return view('pages.management-access.user.index', compact('users', 'roles', 'companies', 'divisions'));
     }
 
     /**
@@ -97,5 +146,12 @@ class UserManagementController extends Controller
         return $user->delete()
             ? back()->with('success', 'User has been deleted successfully!')
             : back()->with('failed', 'User was not deleted successfully!');
+    }
+
+    public function getDivisions(Request $request)
+    {
+        $companyId = $request->input('company_id');
+        $division = Division::where('company_id', $companyId)->get();
+        return response()->json($division);
     }
 }

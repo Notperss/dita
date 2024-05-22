@@ -10,6 +10,7 @@ class Lending extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
+        'company_id',
         'lending_number',//
         'start_date',
         'end_date',

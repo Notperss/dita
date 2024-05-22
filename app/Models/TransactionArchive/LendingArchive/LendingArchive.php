@@ -14,6 +14,7 @@ class LendingArchive extends Model
     protected $fillable = [
         'user_id',
         'lending_id',
+        'company_id',
         'archive_container_id',
         'status',
         'approval',

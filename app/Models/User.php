@@ -8,6 +8,8 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use App\Models\ManagementAccess\DetailUser;
+use App\Models\MasterData\Company\Company;
+use App\Models\MasterData\WorkUnits\Division;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -32,6 +34,7 @@ class User extends Authenticatable
         'password',
         'email_verified_at',
         'company_id',
+        'division_id',
     ];
 
     /**
@@ -68,5 +71,14 @@ class User extends Authenticatable
     {
         // 2 parameter (path model, field foreign key)
         return $this->hasOne(DetailUser::class, 'user_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'division_id');
     }
 }

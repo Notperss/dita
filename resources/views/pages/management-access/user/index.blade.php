@@ -20,6 +20,9 @@
         </h5>
       </div>
       <div class="card-body">
+
+
+
         <!-- end cardheader -->
         <!-- Hoverable Rows -->
         <table class="table table-hover table-nowrap mb-0" id="table1">
@@ -29,6 +32,8 @@
               <th scope="col">Name</th>
               <th scope="col">Email</th>
               <th scope="col">Role</th>
+              <th scope="col">Company</th>
+              <th scope="col">Division</th>
               <th scope="col">Verified</th>
               <th scope="col" class="col-1"></th>
             </tr>
@@ -41,14 +46,20 @@
                 <td>{{ $user->email }}</td>
                 <td>
                   @foreach ($user->roles as $role)
-                    <span class="badge badge-soft-success">{{ $role->name }}</span>
+                    <span class="badge bg-light-info">{{ $role->name }}</span>
                   @endforeach
                 </td>
                 <td>
+                  {{ $user->company->name ?? 'N/A' }}
+                </td>
+                <td>
+                  {{ $user->division->name ?? 'N/A' }}
+                </td>
+                <td>
                   @if (!blank($user->email_verified_at))
-                    <span class="badge badge-soft-success">Verified</span>
+                    <span class="badge bg-light-success">Active</span>
                   @else
-                    <span class="badge badge-soft-danger">Not Verified</span>
+                    <span class="badge bg-light-danger">Inactive</span>
                   @endif
                 </td>
                 {{-- <td>
@@ -77,11 +88,22 @@
               </div>
             </td> --}}
                 <td class="text-center" style="width: 100px;">
-                  <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-user-{{ $user->id }}"
-                    class="btn icon btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>
-                  <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $user->id }}')">
-                    <i class="bi bi-x-lg"></i>
-                  </a>
+                  <div class="btn-group mb-1">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle me-1" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-user-{{ $user->id }}"
+                          class="dropdown-item" title="Edit"><i class="bi bi-pencil"></i> Edit</a>
+                        <a class="dropdown-item" title="Delete" onclick="showSweetAlert('{{ $user->id }}')">
+                          <i class="bi bi-x-lg"> Delete</i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
 
                   @include('components.form.modal.user.edit')
                   @include('components.form.modal.user.delete')
@@ -122,4 +144,35 @@
       });
     }
   </script>
+  <script>
+    $(document).ready(function() {
+      $('.modal-form-user').on('change', '#company_id', function() {
+        var companyId = $(this).val();
+        if (companyId) {
+          $.ajax({
+            url: "{{ route('backsite.getDivisions') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              company_id: companyId
+            },
+            success: function(data) {
+              $('#division').empty();
+              $('#division').append('<option value="" selected disabled>Choose</option>');
+              $.each(data, function(key, value) {
+                $('#division').append('<option value="' + value.id + '">' + value.name +
+                  '</option>');
+              });
+            }
+          });
+        } else {
+          $('#division').empty();
+          $('#division').append('<option value="" selected disabled>Choose</option>');
+        }
+        // console.log(data);
+      });
+    });
+  </script>
+
+
 @endsection

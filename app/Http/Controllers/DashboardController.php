@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Models\MasterData\WorkUnits\Division;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\TransactionArchive\LendingArchive\LendingArchive;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -15,24 +16,45 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        if (auth()->check() && auth()->user()->hasRole('Peminjam')) {
-            // If the user has the role "Peminjam", redirect to the lending page
+        if (auth()->check() && ! (auth()->user()->can('super_admin') || auth()->user()->can('admin'))) {
+            // If the user has either 'super_admin' or 'admin' permission, redirect to the lending page
             return redirect()->route('backsite.lending-archive.index');
         }
 
-        $divisions = Division::with('archive_container')->get();
-        $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')->take(10)->get();
-        $lendingArchives = LendingArchive::orderBy('created_at', 'desc')->take(10)->get();
+        $companies = auth()->user()->company_id;
 
-        $currentYear = date('Y'); // Get the current year
-        $monthCounts = [];
-        foreach (range(1, 12) as $month) {
-            $count = ArchiveContainer::whereYear('created_at', $currentYear)
-                ->whereMonth('created_at', $month)
-                ->count();
-            $monthCounts[] = $count;
+        // $archivesQuery = ArchiveContainer::where('status', 1)->whereDate('expiration_active', '<', now()->toDateString())->orderBy('created_at', 'desc');
+
+        if (Gate::allows('super_admin')) {
+            $divisions = Division::with('archive_container')->get();
+            $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')->take(10)->get();
+            $lendingArchives = LendingArchive::orderBy('created_at', 'desc')->take(10)->get();
+
+            $currentYear = date('Y'); // Get the current year
+            $monthCounts = [];
+            foreach (range(1, 12) as $month) {
+                $count = ArchiveContainer::whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+                $monthCounts[] = $count;
+            }
+        } else {
+            $divisions = Division::where('company_id', $companies)->with('archive_container')->get();
+            $archiveContainers = ArchiveContainer::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
+            $lendingArchives = LendingArchive::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
+
+            $currentYear = date('Y'); // Get the current year
+            $monthCounts = [];
+            foreach (range(1, 12) as $month) {
+                $count = ArchiveContainer::where('company_id', $companies)->whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+                $monthCounts[] = $count;
+            }
         }
-        return view('pages.dashboard.index', compact('divisions', 'archiveContainers', 'lendingArchives', 'monthCounts'));
+
+
+        return view('pages.dashboard.index', compact('divisions', 'archiveContainers', 'lendingArchives', 'monthCounts', 'companies'));
     }
 
     /**
@@ -40,7 +62,7 @@ class DashboardController extends Controller
      */
     public function create()
     {
-        abort(403);
+        return abort(403);
     }
 
     /**
@@ -48,7 +70,7 @@ class DashboardController extends Controller
      */
     public function store(Request $request)
     {
-        abort(403);
+        return abort(403);
     }
 
     /**
@@ -56,7 +78,7 @@ class DashboardController extends Controller
      */
     public function show(string $id)
     {
-        abort(403);
+        return abort(403);
     }
 
     /**
@@ -64,7 +86,7 @@ class DashboardController extends Controller
      */
     public function edit(string $id)
     {
-        abort(403);
+        return abort(403);
     }
 
     /**
@@ -72,7 +94,7 @@ class DashboardController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        abort(403);
+        return abort(403);
     }
 
     /**
@@ -80,6 +102,15 @@ class DashboardController extends Controller
      */
     public function destroy(string $id)
     {
-        abort(403);
+        return abort(403);
+    }
+
+    public function division_archive($id)
+    {
+        // $id = $request->id;
+        // $decrypt_id = decrypt($id);
+        $divisions = Division::with('archive_container')->findOrFail($id);
+        $archiveContainers = ArchiveContainer::where('division_id', $divisions->id)->get();
+        return view('pages.dashboard.division-archive', compact('divisions', 'archiveContainers'));
     }
 }

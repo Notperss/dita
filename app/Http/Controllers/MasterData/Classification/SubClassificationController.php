@@ -56,6 +56,9 @@ class SubClassificationController extends Controller
             'name' => ['required', 'max:255'],
             'main_classification_id' => ['required', 'max:255'],
             'code' => ['required', 'max:255',],
+            'type_document' => ['required', 'max:255',],
+            'period_active' => ['required', 'max:255',],
+            'period_inactive' => ['required', 'max:255',],
 
             // Add other validation rules as needed
         ], [
@@ -64,6 +67,9 @@ class SubClassificationController extends Controller
             'main_classification_id.required' => 'Nama Klasifikasi harus diisi.',
             'main_classification_id.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
             'code.required' => 'Kode Sub Klasifikasi harus diisi.',
+            'type_document.required' => 'Tipe Dokumen harus diisi.',
+            'period_active.required' => 'Masa Aktif harus diisi.',
+            'period_inactive.required' => 'Masa Inaktif harus diisi.',
             'code.max' => 'Kode Sub Klasifikasi tidak boleh lebih dari :max karakter.',
             'code.unique' => 'Kode Sub Klasifikasi sudah digunakan.',
 

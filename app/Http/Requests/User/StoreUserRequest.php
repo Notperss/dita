@@ -28,6 +28,7 @@ class StoreUserRequest extends FormRequest
             'role' => ['nullable', 'string'],
             'verified' => ['nullable', 'boolean'],
             'company_id' => ['required'],
+            'division_id' => ['int'],
         ];
     }
 }

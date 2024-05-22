@@ -384,7 +384,7 @@
                           {{ $errors->first('sub_classification_id') }}</p>
                       @endif
                     </div>
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                       <label for="subseries">Sub Series Arsip <code>*</code></label>
                       <select type="text" id="subseries" class="form-control select2" style="width: 100%"
                         name="subseries" required>
@@ -399,7 +399,7 @@
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('subseries') }}</p>
                       @endif
-                    </div>
+                    </div> --}}
                   </div>
 
                   <div class="col-md-4 col-4">
@@ -616,9 +616,6 @@
                   </div>
                 </div>
 
-
-
-
                 <div class="col-12 d-flex justify-content-end my-3">
                   <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
                   <a href="{{ route('backsite.archive-container.index') }}"
@@ -815,11 +812,16 @@
               $('#sub_classification_id').empty();
               $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
               $.each(data, function(key, value) {
-                $('#sub_classification_id').append('<option value="' + value.id + '">' + value.name +
+                $('#sub_classification_id').append('<option value="' + value.id +
+                  '" data-value-active="' +
+                  value
+                  .period_active + '" data-value-inactive="' + value.period_inactive +
+                  '" data-description-active="' + value.description_active +
+                  '" data-description-inactive="' + value.description_inactive +
+                  '" data-description="' + value.description + '">' + value
+                  .name +
                   '</option>');
               });
-
-
               // Manually reset the selected option in the department_id dropdown
               $('#sub_classification_id').val('').trigger('change');
             }
@@ -829,73 +831,77 @@
           $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
         }
       });
-    });
 
-    $(document).ready(function() {
-      $('#sub_classification_id').change(function() {
-        var subclassificationId = $(this).val();
-        if (subclassificationId) {
-          $.ajax({
-            url: "{{ route('backsite.getSeriesClassifications') }}",
-            type: 'GET',
-            dataType: 'json',
-            data: {
-              sub_classification_id: subclassificationId
-            },
-            success: function(data) {
-              $('#subseries').empty();
-              $('#subseries').append('<option value="" selected disabled>Choose</option>');
-              $.each(data, function(key, value) {
-                $('#subseries').append('<option value="' + value.sub_series + '" data-value="' + value
-                  .retention_period + '">' + value
-                  .sub_series +
-                  '</option>');
-              });
-
-
-              // Manually reset the selected option in the department dropdown
-              $('#subseries').val('').trigger('change');
-            }
-          });
-        } else {
-          $('#subseries').empty();
-          $('#subseries').append('<option value="" selected disabled>Choose</option>');
-        }
-      });
       // Handle change event of number_container
-      $('#subseries').on('change', function() {
+      $('#sub_classification_id').on('change', function() {
         var selectedOption = $(this).find(':selected');
-        console.log(selectedOption);
 
-        var retentionPeriod = selectedOption.data('value');
+        function calculateExpiration(retention) {
+          return (retention !== "PERMANEN") ?
+            new Date(currentDate.getFullYear() + retention, currentDate.getMonth(), currentDate.getDate())
+            .toISOString().split('T')[0] :
+            "PERMANEN";
+        }
+
         var currentDate = new Date();
-        var expirationDate;
 
-        if (retentionPeriod !== "PERMANEN") {
-          // Calculate the expiration date by adding the selected retention period to the current date
-          expirationDate = new Date(currentDate.getFullYear() + retentionPeriod, currentDate.getMonth(),
-            currentDate.getDate());
-        } else {
-          // If retention period is "PERMANEN", set the expiration date string
-          expirationDate = 'PERMANEN';
-        }
+        var retentionActive = selectedOption.data('value-active');
+        $('#period_active').val(calculateExpiration(retentionActive));
 
-        // Set the formatted date or "PERMANEN" as the value of the "retention" input field
-        var formattedDate = (retentionPeriod !== "PERMANEN") ? expirationDate.toISOString().split('T')[0] :
-          "PERMANEN";
-        $('#retention').val(formattedDate);
+        var descriptionActive = selectedOption.data('description-active');
+        $('#description_active').val(descriptionActive);
 
+        var retentionInactive = selectedOption.data('value-inactive');
+        $('#period_inactive').val(calculateExpiration(retentionInactive));
 
-        var mainLocationValue = selectedOption.data('value');
-        var retentionsValue;
-        if (mainLocationValue !== "PERMANEN") {
-          retentionsValue = mainLocationValue + ' tahun';
-        } else {
-          retentionsValue = mainLocationValue; // Do not add "tahun" for "PERMANENT"
-        }
-        $('#retentions').val(retentionsValue);
+        var descriptionInactive = selectedOption.data('description-inactive');
+        $('#description_inactive').val(descriptionInactive);
+
+        var description = selectedOption.data('description');
+        $('#description_retention').val(description);
+
+        var expiredActive = selectedOption.data('value-active');
+        $('#period_actives').val((expiredActive !== "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
+
+        var expiredInactive = selectedOption.data('value-inactive');
+        $('#period_inactives').val((expiredInactive !== "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
       });
     });
+
+    // $(document).ready(function() {
+    //   $('#sub_classification_id').change(function() {
+    //     var subclassificationId = $(this).val();
+    //     if (subclassificationId) {
+    //       $.ajax({
+    //         url: "{{ route('backsite.getSeriesClassifications') }}",
+    //         type: 'GET',
+    //         dataType: 'json',
+    //         data: {
+    //           sub_classification_id: subclassificationId
+    //         },
+    //         success: function(data) {
+    //           $('#subseries').empty();
+    //           $('#subseries').append('<option value="" selected disabled>Choose</option>');
+    //           $.each(data, function(key, value) {
+    //             $('#subseries').append('<option value="' + value.sub_series + '" data-value-active="' +
+    //               value
+    //               .period_active + '" data-value-inactive="' + value.period_inactive +
+    //               '" data-description-active="' + value.description_active +
+    //               '" data-description-inactive="' + value.description_inactive +
+    //               '" data-description="' + value.description + '">' + value
+    //               .sub_series +
+    //               '</option>');
+    //           });
+    //           // Manually reset the selected option in the department dropdown
+    //           $('#subseries').val('').trigger('change');
+    //         }
+    //       });
+    //     } else {
+    //       $('#subseries').empty();
+    //       $('#subseries').append('<option value="" selected disabled>Choose</option>');
+    //     }
+    //   });
+    // });
   </script>
 @endpush
 @push('after-style')
