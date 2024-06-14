@@ -39,9 +39,22 @@
                 <div class="row ">
                   <div class="col-md-8 col-12 mx-auto">
                     <div class="form-group">
-                      <label for="code">Kode Klasifikasi <code>*</code></label>
+                      <label for="division_id">Divisi <code>*</code></label>
+                      <select id="division_id" class="form-control choices" name="division_id" required>
+                        <option value="" selected disabled>Choose</option>
+                        @foreach ($divisions as $division)
+                          <option value="{{ $division->id }}" @selected($division->id == $mainClassifications->division_id)>{{ $division->name }}</option>
+                        @endforeach
+                      </select>
+                      @if ($errors->has('division_id'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('division_id') }}</p>
+                      @endif
+                    </div>
+                    <div class="form-group">
+                      <label for="code">Kode Klasifikasi</label>
                       <input type="text" id="code" class="form-control" placeholder="Nama Klasifikasi"
-                        name="code" value="{{ old('code', $mainClassifications->code) }}" required>
+                        name="code" value="{{ old('code', $mainClassifications->code) }}">
                       @if ($errors->has('code'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('code') }}</p>

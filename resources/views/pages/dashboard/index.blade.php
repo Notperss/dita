@@ -24,7 +24,12 @@
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                     <h6 class="text-muted font-semibold">Total Semua Arsip</h6>
                     <h6 class="font-extrabold mb-0">
-                      {{ DB::table('archive_containers')->where('company_id', $companies)->count() }}</h6>
+                      @can('super_admin')
+                        {{ DB::table('archive_containers')->count() }}
+                      @else
+                        {{ DB::table('archive_containers')->where('company_id', $companies)->count() }}
+                      @endcan
+                    </h6>
                   </div>
                 </div>
               </div>
@@ -42,7 +47,11 @@
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                     <h6 class="text-muted font-semibold">Total Arsip Tahun Ini</h6>
                     <h6 class="font-extrabold mb-0">
-                      {{ DB::table('archive_containers')->where('company_id', $companies)->whereYear('created_at', now()->year)->count() }}
+                      @can('super_admin')
+                        {{ DB::table('archive_containers')->whereYear('created_at', now()->year)->count() }}
+                      @else
+                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereYear('created_at', now()->year)->count() }}
+                      @endcan
                     </h6>
                   </div>
                 </div>
@@ -61,7 +70,11 @@
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                     <h6 class="text-muted font-semibold">Total Arsip Bulan Ini</h6>
                     <h6 class="font-extrabold mb-0">
-                      {{ DB::table('archive_containers')->where('company_id', $companies)->whereMonth('created_at', now()->month)->count() }}
+                      @can('super_admin')
+                        {{ DB::table('archive_containers')->whereMonth('created_at', now()->month)->count() }}
+                      @else
+                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereMonth('created_at', now()->month)->count() }}
+                      @endcan
                     </h6>
                     </h6>
                   </div>
@@ -81,7 +94,11 @@
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                     <h6 class="text-muted font-semibold">Total Arsip Aktif</h6>
                     <h6 class="font-extrabold mb-0">
-                      {{ DB::table('archive_containers')->where('company_id', $companies)->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
+                      @can('super_admin')
+                        {{ DB::table('archive_containers')->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
+                      @else
+                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
+                      @endcan
                     </h6>
                   </div>
                 </div>
@@ -100,7 +117,11 @@
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                     <h6 class="text-muted font-semibold">Total Arsip Tidak Aktif</h6>
                     <h6 class="font-extrabold mb-0">
-                      {{ DB::table('archive_containers')->where('company_id', $companies)->whereDate('expiration_active', '<', now()->toDateString())->count() }}
+                      @can('super_admin')
+                        {{ DB::table('archive_containers')->whereDate('expiration_active', '<', now()->toDateString())->count() }}
+                      @else
+                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereDate('expiration_active', '<', now()->toDateString())->count() }}
+                      @endcan
                     </h6>
                   </div>
                 </div>
@@ -109,25 +130,57 @@
           </div>
         </div>
 
-        <div class="row">
+        @foreach ($workUnits as $company)
+          <div class="row">
+            <h5>{{ $company->name }}</h5>
+            @forelse($company->division as $division)
+              <div class="col-6 col-lg-2 col-md-6">
+                <div class="card">
+                  <div class="card-body ">
+                    <div class="row">
+                      <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted font-semibold"><a
+                            href="{{ route('backsite.division-archive', $division->id) }}"> {{ $division->code }}</a>
+                        </h6>
+                        <h6 class="font-extrabold mb-0">
+                          {{ $division->archive_container->count() }}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            @empty
+              <div class="col-12 col-lg-12 col-md-12">
+                <div class="card">
+                  <div class="card-body ">
+                    <div class="row">
+                      <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted text-center font-semibold">
+                          Empty
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            @endforelse
+          </div>
+        @endforeach
+
+        {{-- <div class="row">
           <h5>Total Arsip Divisi</h5>
           @foreach ($divisions as $division)
             <div class="col-6 col-lg-2 col-md-6">
               <div class="card">
                 <div class="card-body ">
                   <div class="row">
-                    {{-- <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
-                      <div class="stats-icon purple mb-2">
-                        <i class="ri-archive-stack-line"></i>
-                      </div>
-                    </div> --}}
                     <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                      <h6 class="text-muted font-semibold"> <a
+                      <h6 class="text-muted font-semibold"><a
                           href="{{ route('backsite.division-archive', $division->id) }}"> {{ $division->code }}</a>
                       </h6>
                       <h6 class="font-extrabold mb-0">
                         {{ $division->archive_container->count() }}
-                        {{-- {{ DB::table('archive_containers')->where('division_id', $archiveContainer->division_id)->count() }} --}}
                       </h6>
                     </div>
                   </div>
@@ -135,7 +188,7 @@
               </div>
             </div>
           @endforeach
-        </div>
+        </div> --}}
 
         <div class="row">
           <div class="col-12">
@@ -173,8 +226,8 @@
                         @forelse ($lendingArchives as $lending)
                           <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $lending->archiveContainer->number_document }}</td>
-                            <td>{{ $lending->archiveContainer->division->name }}</td>
+                            <td>{{ $lending->archiveContainer->number_document ?? 'N/A' }}</td>
+                            <td>{{ $lending->archiveContainer->division->name ?? 'N/A' }}</td>
                             <td>
                               @if ($lending->archiveContainer->status == 2)
                                 <span class="badge bg-light-warning">Dipinjam</span>
@@ -216,8 +269,8 @@
                       @forelse ($archiveContainers as $archive)
                         <tr>
                           <td>{{ $loop->iteration }}</td>
-                          <td>{{ $archive->number_document }}</td>
-                          <td>{{ $archive->division->name }}</td>
+                          <td>{{ $archive->number_document ?? 'N/A' }}</td>
+                          <td>{{ $archive->division->name ?? 'N/A' }}</td>
                           {{-- <td>{{ $archive->tag }}</td> --}}
                         </tr>
                       @empty

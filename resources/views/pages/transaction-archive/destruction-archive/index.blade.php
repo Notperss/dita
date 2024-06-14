@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Destruction Archive')
+@section('title', 'Archive Destruction')
 @section('content')
   <div class="page-heading">
     <div class="page-title">
       <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
           <h3>Pemusnahan Arsip</h3>
-          <p class="text-subtitle text-muted">List all data from the Destruction Archive.</p>
+          <p class="text-subtitle text-muted">List all data from the Archive Destruction.</p>
         </div>
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
               {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Master Data</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Pemusnahan Arsip</li>
             </ol>
           </nav>
@@ -32,7 +32,7 @@
               <div class="row">
                 <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                   <h6 class="text-muted font-semibold">
-                    {{ $division->code }}
+                    <a href="{{ route('backsite.division-destruct', encrypt($division->id)) }}">{{ $division->code }}</a>
                   </h6>
                   <h6 class="font-extrabold mb-0">
                     @php
@@ -41,8 +41,9 @@
                       // Assuming $archivesContainer is a collection
                       $expirationDate += $archivesContainer
                           ->filter(function ($archive) {
-                              return $archive->expiration_active < now()->toDateString();
+                              return $archive->expiration_inactive < now()->toDateString();
                           })
+                          ->where('status', 1)
                           ->count();
                     @endphp
                     {{ $expirationDate }}
@@ -59,74 +60,62 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          {{-- <a href="{{ route('backsite.archive-container.create') }}" class="btn btn-primary"> <i
-              class="bi bi-plus-lg"></i>
-            Add data</a> --}}
+          {{-- <a href="{{ route('backsite.archive-container.create') }}" class="btn btn-primary">
+            Pratinjau Pemusnahan Arsip
+          </a> --}}
+          <a href="{{ route('backsite.archive-destroy') }}" class="btn btn-primary">
+            Arsip yang Dimusnahkan
+          </a>
           {{-- <a onclick="upload()" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data File</a> --}}
         </h5>
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <form class="form" method="POST" action="{{ route('backsite.approvalDestruction') }}"
-            enctype="multipart/form-data" id="myForm">
+          <form class="form" method="POST" action="{{ route('backsite.check-destroy') }}" enctype="multipart/form-data"
+            id="myForm">
             @csrf
             @method('PUT')
-            <table class="table table-striped" id="table1">
+            <table class="table table-striped" id="destruct-table">
               <thead>
                 <tr>
                   <th class="text-center">#</th>
                   {{-- <th class="text-center">No. Container</th> --}}
+                  <th class="text-center">No.Kontainer</th>
                   <th class="text-center">Nomor Dokumen</th>
                   <th class="text-center">Divisi</th>
-                  <th class="text-center">Masa Retensi</th>
+                  <th class="text-center">Masa Inaktif</th>
                   <th class="text-center">Perihal</th>
                   {{-- <th class="text-center">keterangan</th> --}}
                   <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                @foreach ($archives as $archive)
+                {{-- @foreach ($archives as $archive)
                   <input type="hidden" name="id[]" id="id" value="{{ $archive->id }}">
                   <tr>
                     <td class="text-center">{{ $loop->iteration }}</td>
+                    <td class="text-center">{{ $archive->number_container ?? 'N/A' }}</td>
                     <td class="text-center">{{ $archive->number_document ?? 'N/A' }}</td>
                     <td class="text-center">{{ $archive->division->name ?? 'N/A' }}</td>
                     <td class="text-center">
                       {{ Carbon\Carbon::parse($archive->expiration_active)->translatedFormat('l, d F Y') ?? 'N/A' }}</td>
-                    {{-- <td class="text-center">{{ $archive->detail_location ?? 'N/A' }}</td> --}}
                     <td class="text-center"><a data-bs-toggle="modal" data-bs-target="#modal-content-{{ $archive->id }}"
                         class="btn icon btn-primary" title="Edit"><i class="bi bi-eye"></i></a></td>
                     <td class="text-center">
 
-                      @can('user')
-                        <li class="d-inline-block me-2 mb-1">
-                          <div class="form-check">
-                            <div class="custom-control custom-checkbox">
-                              <input type="checkbox" class="form-check-input form-check-danger"
-                                name="approval[{{ $archive->id }}]" id="customColorCheck{{ $loop->index }}">
-                              <label class="form-check-label" for="customColorCheck{{ $loop->index }}">Musnahkan</label>
-                            </div>
-                          </div>
-                        </li>
-                      @else
-                        @if ($archive->status == 10)
-                          <span style="color: red">Dimusnahkan</span>
-                        @endif
-                      @endcan
-
-
-
-                      @include('pages.transaction-archive.destruction-archive.content-show')
                     </td>
                   </tr>
-                @endforeach
+                @endforeach --}}
+
               </tbody>
             </table>
-            @if ($archives->isNotEmpty())
-              <button type="button" onclick="submitForm()"
-                class="btn btn-primary bg-primary my-2 float-right">Submit</button>
-            @endif
+            @can('user')
+              @if ($archives->isNotEmpty())
+                <button type="button" onclick="submitForm()"
+                  class="btn btn-primary bg-primary my-2 float-right">Submit</button>
+              @endif
+            @endcan
           </form>
         </div>
       </div>
@@ -154,39 +143,60 @@
     }
   </script> --}}
 
-  {{-- <script>
+  <script>
+    // Initialize an object to store checkbox states
+    var checkboxStates = {};
+
+    // Function to update checkbox states
+    function updateCheckboxState(id, checked) {
+      checkboxStates[id] = checked;
+    }
+
+    // Function to initialize checkbox states
+    function initializeCheckboxStates() {
+      $('input[type="checkbox"]').each(function() {
+        var id = $(this).attr('id');
+        var checked = $(this).prop('checked');
+        checkboxStates[id] = checked;
+      });
+    }
+
+    // Listen for checkbox changes
+    $('body').on('change', 'input[type="checkbox"]', function() {
+      var id = $(this).attr('id');
+      var checked = $(this).prop('checked');
+      updateCheckboxState(id, checked);
+    });
+
+    // Function to update checkboxes based on stored states
+    function updateCheckboxes() {
+      for (var id in checkboxStates) {
+        $('#' + id).prop('checked', checkboxStates[id]);
+      }
+    }
+
+    // Initialize checkbox states
+    initializeCheckboxStates();
+
+
+    // Reapply checkbox states after table redraw (e.g., pagination, sorting, filtering)
+    $('#destruct-table').on('draw.dt', function() {
+      updateCheckboxes();
+    });
+
     jQuery(document).ready(function($) {
-      $('#container-table').DataTable({
+      $('#destruct-table').DataTable({
         processing: true,
         serverSide: true,
-        ordering: false,
+        ordering: true,
+        pageLength: -1, // Show all records by default
         lengthMenu: [
-          [10, 25, 50, -1],
-          [10, 25, 50, 'All']
-        ],
-        lengthChange: true,
-        pageLength: 15,
-        dom: 'Bfrtip',
-        buttons: [{
-            extend: 'copy',
-            className: "btn btn-info"
-          },
-          {
-            extend: 'excel',
-            className: "btn btn-info"
-          },
-          {
-            extend: 'print',
-            className: "btn btn-info",
-            exportOptions: {
-              columns: ':not(.no-print)' // Exclude elements with class 'no-print'
-            }
-          },
-        ],
+          [-1],
+          ['All']
+        ], // Add 'All' option to the length menu
         ajax: {
-          url: "{{ route('backsite.archive-container.index') }}",
+          url: "{{ route('backsite.destruction-archive.index') }}",
         },
-
         columns: [{
             data: 'DT_RowIndex',
             name: 'DT_RowIndex',
@@ -202,17 +212,18 @@
             data: 'number_document',
             name: 'number_document',
           },
-          {
-            data: 'regarding',
-            name: 'regarding',
-          },
+
           {
             data: 'division.name',
             name: 'division.name',
           },
           {
-            data: 'detail_location',
-            name: 'detail_location',
+            data: 'expiration_inactive',
+            name: 'expiration_inactive',
+          },
+          {
+            data: 'regarding',
+            name: 'regarding',
           },
           {
             data: 'action',
@@ -226,9 +237,31 @@
           className: 'text-center',
           targets: '_all'
         }, ],
+        dom: 'Bfrtip',
+        buttons: [{
+            extend: 'print',
+            className: "btn btn-info",
+            exportOptions: {
+              columns: ':not(.no-print)' // Exclude elements with class 'no-print'
+            }
+          },
+          {
+            text: 'Check All',
+            className: 'btn btn-primary',
+            action: function() {
+              $('input[type="checkbox"].form-check-input').prop('checked', true);
+            }
+          }
+        ]
+      });
+      // Check all checkboxes when the header checkbox is clicked
+      $('#checkAll').on('click', function() {
+        var isChecked = $(this).prop('checked');
+        $('input[type="checkbox"].form-check-input').prop('checked', isChecked);
       });
     });
   </script>
+  {{-- 
   <script>
     function upload() {
       $.ajaxSetup({

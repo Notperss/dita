@@ -13,11 +13,13 @@ return new class extends Migration {
         Schema::create('classification_subs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('main_classification_id');
+            $table->unsignedBigInteger('company_id');
             $table->string('code');
             $table->string('name');
             $table->longText('description')->nullable();
             $table->timestamps();
 
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('main_classification_id')->references('id')->on('classification_mains')->onDelete('cascade');
 
         });

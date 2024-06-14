@@ -29,7 +29,7 @@
 
           <div class="mb-3">
             <label for="company_id" class="form-label">Perusahaan</label>
-            <select class="form-control choices" id="company_id" placeholder="Guard Name" name="company_id">
+            <select class="form-control choices" id="company_id" name="company_id">
               <option value="" selected disabled>Choose</option>
               @foreach ($companies as $company)
                 <option value="{{ $company->id }}" {{ $company->id == $user->company_id ? 'selected' : '' }}>
@@ -41,13 +41,18 @@
 
           <div class="mb-3">
             <label for="division_id" class="form-label">Divisi</label>
-            <select class="form-control" id="division_id" placeholder="Guard Name" name="division_id">
+            <select class="form-control" id="division_id" name="division_id">
               <option value="" selected disabled>Choose</option>
-              {{-- @foreach ($divisions as $division)
-                <option value="{{ $division->id }}" {{ $division->id == $user->division_id ? 'selected' : '' }}>
-                  {{ $division->name }}
+              @php
+                $divs = DB::table('divisions')
+                    ->where('company_id', $user->company_id)
+                    ->get();
+              @endphp
+              @foreach ($divs as $div)
+                <option value="{{ $div->id }}" {{ $div->id == $user->division_id ? 'selected' : '' }}>
+                  {{ $div->name }}
                 </option>
-              @endforeach --}}
+              @endforeach
             </select>
             <x-form.validation.error name="division_id" />
           </div>

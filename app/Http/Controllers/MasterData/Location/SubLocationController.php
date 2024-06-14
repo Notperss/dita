@@ -23,7 +23,13 @@ class SubLocationController extends Controller
             abort(403);
         }
         $company_id = auth()->user()->company_id;
-        $subLocations = SubLocation::where('company_id', $company_id)->with('mainLocation')->orderBy('name', 'asc')->get();
+
+        if (Gate::allows('super_admin')) {
+            $subLocations = SubLocation::with('mainLocation')->orderBy('name', 'asc')->get();
+        } else {
+            $subLocations = SubLocation::where('company_id', $company_id)->with('mainLocation')->orderBy('name', 'asc')->get();
+        }
+
         return view('pages.master-data.location.sub-location.index', compact('subLocations'));
     }
 

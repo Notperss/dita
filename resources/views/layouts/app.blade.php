@@ -12,8 +12,8 @@
 </head>
 
 <body>
-  @routes()
-  <script src="{{ asset('') }}/assets/static/js/initTheme.js"></script>
+  @routes
+  <script src="{{ asset('dist/assets/static/js/initTheme.js') }}"></script>
   <div id="app">
     {{-- sidebar --}}
     {{-- @include('components.menu') --}}

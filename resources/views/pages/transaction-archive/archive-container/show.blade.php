@@ -58,10 +58,10 @@
           {{ isset($archiveContainers->subClassification->name) ? $archiveContainers->subClassification->name : 'N/A' }}
         </td>
       </tr>
-      <tr>
+      {{-- <tr>
         <th>Sub Series Arsip</th>
         <td>{{ isset($archiveContainers->subseries) ? $archiveContainers->subseries : 'N/A' }}</td>
-      </tr>
+      </tr> --}}
     </table>
   </div>
 
@@ -235,14 +235,7 @@
       </tr>
     </table>
   </div>
-
-
-
 </div>
-
-
-
-
 
 <script>
   Fancybox.bind('[data-fancy]', {

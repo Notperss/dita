@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
+use App\Models\MasterData\WorkUnits\Division;
+use App\Models\MasterData\Classification\SubClassification;
 use App\Models\MasterData\Classification\MainClassification;
 
 class MainClassificationController extends Controller
@@ -21,8 +23,9 @@ class MainClassificationController extends Controller
             abort(403);
         }
         $company_id = auth()->user()->company_id;
+        $division = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
         $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
-        return view('pages.master-data.classification.main-classification.index', compact('mainClassifications'));
+        return view('pages.master-data.classification.main-classification.index', compact('mainClassifications', 'division'));
     }
 
     /**
@@ -33,7 +36,9 @@ class MainClassificationController extends Controller
         if (! Gate::allows('main_classification_create')) {
             abort(403);
         }
-        return view('pages.master-data.classification.main-classification.create');
+        $company_id = auth()->user()->company_id;
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        return view('pages.master-data.classification.main-classification.create', compact('divisions'));
     }
 
     /**
@@ -46,15 +51,15 @@ class MainClassificationController extends Controller
         }
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
-            'code' => ['required', 'max:255', Rule::unique('classification_mains')],
+            // 'code' => ['required', 'max:255', Rule::unique('classification_mains')],
 
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Klasifikasi harus diisi.',
             'name.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
-            'code.required' => 'Kode Klasifikasi harus diisi.',
-            'code.max' => 'Kode Klasifikasi tidak boleh lebih dari :max karakter.',
-            'code.unique' => 'Kode Klasifikasi sudah digunakan.',
+            // 'code.required' => 'Kode Klasifikasi harus diisi.',
+            // 'code.max' => 'Kode Klasifikasi tidak boleh lebih dari :max karakter.',
+            // 'code.unique' => 'Kode Klasifikasi sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
@@ -92,8 +97,11 @@ class MainClassificationController extends Controller
         if (! Gate::allows('main_classification_edit')) {
             abort(403);
         }
+        $company_id = auth()->user()->company_id;
         $mainClassifications = MainClassification::find($id);
-        return view('pages.master-data.classification.main-classification.edit', compact('mainClassifications'));
+        $divisions = Division::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+
+        return view('pages.master-data.classification.main-classification.edit', compact('mainClassifications', 'divisions'));
     }
 
     /**
@@ -106,15 +114,15 @@ class MainClassificationController extends Controller
         }
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
-            'code' => ['required', 'max:255', Rule::unique('classification_mains')->ignore($mainClassification->id)],
+            // 'code' => ['required', 'max:255', Rule::unique('classification_mains')->ignore($mainClassification->id)],
 
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Klasifikasi harus diisi.',
             'name.max' => 'Nama Klasifikasi tidak boleh lebih dari :max karakter.',
-            'code.required' => 'Kode Klasifikasi harus diisi.',
-            'code.max' => 'Kode Klasifikasi tidak boleh lebih dari :max karakter.',
-            'code.unique' => 'Kode Klasifikasi sudah digunakan.',
+            // 'code.required' => 'Kode Klasifikasi harus diisi.',
+            // 'code.max' => 'Kode Klasifikasi tidak boleh lebih dari :max karakter.',
+            // 'code.unique' => 'Kode Klasifikasi sudah digunakan.',
 
             // Add custom error messages for other rules
         ]);
@@ -122,7 +130,6 @@ class MainClassificationController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
 
         // get all request from frontsite
         $data = $request->all();
@@ -163,4 +170,26 @@ class MainClassificationController extends Controller
             return back();
         }
     }
+
+    public function getSubClassifications(Request $request)
+    {
+        $companies = auth()->user()->company_id;
+        $mainClassification = $request->input('main_classification_id');
+        $subClassifications = SubClassification::where('company_id', $companies)->where('main_classification_id', $mainClassification)->get();
+        return response()->json($subClassifications);
+    }
+    public function getMainClassifications(Request $request)
+    {
+        $companies = auth()->user()->company_id;
+        $division = $request->input('division_id');
+        $mainClassifications = MainClassification::where('company_id', $companies)->where('division_id', $division)->get();
+        return response()->json($mainClassifications);
+    }
+    // public function getSeriesClassifications(Request $request)
+    // {
+    //     $companies = auth()->user()->company_id;
+    //     $subClassification = $request->input('sub_classification_id');
+    //     $seriesClassifications = RetentionArchives::where('company_id', $companies)->where('sub_classification_id', $subClassification)->get();
+    //     return response()->json($seriesClassifications);
+    // }
 }

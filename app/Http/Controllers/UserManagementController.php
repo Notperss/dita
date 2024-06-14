@@ -43,7 +43,7 @@ class UserManagementController extends Controller
             // $userCompany = User::orderBy('name')->get();
             // $companyUser = $userCompany->company_id;
 
-            $divisions = Division::where('company_id', $company_id)->orderBy('name')->get();
+            $divisions = Division::orderBy('name')->get();
 
         } else {
 

@@ -55,7 +55,7 @@ class SubClassificationController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'main_classification_id' => ['required', 'max:255'],
-            'code' => ['required', 'max:255',],
+            // 'code' => ['required', 'max:255',],
             'type_document' => ['required', 'max:255',],
             'period_active' => ['required', 'max:255',],
             'period_inactive' => ['required', 'max:255',],
@@ -127,7 +127,7 @@ class SubClassificationController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:255'],
             'main_classification_id' => ['required', 'max:255'],
-            'code' => ['required', 'max:255',],
+            // 'code' => ['required', 'max:255',],
 
             // Add other validation rules as needed
         ], [

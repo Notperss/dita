@@ -50,7 +50,8 @@
                         @endphp
                         @foreach ($divisions as $division)
                           <option value="{{ $division->id }}" data-code={{ $division->code }}
-                            data-id-container="{{ $dataIdContainer }}" {{-- {{ $division->id ==optional(DB::table('archive_containers')->where('company_id', auth()->user()->company_id)->latest()->first())->division_id ??null? 'selected': '' }} --}}>
+                            data-id-container="{{ $dataIdContainer }}"
+                            {{ $division->id == optional(DB::table('archive_containers')->latest()->first())->division_id ?? null ? 'selected' : '' }}>
                             {{ $division->name }}</option>
                         @endforeach
                       </select>
@@ -69,8 +70,10 @@
                             data-value="{{ $numberContainer->mainLocation->name }}"
                             data-value2="{{ $numberContainer->subLocation->name }}"
                             data-value3="{{ $numberContainer->detailLocation->name }}"
-                            data-value4="{{ $numberContainer->description }}" {{-- {{ $numberContainer->number_container == DB::table('archive_containers')->latest()->first()->number_container ? 'selected' : '' }} --}}>
+                            data-value4="{{ $numberContainer->description }}" {{-- {{ $numberContainer->number_container == str_pad(DB::table('archive_containers')->latest()->first()->number_container, 3, '0', STR_PAD_LEFT) ? 'selected' : '' }} --}}
+                            {{ $numberContainer->number_container == DB::table('archive_containers')->latest()->first()->number_container ? 'selected' : '' }}>
                             {{-- {{ str_pad($numberContainer->number_container, 3, '0', STR_PAD_LEFT) }} --}}
+                            {{ str_pad($numberContainer->number_container, 3, '0', STR_PAD_LEFT) }}
                           </option>
                         @endforeach
 
@@ -82,7 +85,8 @@
                     </div>
                     <div class="form-group">
                       <label for="main_location">Lokasi Utama</label>
-                      <input type="text" id="main_location" name="main_location" {{-- value="{{ DB::table('archive_containers')->latest()->first()->main_location ?? '' }}" --}}
+                      <input type="text" id="main_location" name="main_location"
+                        value="{{ DB::table('archive_containers')->latest()->first()->main_location ?? '' }}"
                         class="form-control" readonly>
                       @if ($errors->has('main_location'))
                         <p style="font-style: bold; color: red;">
@@ -91,7 +95,8 @@
                     </div>
                     <div class="form-group">
                       <label for="sub_location">Sub Lokasi</label>
-                      <input type="text" id="sub_location" name="sub_location" {{-- value="{{ DB::table('archive_containers')->latest()->first()->sub_location ?? '' }}" --}}
+                      <input type="text" id="sub_location" name="sub_location"
+                        value="{{ DB::table('archive_containers')->latest()->first()->sub_location ?? '' }}"
                         class="form-control" readonly>
                       @if ($errors->has('sub_location'))
                         <p style="font-style: bold; color: red;">
@@ -100,7 +105,8 @@
                     </div>
                     <div class="form-group">
                       <label for="detail_location">Detail Lokasi</label>
-                      <input type="text" id="detail_location" name="detail_location" {{-- value="{{ DB::table('archive_containers')->latest()->first()->detail_location ?? '' }}" --}}
+                      <input type="text" id="detail_location" name="detail_location"
+                        value="{{ DB::table('archive_containers')->latest()->first()->detail_location ?? '' }}"
                         class="form-control" readonly>
                       @if ($errors->has('detail_location'))
                         <p style="font-style: bold; color: red;">
@@ -109,9 +115,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description">Keterangan</label>
-                      <textarea type="text" id="description_location" name="description_location" class="form-control" readonly>
-                        {{-- {{ DB::table('archive_containers')->latest()->first()->description_location ?? '' }}  --}}
-                      </textarea>
+                      <textarea type="text" id="description_location" name="description_location" class="form-control" readonly> {{ DB::table('archive_containers')->latest()->first()->description_location ?? '' }} </textarea>
                       @if ($errors->has('description_location'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_location') }}</p>
@@ -224,7 +228,7 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="number_catalog">Nomor Katalog/PP/DLL</label>
+                      <label for="number_catalog">Nomor Katalog</label>
                       <input type="text" id="number_catalog" name="number_catalog"
                         value="{{ old('number_catalog') }}" class="form-control">
                       @if ($errors->has('number_catalog'))
@@ -438,6 +442,7 @@
       });
     });
   </script> --}}
+
   {{-- <script>
     $('#number_container').change(function() {
       var numberId = $(this).val();
@@ -492,13 +497,14 @@
       }
     });
   </script> --}}
+
   <script>
     $(document).ready(function() {
       // Assuming you have a table with the id 'table1'
       let table = $('#table11');
       // Add table headers
       table.append(
-        '<thead><tr><th>Nomor Kontainer</th><th>Nomor Dokumen</th><th>Perihal</th><th>Jenis Arsip</th><th>Action</th></tr></thead>'
+        '<thead><tr><th>Nomor Kontainer</th><th>Nomor Arsip</th><th>Masa Retensi</th><th>Jenis Arsip</th><th>Action</th></tr></thead>'
       );
 
       $('#number_container').change(function() {
@@ -519,8 +525,8 @@
                 // Create a new row for each item in the data
                 let row = $('<tr></tr>');
                 row.append('<td>' + paddedNumber + '</td>');
-                row.append('<td>' + (value.number_document ? value.number_document : 'N/A') + '</td>');
-                row.append('<td>' + (value.regarding ? value.regarding : 'N/A') +
+                row.append('<td>' + value.number_archive + '</td>');
+                row.append('<td>' + (value.expiration_date ? value.expiration_date : 'Permanen') +
                   '</td>');
                 row.append('<td>' + value.archive_type + '</td>');
                 // Add action buttons
@@ -780,27 +786,20 @@
         var descriptionActive = selectedOption.data('description-active');
         $('#description_active').val(descriptionActive);
 
-        // var retentionInactive = selectedOption.data('value-inactive');
-        // $('#period_inactive').val(calculateExpiration(retentionInactive));
-
         var retentionInactive = selectedOption.data('value-inactive');
-        var sum41 = retentionInactive + retentionActive;
-        $('#period_inactive').val(calculateExpiration(sum41));
+        $('#period_inactive').val(calculateExpiration(retentionInactive));
 
         var descriptionInactive = selectedOption.data('description-inactive');
-        $('#description_inactive').val(
-          descriptionInactive);
+        $('#description_inactive').val(descriptionInactive);
 
         var description = selectedOption.data('description');
         $('#description_retention').val(description);
 
         var expiredActive = selectedOption.data('value-active');
-        $('#period_actives').val((expiredActive !==
-          "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
+        $('#period_actives').val((expiredActive !== "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
 
         var expiredInactive = selectedOption.data('value-inactive');
-        $('#period_inactives').val((expiredInactive !==
-          "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
+        $('#period_inactives').val((expiredInactive !== "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
       });
     });
 

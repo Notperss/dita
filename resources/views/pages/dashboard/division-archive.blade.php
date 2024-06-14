@@ -31,6 +31,7 @@
               <th class="text-center">No.Dokumen</th>
               <th class="text-center">Perihal</th>
               <th class="text-center">Detail Lokasi</th>
+              <th class="text-center">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -41,6 +42,7 @@
                 <td class="text-center">{{ $archiveContainer->number_document ?? 'N/A' }}</td>
                 <td class="text-center">{{ $archiveContainer->regarding ?? 'N/A' }}</td>
                 <td class="text-center">{{ $archiveContainer->detail_location ?? 'N/A' }}</td>
+                <td class="text-center">{{ $archiveContainer->status ?? 'N/A' }}</td>
               </tr>
             @endforeach
           </tbody>

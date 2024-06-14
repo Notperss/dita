@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterData\Company\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -26,7 +27,8 @@ class DashboardController extends Controller
         // $archivesQuery = ArchiveContainer::where('status', 1)->whereDate('expiration_active', '<', now()->toDateString())->orderBy('created_at', 'desc');
 
         if (Gate::allows('super_admin')) {
-            $divisions = Division::with('archive_container')->get();
+            // $divisions = Division::with('archive_container')->get();
+            $workUnits = Company::orderBy('name', 'asc')->with('division')->get();
             $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')->take(10)->get();
             $lendingArchives = LendingArchive::orderBy('created_at', 'desc')->take(10)->get();
 
@@ -39,7 +41,9 @@ class DashboardController extends Controller
                 $monthCounts[] = $count;
             }
         } else {
-            $divisions = Division::where('company_id', $companies)->with('archive_container')->get();
+            // $workUnits = Division::where('company_id', $companies)->with('archive_container')->get();
+            $workUnits = Company::orderBy('name', 'asc')->where('id', $companies)->with('division')->get();
+
             $archiveContainers = ArchiveContainer::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
             $lendingArchives = LendingArchive::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
 
@@ -54,7 +58,7 @@ class DashboardController extends Controller
         }
 
 
-        return view('pages.dashboard.index', compact('divisions', 'archiveContainers', 'lendingArchives', 'monthCounts', 'companies'));
+        return view('pages.dashboard.index', compact('workUnits', 'archiveContainers', 'lendingArchives', 'monthCounts', 'companies'));
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Models\MasterData\Classification;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use App\Models\MasterData\Retention\RetentionArchives;
+use App\Models\MasterData\WorkUnits\Division;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MainClassification extends Model
@@ -14,6 +15,7 @@ class MainClassification extends Model
     protected $table = 'classification_mains';
     protected $fillable = [
         'company_id',
+        'division_id',
         'code',
         'name',
         'description',
@@ -23,6 +25,11 @@ class MainClassification extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(Company::class, 'company_id');
+    }
+    public function division()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(Division::class, 'division_id');
     }
     public function sub_classification()
     {

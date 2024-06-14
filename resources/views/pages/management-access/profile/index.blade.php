@@ -36,17 +36,17 @@
         <div class="p-2">
           <h3 class="text-white mb-1">{{ auth()->user()->name }}</h3>
           <p class="text-white-75">{{ auth()->user()->getRoleNames()[0] }}</p>
-          <div class="hstack text-white-50 gap-1">
+          {{-- <div class="hstack text-white-50 gap-1">
             <div class="me-2"><i class="ri-map-pin-user-line me-1 text-white-75 fs-16 align-middle"></i>California,
               United States</div>
             <div>
               <i class="ri-building-line me-1 text-white-75 fs-16 align-middle"></i>Themesbrand
             </div>
-          </div>
+          </div> --}}
         </div>
       </div>
       <!--end col-->
-      <div class="col-12 col-lg-auto order-last order-lg-0">
+      {{-- <div class="col-12 col-lg-auto order-last order-lg-0">
         <div class="row text text-white-50 text-center">
           <div class="col-lg-6 col-4">
             <div class="p-2">
@@ -61,7 +61,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> --}}
       <!--end col-->
 
     </div>
@@ -80,7 +80,7 @@
                   class="d-none d-md-inline-block">Overview</span>
               </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
               <a class="nav-link fs-14" data-bs-toggle="tab" href="#activities" role="tab">
                 <i class="ri-list-unordered d-inline-block d-md-none"></i> <span
                   class="d-none d-md-inline-block">Activities</span>
@@ -97,7 +97,7 @@
                 <i class="ri-folder-4-line d-inline-block d-md-none"></i> <span
                   class="d-none d-md-inline-block">Documents</span>
               </a>
-            </li>
+            </li> --}}
           </ul>
 
           <div class="flex-shrink-0">
@@ -131,24 +131,26 @@
                         <tbody>
                           <tr>
                             <th class="ps-0" scope="row">Full Name :</th>
-                            <td class="text-muted">Anna Adame</td>
+                            <td class="text-muted">{{ auth()->user()->name }}</td>
+                          </tr>
+                          <th class="ps-0" scope="row">E-mail :</th>
+                          <td class="text-muted">{{ auth()->user()->email }}</td>
                           </tr>
                           <tr>
-                            <th class="ps-0" scope="row">Mobile :</th>
-                            <td class="text-muted">+(1) 987 6543</td>
+                            <th class="ps-0" scope="row">Division :</th>
+                            <td class="text-muted">{{ auth()->user()->division->name ?? 'N/A' }}</td>
                           </tr>
                           <tr>
-                            <th class="ps-0" scope="row">E-mail :</th>
-                            <td class="text-muted">daveadame@velzon.com</td>
-                          </tr>
                           <tr>
-                            <th class="ps-0" scope="row">Location :</th>
-                            <td class="text-muted">California, United States
+                            <th class="ps-0" scope="row">Company :</th>
+                            <td class="text-muted">{{ auth()->user()->company->name ?? 'N/A' }}
                             </td>
                           </tr>
                           <tr>
                             <th class="ps-0" scope="row">Joining Date</th>
-                            <td class="text-muted">24 Nov 2021</td>
+                            <td class="text-muted">
+                              {{ Carbon\Carbon::parse(auth()->user()->created_at)->translatedFormat('H:i - l, d F Y') ?? 'N/A' }}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -156,7 +158,7 @@
                   </div><!-- end card body -->
                 </div><!-- end card -->
 
-                <div class="card">
+                {{-- <div class="card">
                   <div class="card-body">
                     <h5 class="card-title mb-4">Portfolio</h5>
                     <div class="d-flex flex-wrap gap-2">
@@ -338,11 +340,12 @@
                     </div>
                   </div>
                   <!--end card-body-->
-                </div>
+                </div> --}}
                 <!--end card-->
               </div>
+
               <!--end col-->
-              <div class="col-xxl-9">
+              {{-- <div class="col-xxl-9">
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title mb-3">About</h5>
@@ -1303,12 +1306,13 @@
                   <!-- end card body -->
                 </div><!-- end card -->
 
-              </div>
+              </div> --}}
               <!--end col-->
             </div>
             <!--end row-->
           </div>
-          <div class="tab-pane fade" id="activities" role="tabpanel">
+
+          {{-- <div class="tab-pane fade" id="activities" role="tabpanel">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title mb-3">Activities</h5>
@@ -2341,7 +2345,8 @@
               </div>
             </div>
           </div>
-          <!--end tab-pane-->
+          <!--end tab-pane--> --}}
+
         </div>
         <!--end tab-content-->
       </div>

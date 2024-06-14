@@ -30,9 +30,11 @@ class PermissionController extends Controller
                 return $query->select('id', 'name');
             })
             ->orderBy('name')->get();
+
         // $roles = Role::orderBy('name')->get();
 
         $roles = Role::orderBy('name')->get();
+
         if ($roles->isEmpty()) {
             abort(403, 'No roles found.');
         }

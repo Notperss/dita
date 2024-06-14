@@ -25,7 +25,12 @@ class MainLocationController extends Controller
 
         $company_id = auth()->user()->company_id;
 
-        $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        if (Gate::allows('super_admin')) {
+            $mainLocations = MainLocation::orderBy('name', 'asc')->get();
+        } else {
+            $mainLocations = MainLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        }
+
         return view('pages.master-data.location.main-location.index', compact('mainLocations'));
     }
 

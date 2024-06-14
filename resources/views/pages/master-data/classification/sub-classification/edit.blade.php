@@ -46,7 +46,9 @@
                         @foreach ($mainClassifications as $mainClassification)
                           <option value="{{ $mainClassification->id }}"
                             {{ $subClassifications->main_classification_id == $mainClassification->id ? 'selected' : '' }}>
-                            {{ $mainClassification->name }} ({{ $mainClassification->code }})</option>
+                            ({{ $mainClassification->division->code }})
+                            .
+                            -{{ $mainClassification->name }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('sub_classification_id'))
@@ -55,9 +57,9 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="code">Kode Sub Klasifikasi <code>*</code></label>
+                      <label for="code">Kode Sub Klasifikasi</label>
                       <input type="text" id="code" class="form-control" placeholder="Kode Sub Klasifikasi"
-                        name="code" value="{{ old('code', $subClassifications->code) }}" required>
+                        name="code" value="{{ old('code', $subClassifications->code) }}">
                       @if ($errors->has('code'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('code') }}</p>
@@ -105,6 +107,10 @@
                         </option>
                         <option value="5" {{ $subClassifications->period_active == 5 ? 'selected' : '' }}>5 Tahun
                         </option>
+                        <option value="8" {{ $subClassifications->period_active == 8 ? 'selected' : '' }}>8 Tahun
+                        </option>
+                        <option value="10" {{ $subClassifications->period_active == 10 ? 'selected' : '' }}>10 Tahun
+                        </option>
                         <option value="PERMANEN">Permanen</option>
                       </select>
                       @if ($errors->has('period_active'))
@@ -134,6 +140,11 @@
                         <option value="4" {{ $subClassifications->period_inactive == 4 ? 'selected' : '' }}>4 Tahun
                         </option>
                         <option value="5" {{ $subClassifications->period_inactive == 5 ? 'selected' : '' }}>5 Tahun
+                        </option>
+                        <option value="8" {{ $subClassifications->period_inactive == 8 ? 'selected' : '' }}>8 Tahun
+                        </option>
+                        <option value="10" {{ $subClassifications->period_inactive == 10 ? 'selected' : '' }}>10
+                          Tahun
                         </option>
                         <option value="PERMANEN">Permanen</option>
                       </select>

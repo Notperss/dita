@@ -201,18 +201,18 @@ class RetentionArchivesController extends Controller
         return back();
     }
 
-    public function getSubClassifications(Request $request)
-    {
-        $companies = auth()->user()->company_id;
-        $mainClassification = $request->input('main_classification_id');
-        $subClassifications = SubClassification::where('company_id', $companies)->where('main_classification_id', $mainClassification)->get();
-        return response()->json($subClassifications);
-    }
-    public function getSeriesClassifications(Request $request)
-    {
-        $companies = auth()->user()->company_id;
-        $subClassification = $request->input('sub_classification_id');
-        $seriesClassifications = RetentionArchives::where('company_id', $companies)->where('sub_classification_id', $subClassification)->get();
-        return response()->json($seriesClassifications);
-    }
+    // public function getSubClassifications(Request $request)
+    // {
+    //     $companies = auth()->user()->company_id;
+    //     $mainClassification = $request->input('main_classification_id');
+    //     $subClassifications = SubClassification::where('company_id', $companies)->where('main_classification_id', $mainClassification)->get();
+    //     return response()->json($subClassifications);
+    // }
+    // public function getSeriesClassifications(Request $request)
+    // {
+    //     $companies = auth()->user()->company_id;
+    //     $subClassification = $request->input('sub_classification_id');
+    //     $seriesClassifications = RetentionArchives::where('company_id', $companies)->where('sub_classification_id', $subClassification)->get();
+    //     return response()->json($seriesClassifications);
+    // }
 }

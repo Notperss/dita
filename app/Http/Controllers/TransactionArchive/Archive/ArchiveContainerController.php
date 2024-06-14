@@ -45,7 +45,6 @@ class ArchiveContainerController extends Controller
 
             }
 
-
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
@@ -100,10 +99,6 @@ class ArchiveContainerController extends Controller
         $archiveContainers = ArchiveContainer::where('company_id', $company_id)->orderBy('id', 'asc')->get();
         $divisions = Division::where('company_id', $company_id)->orderBy('id', 'asc')->get();
         $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
-        // $numberContainers = ContainerLocation::with('mainLocation')->where('division_id', $archiveContainersId->division_id)->get();
-        // $divisions = Division::orderBy('id', 'asc')->get();
-        // $sections = Section::orderBy('id', 'asc')->get();
-// Get the last ContainerLocation record
         $lastArchiveContainer = ArchiveContainer::latest()->first();
 
         if ($lastArchiveContainer) {
@@ -116,8 +111,6 @@ class ArchiveContainerController extends Controller
         }
         return view('pages.transaction-archive.archive-container.create',
             compact('archiveContainers', 'archiveContainersId', 'divisions', 'mainClassifications', 'numberContainers'));
-
-
     }
 
     /**
@@ -125,48 +118,21 @@ class ArchiveContainerController extends Controller
      */
     public function store(Request $request)
     {
-        // // Validate the request data
-        // $validator = Validator::make($request->all(), [
-        //     'division_id' => ['required'],
-        //     'number_container' => ['required'],
-
-        //     // Add other validation rules as needed
-        // ], [
-        //     'division_id.required' => 'Nama Divisi harus diisi.',
-        //     'number_container.required' => 'Nomor Kontainer harus diisi.',
-        //     // Add custom error messages for other rules
-        // ]);
-        // // Check if validation fails
-        // if ($validator->fails()) {
-        //     return redirect()->back()->withErrors($validator)->withInput();
-        // }
-
-        // If the validation passes, create the MainLocation record
-        // get all request from frontsite
-
-        // Validate the form data
         $request->validate([
-            // 'main_location' => 'required|string',
-            // 'sub_location' => 'required|string',
-            // 'detail_location' => 'required|string',
-            // 'description_location' => 'required|string',
-            // 'number_archive' => 'required|string',
             'main_classification_id' => 'required|string',
             'sub_classification_id' => 'required|string',
-            // 'retention' => 'required|string',
             'document_type' => 'required|string',
             'archive_type' => 'required|string',
-            // 'amount' => 'required|string',
             'archive_in' => 'required|date',
-            // 'expiration_date' => 'required',
+
             'number_app' => 'required|string|unique:archive_containers',
             // 'number_catalog' => 'required|string',
             // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
-            // 'subseries' => 'required|string',
+
             // 'file' => 'required|file|mimes:pdf|max:290',
-            'file' => 'file|mimes:pdf|max:290',
+            'file' => 'file|mimes:pdf',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
@@ -180,6 +146,8 @@ class ArchiveContainerController extends Controller
         ]);
         // dd($request->all());
 
+        // dd([
+        //     "inactive" => $request->expiration_inactive, "active" => $request->expiration_active]);
         // Retrieve form data
         $data = $request->all();
 
@@ -201,28 +169,28 @@ class ArchiveContainerController extends Controller
             if ($files->getClientOriginalExtension() == 'pdf') {
                 // Specify the path to pdftotext executable
 
-                $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
-                // Use spatie/pdf-to-text to extract text from the PDF
-                $text = (new Pdf($pdftotextPath))
-                    ->setPdf($files->getRealPath())
-                    ->text();
-
-                // $text = (new Pdf())
+                // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+                // // Use spatie/pdf-to-text to extract text from the PDF
+                // $text = (new Pdf($pdftotextPath))
                 //     ->setPdf($files->getRealPath())
                 //     ->text();
+
+                $text = (new Pdf())
+                    ->setPdf($files->getRealPath())
+                    ->text();
 
                 // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
                 $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
                 // Get the first 100 characters from the filtered text
-                $first200Chars = substr($filteredText, 0, 180);
+                $first100Chars = substr($filteredText, 0, 100);
 
                 // Store the filtered text in the 'content_file' column
                 $data['content_file'] = $filteredText;
             }
 
             $file = $files->getClientOriginalName();
-            $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+            $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first100Chars . ' )' . '-' . Str::random(5);
             $extension = $files->getClientOriginalExtension();
             $fullname = $basename . '.' . $extension;
 
@@ -244,100 +212,6 @@ class ArchiveContainerController extends Controller
 
         alert()->success('Success', 'Data successfully added');
         return redirect()->back()->withInput();
-
-
-
-        // try {
-        //     // Retrieve form data
-        //     $data = $request->all();
-
-        //     // Process file upload
-        //     if ($request->hasFile('file')) {
-        //         $files = $request->file('file');
-
-
-        //         if ($files->getClientOriginalExtension() == 'pdf') {
-        //             // Specify the path to pdftotext executable
-        //             $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
-
-        //             // Use spatie/pdf-to-text to extract text from the PDF
-        //             $text = (new Pdf($pdftotextPath))
-        //                 ->setPdf($files->getRealPath())
-        //                 ->text();
-
-        //             // $text = (new Pdf())
-        //             //     ->setPdf($files->getRealPath())
-        //             //     ->text();
-
-        //             // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-        //             // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
-        //             $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
-
-        //             // Get the first 100 characters from the filtered text
-        //             $first200Chars = substr($filteredText, 0, 180);
-
-        //             // Store the filtered text in the 'content_file' column
-        //             $data['content_file'] = $filteredText;
-        //         }
-
-        //         $file = $files->getClientOriginalName();
-        //         $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
-        //         $extension = $files->getClientOriginalExtension();
-        //         $fullname = $basename . '.' . $extension;
-
-        //         // Store the file in the specified directory
-        //         $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
-
-        //         if ($data['file'] === false) {
-        //             // Handle the error
-        //             alert()->error('Error', 'Failed to upload file');
-        //             return redirect()->back()->withInput();
-        //         }
-        //     } else {
-        //         // Handle the case where no file was uploaded
-        //         // You may want to return an error message or redirect back to the form
-        //         alert()->error('Error', 'No file uploaded. Please upload a file.');
-        //         return redirect()->back()->withInput();
-        //     }
-        //     // dd($data);
-        //     // ArchiveContainer::create($data);
-
-        //     // Start a database transaction
-        //     DB::beginTransaction();
-
-        //     try {
-        //         $company_id = Auth::user()->company_id;
-
-        //         // Merge the company_id into the request data
-        //         $requestData = array_merge($data, ['company_id' => $company_id]);
-        //         // Store to database
-        //         ArchiveContainer::create($requestData);
-
-        //         // Commit the transaction if everything is successful
-        //         DB::commit();
-
-        //         alert()->success('Success', 'Data successfully added');
-        //         return redirect()->back()->withInput();
-        //         // return redirect()->route('backsite.archive-container.index');
-        //     } catch (\Exception $e) {
-        //         // Rollback the transaction in case of an error
-        //         DB::rollBack();
-
-        //         // Log the error
-        //         Log::error("Database transaction error: " . $e->getMessage());
-
-        //         // Provide feedback to the user or redirect with an error message
-        //         alert()->error('Error', 'Failed to add data. Please try again.');
-        //         return redirect()->back()->withInput();
-        //     }
-        // } catch (\Exception $e) {
-        //     // Log the error
-        //     Log::error("File upload or text extraction error: " . $e->getMessage());
-
-        //     // Provide feedback to the user or redirect with an error message
-        //     alert()->error('Error', 'Failed to process the file. Please try again.');
-        //     return redirect()->back()->withInput();
-        // }
 
     }
 
@@ -371,11 +245,11 @@ class ArchiveContainerController extends Controller
         $archiveContainers = ArchiveContainer::find($id);
         $divisions = Division::where('company_id', $company_id)->orderBy('id', 'asc')->get();
         $locationContainers = ContainerLocation::where('division_id', $archiveContainers->division_id)->orderBy('id', 'asc')->get();
-        $mainClassifications = MainClassification::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        $mainClassifications = MainClassification::where('division_id', $archiveContainers->division_id)->orderBy('name', 'asc')->get();
         $subClassifications = SubClassification::where('main_classification_id', $archiveContainers->main_classification_id)->get();
         $retentions = RetentionArchives::where('sub_classification_id', $archiveContainers->sub_classification_id)->get();
         // $divisions = Division::orderBy('id', 'asc')->get();
-        $sections = Section::orderBy('id', 'asc')->get();
+        // $sections = Section::orderBy('id', 'asc')->get();
 
         $filepath = storage_path($archiveContainers->file);
         $fileName = basename($filepath);
@@ -388,7 +262,7 @@ class ArchiveContainerController extends Controller
                 'subClassifications',
                 'retentions',
                 'fileName',
-                'sections'));
+            ));
     }
 
     /**
@@ -401,19 +275,11 @@ class ArchiveContainerController extends Controller
         }
 
         $request->validate([
-            // 'main_location' => 'required|string',
-            // 'sub_location' => 'required|string',
-            // 'detail_location' => 'required|string',
-            // 'description_location' => 'required|string',
-            // 'number_archive' => 'required|string',
             'main_classification_id' => 'required|string',
             'sub_classification_id' => 'required|string',
-            // 'retention' => 'required|string',
             'document_type' => 'required|string',
             'archive_type' => 'required|string',
-            // 'amount' => 'required|string',
             'archive_in' => 'required|date',
-            // 'expiration_date' => 'required',
             'number_app' => [
                 'required',
                 'string',
@@ -423,7 +289,7 @@ class ArchiveContainerController extends Controller
             // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
-            // 'subseries' => 'required|string',
+
             // 'file' => 'required|file|mimes:pdf|max:290',
             'file' => 'file|mimes:pdf|max:290',
             'division_id' => 'required|confirmed',
@@ -457,6 +323,9 @@ class ArchiveContainerController extends Controller
             $files = $request->file('file');
 
             if ($files->getClientOriginalExtension() == 'pdf') {
+
+                //Microsoft
+
                 // // Specify the path to pdftotext executable
                 // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
@@ -465,6 +334,7 @@ class ArchiveContainerController extends Controller
                 //     ->setPdf($files->getRealPath())
                 //     ->text();
 
+                //Linux
 
                 $text = (new Pdf())
                     ->setPdf($files->getRealPath())
@@ -505,103 +375,6 @@ class ArchiveContainerController extends Controller
         alert()->success('Success', 'Data successfully added');
         return redirect()->route('backsite.archive-container.index');
         // return redirect()->back()->withInput();
-
-
-
-        // try {
-        //     // Retrieve form data
-        //     $data = $request->all();
-
-        //     $path_file = $archiveContainer['file'];
-
-        //     // Process file upload
-        //     if ($request->hasFile('file')) {
-        //         $files = $request->file('file');
-
-        //         if ($files->getClientOriginalExtension() == 'pdf') {
-        //             // Specify the path to pdftotext executable
-        //             // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
-
-        //             // // Use spatie/pdf-to-text to extract text from the PDF
-        //             // $text = (new Pdf($pdftotextPath))
-        //             //     ->setPdf($files->getRealPath())
-        //             //     ->text();
-        //             $text = (new Pdf())
-        //                 ->setPdf($files->getRealPath())
-        //                 ->text();
-        //             // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-        //             // $filteredText = preg_replace("/[^a-zA-Z0-9 ,.\/=()]/", "", $text);
-        //             $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
-
-        //             // Get the first 100 characters from the filtered text
-        //             $first200Chars = substr($filteredText, 0, 180);
-
-        //             // Store the filtered text in the 'content_file' column
-        //             $data['content_file'] = $filteredText;
-        //         }
-
-        //         $file = $files->getClientOriginalName();
-        //         $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
-        //         $extension = $files->getClientOriginalExtension();
-        //         $fullname = $basename . '.' . $extension;
-
-        //         // Store the file in the specified directory
-        //         $data['file'] = $files->storeAs('assets/file-arsip/' . $data['subseries'] . '/' . $data['number_container'], $fullname);
-
-        //         if ($path_file != null || $path_file != '') {
-        //             Storage::delete($path_file);
-        //         }
-
-        //         if ($data['file'] === false) {
-        //             // Handle the error
-        //             alert()->error('Error', 'Failed to upload file');
-        //             return redirect()->back()->withInput();
-        //         }
-        //     } else {
-        //         $data['file'] = $path_file;
-        //     }
-        //     // else {
-        //     //     // Handle the case where no file was uploaded
-        //     //     // You may want to return an error message or redirect back to the form
-        //     //     alert()->error('Error', 'No file uploaded. Please upload a file.');
-        //     //     return redirect()->back()->withInput();
-        //     // }
-
-        //     // Start a database transaction
-        //     DB::beginTransaction();
-
-        //     try {
-        //         // Store to database
-        //         // get all request from frontsite
-
-        //         $archiveContainer->update($data);
-
-
-        //         // Commit the transaction if everything is successful
-        //         DB::commit();
-
-        //         alert()->success('Success', 'Data successfully Updated');
-        //         // return redirect()->back()->withInput();
-        //         return redirect()->route('backsite.archive-container.index');
-        //     } catch (\Exception $e) {
-        //         // Rollback the transaction in case of an error
-        //         DB::rollBack();
-
-        //         // Log the error
-        //         Log::error("Database transaction error: " . $e->getMessage());
-
-        //         // Provide feedback to the user or redirect with an error message
-        //         alert()->error('Error', 'Failed to add data. Please try again.');
-        //         return redirect()->back()->withInput();
-        //     }
-        // } catch (\Exception $e) {
-        //     // Log the error
-        //     Log::error("File upload or text extraction error: " . $e->getMessage());
-
-        //     // Provide feedback to the user or redirect with an error message
-        //     alert()->error('Error', 'Failed to process the file. Please try again.');
-        //     return redirect()->back()->withInput();
-        // }
     }
 
     /**
@@ -628,29 +401,29 @@ class ArchiveContainerController extends Controller
         return back();
     }
 
-    public function form_upload(Request $request)
-    {
-        if ($request->ajax()) {
+    // public function form_upload(Request $request)
+    // {
+    //     if ($request->ajax()) {
 
-            $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
-            $divisions = Division::orderBy('id', 'asc')->get();
-            $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
-            // $divisions = Division::orderBy('id', 'asc')->get();
-            $sections = Section::orderBy('id', 'asc')->get();
-            $data = [
-                'archiveContainers' => $archiveContainers,
-                'divisions' => $divisions,
-                'sections' => $sections,
-                'mainClassifications' => $mainClassifications,
-            ];
+    //         $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
+    //         $divisions = Division::orderBy('id', 'asc')->get();
+    //         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
+    //         // $divisions = Division::orderBy('id', 'asc')->get();
+    //         $sections = Section::orderBy('id', 'asc')->get();
+    //         $data = [
+    //             'archiveContainers' => $archiveContainers,
+    //             'divisions' => $divisions,
+    //             'sections' => $sections,
+    //             'mainClassifications' => $mainClassifications,
+    //         ];
 
-            $msg = [
-                'data' => view('pages.transaction-archive.archive-container.form-upload', $data)->render(),
-            ];
+    //         $msg = [
+    //             'data' => view('pages.transaction-archive.archive-container.form-upload', $data)->render(),
+    //         ];
 
-            return response()->json($msg);
-        }
-    }
+    //         return response()->json($msg);
+    //     }
+    // }
 
     public function getNumberContainer(Request $request)
     {
@@ -671,6 +444,7 @@ class ArchiveContainerController extends Controller
 
         return response()->json($formattedDetailLocations);
     }
+
     public function getDataContainer(Request $request)
     {
         $numberId = $request->input('number_container');
@@ -681,8 +455,8 @@ class ArchiveContainerController extends Controller
             return [
                 'id' => $detailNumber->id,
                 'number_container' => $detailNumber->number_container,
-                'number_archive' => $detailNumber->number_archive, // Assuming 'name' is a property in the 'mainLocation' model
-                'expiration_date' => $detailNumber->expiration_date, // Assuming 'name' is a property in the 'mainLocation' model
+                'number_document' => $detailNumber->number_document, // Assuming 'name' is a property in the 'mainLocation' model
+                'regarding' => $detailNumber->regarding, // Assuming 'name' is a property in the 'mainLocation' model
                 'archive_type' => $detailNumber->archive_type, // Assuming 'name' is a property in the 'mainLocation' model
             ];
         });
@@ -705,5 +479,89 @@ class ArchiveContainerController extends Controller
         // $decrypt_id = decrypt($id);
         $archiveContainers = ArchiveContainer::findOrFail($id);
         return view('components.qr-code.archive-qr.detail-qr-archive', compact('archiveContainers'));
+    }
+
+    public function dataArchive(Request $request)
+    {
+        if (! Gate::allows('archive_container_index')) {
+            abort(403);
+        }
+
+        if (request()->ajax()) {
+
+            $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
+            if (Gate::allows('super_admin')) {
+                // Super admin: can view all archive containers
+                $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
+            } else {
+                // Non-super admin: view archive containers limited to their company
+                $archiveContainers = ArchiveContainer::where('company_id', $company_id)
+                    ->with('division')
+                    ->orderBy('created_at', 'desc');
+            }
+
+            // Apply year filter if present
+            if ($request->has('year') && ! empty($request->year)) {
+                $archiveContainers->where('year', $request->year);
+            }
+            // Apply regarding filter if present
+            if ($request->has('regarding') && ! empty($request->regarding)) {
+                $archiveContainers->where('regarding', 'like', '%' . $request->regarding . '%');
+            }
+            // Apply catalog filter if present
+            if ($request->has('catalog') && ! empty($request->catalog)) {
+                $archiveContainers->where('number_catalog', 'like', '%' . $request->catalog . '%');
+            }
+            // Apply document filter if present
+            if ($request->has('document') && ! empty($request->document)) {
+                $archiveContainers->where('number_document', 'like', '%' . $request->document . '%');
+            }
+            // Apply archive filter if present
+            if ($request->has('archive') && ! empty($request->archive)) {
+                $archiveContainers->where('number_archive', 'like', '%' . $request->archive . '%');
+            }
+            // Apply tag filter if present
+            if ($request->has('tag') && ! empty($request->tag)) {
+                $archiveContainers->where('tag', 'like', '%' . $request->tag . '%');
+            }
+            // Apply type filter if present
+            if ($request->has('type') && ! empty($request->type)) {
+                $archiveContainers->where('archive_type', 'like', $request->type);
+            }
+            // Apply division filter if present
+            if ($request->has('division') && ! empty($request->division)) {
+                $archiveContainers->whereHas('division', function ($query) use ($request) {
+                    $query->where('code', 'like', '%' . $request->division . '%');
+                });
+            }
+
+            return DataTables::of($archiveContainers)
+                ->addIndexColumn()
+                ->addColumn('action', function ($item) {
+                    return '
+                <div class="btn-group mb-1">
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn dropdown-toggle me-1" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a href="#mymodal" data-remote="' . route('backsite.archive-container.show', $item->id) . '" data-toggle="modal"
+                            data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                ';
+                })
+                ->rawColumns(['action',])
+                ->toJson();
+        }
+        $divisions = Division::orderBy('name', 'asc')->get();
+
+        // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
+        return view('pages.transaction-archive.archive-container.data-archive', compact('divisions'));
     }
 }

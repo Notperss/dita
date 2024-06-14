@@ -24,6 +24,7 @@
         "realrashid/sweet-alert": "^7.1",
         "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/laravel-activitylog": "^4.8",
         "spatie/laravel-permission": "^6.4",
         "spatie/pdf-to-text": "^1.52",
         "tecnickcom/tcpdf": "^6.7",

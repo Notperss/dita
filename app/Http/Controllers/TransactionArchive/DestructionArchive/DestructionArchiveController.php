@@ -4,8 +4,9 @@ namespace App\Http\Controllers\TransactionArchive\DestructionArchive;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\MasterData\WorkUnits\Division;
 use Illuminate\Support\Facades\Gate;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\MasterData\WorkUnits\Division;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\TransactionArchive\DestructionArchive\DestructionArchive;
 
@@ -19,8 +20,8 @@ class DestructionArchiveController extends Controller
         $division_id = auth()->user()->division_id;
         $company_id = auth()->user()->company_id;
 
-        $archivesQuery = ArchiveContainer::whereDate('expiration_active', '<', now()->toDateString())->orderBy('created_at', 'desc');
-        $divisionsQuery = Division::with('archive_container');
+        $archivesQuery = ArchiveContainer::with('division')->whereDate('expiration_inactive', '<', now()->toDateString())->orderBy('created_at', 'desc');
+        $divisionsQuery = Division::with('archive_container')->orderBy('code', 'asc');
 
         // Filter archives and divisions based on user role
         if (Gate::allows('super_admin')) {
@@ -33,7 +34,76 @@ class DestructionArchiveController extends Controller
             $archives = $archivesQuery->where('status', 1)->where('company_id', $company_id)->where('division_id', $division_id)->get();
             $divisions = $divisionsQuery->where('company_id', $company_id)->where('id', $division_id)->get();
         }
+        if (request()->ajax()) {
+            return DataTables::of($archives)
+                ->addIndexColumn()
+                ->addColumn('action', function ($item) {
+                    $html = '';
 
+                    if (Gate::allows('user')) {
+                        $html .= '
+                <li class="d-inline-block me-2 mb-1">
+                    <div class="form-check">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="form-check-input form-check-danger"
+                                   name="approval[' . $item->id . ']" id="customColorCheck' . $item->id . '">
+                            <label class="form-check-label" for="customColorCheck' . $item->id . '">
+                               Musnahkan
+                            </label>
+                        </div>
+                    </div>
+                </li>';
+                    } else {
+                        if ($item->status == 10) {
+                            $html .= '<span style="color: red">Dimusnahkan</span>';
+                        }
+                    }
+
+                    return $html;
+                })
+                ->editColumn('division.name', function ($item) {
+                    return $item->division->name;
+                })
+                // ->editColumn('regarding', function ($item) {
+                //     // Render the view content and store it in a variable
+                //     // $content = view('pages.transaction-archive.destruction-archive.content-show', compact('item'))->render();
+
+                //     // Store the modal content in a variable to include later
+                //     $modal = '
+                // <div class="modal fade" id="modal-content-' . $item->id . '" tabindex="-1" aria-labelledby="modalLabel-' . $item->id . '" aria-hidden="true">
+                //     <div class="modal-dialog modal-lg">
+                //         <div class="modal-content">
+                //             <div class="modal-header">
+                //                 <h5 class="modal-title" id="modalLabel-' . $item->id . '">Item Details</h5>
+                //                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                //             </div>
+                //             <div class="modal-header">
+                //                 <h5 class="modal-title" id="modal-content-' . $item->id . '-label">No. Dokumen :
+                //                     ' . $item->number_document . '
+                //                 </h5>
+                //             </div>
+                //             <div class="modal-body">
+                //             ' . \Illuminate\Support\Str::limit($item->content_file ?? 'N/A', 1000) . '
+                //             </div>
+                //             <div class="modal-footer">
+                //                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                //             </div>
+                //         </div>
+                //     </div>
+                // </div>';
+
+                //     // Create the button that triggers the modal
+                //     $button = '
+                // <a data-bs-toggle="modal" data-bs-target="#modal-content-' . $item->id . '" class="btn icon btn-primary" title="Show">
+                //     <i class="bi bi-eye"></i>
+                // </a>';
+
+                //     // Return both the button and the modal content
+                //     return $button . $modal;
+                // })
+                ->rawColumns(['action', 'division.name'])
+                ->toJson();
+        }
         // $expirationDate = 0; // Initialize the variable outside the loop
 
         // foreach ($divisions as $division) {
@@ -99,30 +169,113 @@ class DestructionArchiveController extends Controller
         //
     }
 
-    public function approvalDestruction(Request $request)
+    public function checkDestroy(Request $request)
     {
-        $approvals = $request->input('approval');
 
-        // Check if approvals array is empty
-        if (empty($approvals)) {
-            // Handle the case where no approvals are selected
-            // For example, you could return a validation error message or redirect back with an error message
-            alert()->error('Error', 'Harap pilih setidaknya satu');
-            return redirect()->back();
-        }
 
-        foreach ($approvals as $archiveId => $approval) {
-            // Assuming you have a boolean value in $approval indicating whether it's approved or not
-            if ($approval) {
-                ArchiveContainer::where('id', $archiveId)->update([
-                    'status' => 10, // Assuming 10 represents "approved" status
-                ]);
-            } else {
-                alert()->error('error', 'adjpajsd');
-            }
+        // Retrieve the approvals input
+        $approvals = $request->input('approval', []);
+        // dd($approvals);
+        // Retrieve all archive IDs
+        // $archiveIds = ArchiveContainer::where('division_id', $division_id)->pluck('id')->toArray();
+
+        // Find the IDs that are not checked
+        $uncheckedIds = array_keys($approvals);
+
+        // Update the status for unchecked items
+        if (! empty($uncheckedIds)) {
+            ArchiveContainer::whereIn('id', $uncheckedIds)->update(['status' => 10]);
         }
 
         alert()->success('Success', 'Data updated successfully.');
         return redirect()->route('backsite.destruction-archive.index');
     }
+    public function checkNotDestroy(Request $request)
+    {
+
+        // $id = $request->id;
+
+        // $division_id = division::find($id);
+
+        // Retrieve the approvals input
+        $approvals = $request->input('approvals', []);
+
+        // Retrieve all archive IDs
+        // $archiveIds = ArchiveContainer::where('division_id', $division_id->id)->pluck('id')->toArray();
+
+        // Find the IDs that are not checked
+        // $uncheckedIds = array_diff($archiveIds, array_keys($approvals));
+
+        $checkedIds = array_keys($approvals);
+
+        // dd([$uncheckedIds]);
+
+        // Update the status for unchecked items
+        if (! empty($checkedIds)) {
+            ArchiveContainer::whereIn('id', $checkedIds)->update(['status' => 10]);
+        }
+
+        alert()->success('Success', 'Data updated successfully.');
+        return redirect()->back();
+    }
+    public function divisionDestruct($id)
+    {
+        try {
+            $decrypt_id = decrypt($id);
+        } catch (\Exception $e) {
+            // If decryption fails, abort with a 404 error
+            return abort(404);
+        }
+        // $archivesQuery = ArchiveContainer::with('division')->whereDate('expiration_inactive', '<', now()->toDateString())->orderBy('created_at', 'desc');
+
+        $divisions = Division::with('archive_container')->findOrFail($decrypt_id);
+        $archiveContainers = ArchiveContainer::where('division_id', $divisions->id)
+            ->whereDate('expiration_inactive', '<', now()->toDateString())
+            ->orderBy('created_at', 'desc')
+            ->where('status', 1)
+            ->get();
+        return view('pages.transaction-archive.destruction-archive.division-destruct', compact('divisions', 'archiveContainers'));
+    }
+    public function archiveDestroy()
+    {
+        // try {
+        //     $decrypt_id = decrypt($id);
+        // } catch (\Exception $e) {
+        //     // If decryption fails, abort with a 404 error
+        //     return abort(404);
+        // }
+        // $archivesQuery = ArchiveContainer::with('division')->whereDate('expiration_inactive', '<', now()->toDateString())->orderBy('created_at', 'desc');
+
+        // $divisions = Division::with('archive_container')->findOrFail($decrypt_id);
+        $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')
+            ->where('status', 10)
+            ->get();
+        return view('pages.transaction-archive.destruction-archive.archive-destroy', compact('archiveContainers'));
+    }
+    public function cancelDestroy(Request $request)
+    {
+        // Retrieve the 'id' from the request
+        $id = $request->id;
+        // dd($id);
+        // Find the archive container by ID
+        $archive = ArchiveContainer::find($id);
+
+        // Check if the archive container was found
+        if (! $archive) {
+            // If not found, redirect back with an error message
+            alert()->error('Error', 'Data not found');
+            return redirect()->back();
+        }
+
+        // Update the status of the archive container
+        $archive->update(['status' => 1]);
+
+        // Display a success message
+        alert()->success('Success', 'Data successfully updated');
+
+        // Redirect back to the previous page
+        return redirect()->back();
+    }
+
+
 }

@@ -106,7 +106,7 @@ class FolderDivisionController extends Controller
     public function show($id)
     {
         // Find the folder
-        $folders = FolderDivision::with('folder_item')->findOrFail($id);
+        $folders = FolderDivision::findOrFail($id);
 
         // Load only direct children (not all descendants)
         $descendants = $folders->children()->get();
@@ -172,7 +172,6 @@ class FolderDivisionController extends Controller
         // Custom validation messages
         $messages = [
             'required' => 'The :attribute field is required.',
-            // 'file.max' => 'Maximum file size to upload is 50MB ',
             'max' => [
                 'file' => 'Maximum file size to upload is 50MB.',
                 'string' => ':attribute terlalu panjang (maks 250 karakter).',
@@ -181,13 +180,10 @@ class FolderDivisionController extends Controller
         ];
         // Validation rules
         $validator = Validator::make($request->all(), [
-            // 'number' => 'required|unique:folder_items', // Ensure the parent exists if provided
             'number' => 'required', // Ensure the parent exists if provided
-            'name' => 'required|string|max:255',
             'date' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'file.*' => 'required|max:51200',
-
+            'file.*' => 'required|max:51200' //50MB,
         ], $messages);
 
         // Check if validation fails
@@ -218,17 +214,6 @@ class FolderDivisionController extends Controller
         }
         $path .= '/' . $folder->name;
 
-        $folderItem = FolderItem::create([
-            'folder_id' => $request->id,
-            'division_id' => $auth->division_id,
-            'company_id' => $auth->company_id,
-            'name' => $request->name,
-            'number' => $request->number,
-            'date' => $request->date,
-            'description' => $request->description,
-        ]);
-
-
         $files = [];
         if ($request->hasFile('file')) {
             foreach ($request->file('file') as $image) {
@@ -246,7 +231,10 @@ class FolderDivisionController extends Controller
                 'folder_id' => $request->id,
                 'division_id' => $auth->division_id,
                 'company_id' => $auth->company_id,
-                'folder_item_id' => $folderItem->id,
+                // 'folder_item_id' => $folderItem->id,
+                'number' => $request->number,
+                'date' => $request->date,
+                'description' => $request->description,
                 'file' => $file,
             ]);
         }
@@ -257,8 +245,29 @@ class FolderDivisionController extends Controller
 
     public function delete_file($id)
     {
-        $file = FolderItemFile::find($id);
-        $folderItem_id = $file->folder_item_id;
+        $folderFile = FolderItemFile::find($id);
+        $file = $folderFile->file;
+
+        // $path_file = $file['file'];
+
+        if ($file) {
+            // Extract the original file name and extension
+            $originalName = pathinfo($file, PATHINFO_FILENAME);
+            $ext = pathinfo($file, PATHINFO_EXTENSION);
+            $checkedName = "(deleted) " . $originalName . '.' . $ext;
+
+            // Define the new file path
+            $newPath = dirname($file) . '/' . $checkedName;
+
+            // Rename the file in the storage
+            if (Storage::exists($file)) {
+                Storage::move($file, $newPath);
+            }
+
+            // Update the folderFile record with the new name
+            $folderFile->file = $newPath;
+            $folderFile->update();
+        }
 
         // find old photo
         // $path_file = $file['file'];
@@ -268,13 +277,7 @@ class FolderDivisionController extends Controller
         //     Storage::delete($path_file);
         // }
 
-        $file->delete();
-
-        $remainingFolderItem = FolderItemFile::where('folder_item_id', $folderItem_id)->get();
-
-        if ($remainingFolderItem->count() === 0) {
-            FolderItem::where('id', $folderItem_id)->delete();
-        }
+        $folderFile->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

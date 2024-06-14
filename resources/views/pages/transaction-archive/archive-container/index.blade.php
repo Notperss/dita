@@ -121,23 +121,6 @@
         ],
         lengthChange: true,
         pageLength: 15,
-        dom: 'Bfrtip',
-        buttons: [{
-            extend: 'copy',
-            className: "btn btn-info"
-          },
-          {
-            extend: 'excel',
-            className: "btn btn-info"
-          },
-          {
-            extend: 'print',
-            className: "btn btn-info",
-            exportOptions: {
-              columns: ':not(.no-print)' // Exclude elements with class 'no-print'
-            }
-          },
-        ],
         ajax: {
           url: "{{ route('backsite.archive-container.index') }}",
         },

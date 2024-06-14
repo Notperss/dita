@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
 use App\Models\TransactionArchive\LendingArchive\Lending;
@@ -21,10 +22,68 @@ class LendingArchiveController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $id = auth()->user()->id;
         $companies = auth()->user()->company_id;
+        if (request()->ajax()) {
+
+            if (Gate::allows('super_admin')) {
+                $archiveContainers = ArchiveContainer::with('division')->where('status', 1);
+
+            } else {
+                $archiveContainers = ArchiveContainer::with('division')->where('company_id', $companies)->where('status', 1);
+            }
+
+
+            // Apply year filter if present
+            if ($request->has('year') && ! empty($request->year)) {
+                $archiveContainers->where('year', $request->year);
+            }
+            // Apply regarding filter if present
+            if ($request->has('regarding') && ! empty($request->regarding)) {
+                $archiveContainers->where('regarding', 'like', '%' . $request->regarding . '%');
+            }
+            // Apply catalog filter if present
+            if ($request->has('catalog') && ! empty($request->catalog)) {
+                $archiveContainers->where('number_catalog', 'like', '%' . $request->catalog . '%');
+            }
+            // Apply document filter if present
+            if ($request->has('document') && ! empty($request->document)) {
+                $archiveContainers->where('number_document', 'like', '%' . $request->document . '%');
+            }
+            // Apply archive filter if present
+            if ($request->has('archive') && ! empty($request->archive)) {
+                $archiveContainers->where('number_archive', 'like', '%' . $request->archive . '%');
+            }
+            // Apply tag filter if present
+            if ($request->has('tag') && ! empty($request->tag)) {
+                $archiveContainers->where('tag', 'like', '%' . $request->tag . '%');
+            }
+            // Apply type filter if present
+            if ($request->has('type') && ! empty($request->type)) {
+                $archiveContainers->where('archive_type', 'like', $request->type);
+            }
+            // Apply division filter if present
+            if ($request->has('division') && ! empty($request->division)) {
+                $archiveContainers->whereHas('division', function ($query) use ($request) {
+                    $query->where('code', 'like', '%' . $request->division . '%');
+                });
+            }
+
+            return DataTables::of($archiveContainers)
+                ->addIndexColumn()
+                ->addColumn('action', function ($item) {
+                    return '
+                <div class="buttons">
+                    <a href="#" class="btn btn-sm btn-success lend-btn" data-row-id="' . $item->id . '">Pinjam</a>
+                </div>
+                ';
+                })
+                ->rawColumns(['action',])
+                ->toJson();
+        }
+
         if (Gate::allows('super_admin')) {
             $lendings = Lending::where('status', null)->orderBy('created_at', 'desc')->get();
             $lendingArchives = LendingArchive::where('approval', 1)->get();
@@ -38,12 +97,12 @@ class LendingArchiveController extends Controller
         }
 
         $newLendingNumber = Lending::generateLendingNumber();
-        $archiveContainers = ArchiveContainer::where('company_id', $companies)->where('status', 1)->orderBy('number_document', 'asc')->get();
+        // $archiveContainers = ArchiveContainer::where('company_id', $companies)->where('status', 1)->orderBy('number_document', 'asc')->get();
         // $lendingArchives = LendingArchive::where('approval', 1)->get();
         $divisions = Division::orderBy('name', 'asc')->get();
         return view('pages.transaction-archive.lending-archive.index',
             compact(
-                'archiveContainers',
+                // 'archiveContainers',
                 'divisions',
                 'lendings',
                 'newLendingNumber',
@@ -64,12 +123,16 @@ class LendingArchiveController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         // if (! Gate::allows('retention_store')) {
         //     abort(403);
         // }
         $validator = Validator::make($request->all(), [
             'lending_number' => ['required', Rule::unique('lendings'),],
             'division' => ['required'],
+            // 'archive_container_id' => 'required|array', // Ensure archive_container_id is present and is an array
+            // 'archive_container_id.*' => 'exists:lending_archives,id', // Validate each lending item ID exists in the database
+            // Add more validation rules for other fields if necessary
             'inputs' => 'required|array',
             'inputs.*.type_document' => 'required', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
             'inputs.*.archive_container_id' => 'required', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
@@ -78,9 +141,9 @@ class LendingArchiveController extends Controller
         ], [
             'lending_number.required' => 'Nomor Peminjaman harus diisi.',
             'division.required' => 'Divisi harus diisi.',
-            'inputs' => 'Arsip tidak boleh kosong.',
-            'inputs.*.archive_container_id.required' => 'Arsip tidak boleh kosong',
-            'inputs.*.type_document.required' => 'Pilih setidaknya satu Tipe Dokumen',
+            // 'inputs' => 'Arsip tidak boleh kosong.',
+            // 'inputs.*.archive_container_id.required' => 'Arsip tidak boleh kosong',
+            // 'inputs.*.type_document.required' => 'Pilih setidaknya satu Tipe Dokumen',
             'lending_number.unique' => 'Nomor Peminjaman sudah digunakan.',
 
 

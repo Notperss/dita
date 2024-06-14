@@ -43,8 +43,9 @@
                         name="main_classification_id" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($mainClassifications as $mainClassification)
-                          <option value="{{ $mainClassification->id }}">{{ $mainClassification->name }}
-                            ({{ $mainClassification->code }})
+                          <option value="{{ $mainClassification->id }}">
+                            ({{ $mainClassification->division->code }})
+                            -{{ $mainClassification->name }}
                           </option>
                         @endforeach
                       </select>
@@ -54,9 +55,9 @@
                       @endif
                     </div>
                     <div class="form-group">
-                      <label for="code">Kode Sub Klasifikasi <code>*</code></label>
+                      <label for="code">Kode Sub Klasifikasi</label>
                       <input type="text" id="code" class="form-control" placeholder="Kode Sub Klasifikasi"
-                        name="code" value="{{ old('code') }}" required>
+                        name="code" value="{{ old('code') }}">
                       @if ($errors->has('code'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('code') }}</p>
@@ -95,6 +96,8 @@
                         <option value="3">3 Tahun</option>
                         <option value="4">4 Tahun</option>
                         <option value="5">5 Tahun</option>
+                        <option value="8">8 Tahun</option>
+                        <option value="10">10 Tahun</option>
                         <option value="PERMANEN">Permanen</option>
                       </select>
                       @if ($errors->has('period_active'))
@@ -120,6 +123,8 @@
                         <option value="3">3 Tahun</option>
                         <option value="4">4 Tahun</option>
                         <option value="5">5 Tahun</option>
+                        <option value="8">8 Tahun</option>
+                        <option value="10">10 Tahun</option>
                         <option value="PERMANEN">Permanen</option>
                       </select>
                       @if ($errors->has('period_inactive'))

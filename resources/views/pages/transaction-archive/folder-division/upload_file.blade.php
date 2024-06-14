@@ -35,7 +35,7 @@
             </div>
           </div>
 
-          <div class="form-group row">
+          {{-- <div class="form-group row">
             <label class="col-md-4 form-label" for="name">Perihal
               <code style="color:red;">*</code></label>
             <div class="col-md-8">
@@ -45,7 +45,7 @@
                   {{ $errors->first('name') }}</p>
               @endif
             </div>
-          </div>
+          </div> --}}
 
           <div class="form-group row">
             <label class="col-md-4 form-label" for="date">Tanggal

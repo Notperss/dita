@@ -41,12 +41,20 @@ class ContainerLocationController extends Controller
 
             $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
-            $containerLocations = ContainerLocation::
-                where('location_containers.company_id', $company_id)->
-                with('mainLocation',
-                    'subLocation',
-                    'detailLocation',
-                    'division');
+            if (Gate::allows('super_admin')) {
+                $containerLocations = ContainerLocation::
+                    with('mainLocation',
+                        'subLocation',
+                        'detailLocation',
+                        'division');
+            } else {
+                $containerLocations = ContainerLocation::
+                    where('location_containers.company_id', $company_id)->
+                    with('mainLocation',
+                        'subLocation',
+                        'detailLocation',
+                        'division');
+            }
 
             return DataTables::of($containerLocations)
                 ->addIndexColumn()

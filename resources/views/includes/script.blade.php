@@ -6,16 +6,24 @@
 
 <!-- Need: Apexcharts -->
 {{-- <script src="{{ asset('/assets/extensions/apexcharts/apexcharts.min.js') }}"></script> --}}
-<script src="{{ asset('/assets/static/js/pages/dashboard.js') }}"></script>
+{{-- <script src="{{ asset('/assets/static/js/pages/dashboard.js') }}"></script> --}}
 
-<script src="{{ asset('/assets/extensions/simple-datatables/umd/simple-datatables.js') }}"></script>
-{{-- <script src="{{ asset('/assets/static/js/pages/simple-datatables.js') }}"></script> --}}
+{{-- <script src="{{ asset('/assets/extensions/simple-datatables/umd/simple-datatables.js') }}"></script> --}}
+<script src="{{ asset('/assets/static/js/pages/simple-datatables.js') }}"></script>
+<script src="{{ asset('/assets/extensions/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('/assets/extensions/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('/assets/static/js/pages/datatables.js') }}"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
 
 <script src="{{ asset('/assets/extensions/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('/assets/static/js/pages/sweetalert2.js') }}"></script>
 
 <script src="{{ asset('assets/extensions/choices.js/public/assets/scripts/choices.js') }}"></script>
 <script src="{{ asset('assets/static/js/pages/form-element-select.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script
   src="{{ asset('assets/extensions/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js') }}">
@@ -37,14 +45,13 @@
 <script src="{{ asset('assets/extensions/toastify-js/src/toastify.js') }}"></script>
 <script src="{{ asset('assets/static/js/pages/filepond.js') }}"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script src="{{ asset('assets/extensions/flatpickr/flatpickr.min.js') }}"></script>
 <script src="{{ asset('assets/static/js/pages/date-picker.js') }}"></script>
 
-<script src="{{ asset('assets/extensions/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+{{-- <script src="{{ asset('assets/extensions/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/extensions/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
-<script src="{{ asset('assets/static/js/pages/datatables.js') }}"></script>
+<script src="{{ asset('assets/static/js/pages/datatables.js') }}"></script> --}}
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -57,7 +64,10 @@
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-
+{{-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script> --}}
 
 
 

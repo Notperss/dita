@@ -23,7 +23,12 @@ class DetailLocationController extends Controller
         }
 
         $company_id = auth()->user()->company_id;
-        $detailLocations = DetailLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        if (Gate::allows('super_admin')) {
+            $detailLocations = DetailLocation::orderBy('name', 'asc')->get();
+        } else {
+            $detailLocations = DetailLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+        }
+
         // $detailLocations = DetailLocation::with('mainLocation', 'subLocation')->orderBy('name', 'asc')->get();
         return view('pages.master-data.location.detail-location.index', compact('detailLocations'));
     }

@@ -723,6 +723,7 @@
       updateNumberApp();
     });
   </script>
+
   <script>
     // fancybox
     Fancybox.bind('[data-fancybox]', {
@@ -734,6 +735,7 @@
       dateFormat: "Y-m-d",
     });
   </script>
+
   {{-- location --}}
   <script>
     $(document).ready(function() {
@@ -795,6 +797,71 @@
 
     });
   </script>
+
+  {{-- get mainSublocation --}}
+  <script>
+    $(document).ready(function() {
+      $('#division_id').change(function() {
+        var divisionId = $(this).val();
+        if (divisionId) {
+          $.ajax({
+            url: "{{ route('backsite.getMainClassifications') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              division_id: divisionId
+            },
+            success: function(data) {
+              $('#main_classification_id').empty();
+              $('#main_classification_id').append('<option value="" selected disabled>Choose</option>');
+              $.each(data, function(key, value) {
+                $('#main_classification_id').append('<option value="' + value.id + '">' + value.name +
+                  '</option>');
+              });
+              // Manually reset the selected option in the department_id dropdown
+              $('#main_classification_id').val('').trigger('change');
+            }
+          });
+        } else {
+          $('#main_classification_id').empty();
+          $('#main_classification_id').append('<option value="" selected disabled>Choose</option>');
+        }
+      });
+    });
+  </script>
+
+  {{-- get mainSublocation --}}
+  <script>
+    $(document).ready(function() {
+      $('#division_id').change(function() {
+        var divisionId = $(this).val();
+        if (divisionId) {
+          $.ajax({
+            url: "{{ route('backsite.getMainClassifications') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              division_id: divisionId
+            },
+            success: function(data) {
+              $('#main_classification_id').empty();
+              $('#main_classification_id').append('<option value="" selected disabled>Choose</option>');
+              $.each(data, function(key, value) {
+                $('#main_classification_id').append('<option value="' + value.id + '">' + value.name +
+                  '</option>');
+              });
+              // Manually reset the selected option in the department_id dropdown
+              $('#main_classification_id').val('').trigger('change');
+            }
+          });
+        } else {
+          $('#main_classification_id').empty();
+          $('#main_classification_id').append('<option value="" selected disabled>Choose</option>');
+        }
+      });
+    });
+  </script>
+
   {{-- clasifitcation --}}
   <script>
     $(document).ready(function() {
@@ -851,8 +918,13 @@
         var descriptionActive = selectedOption.data('description-active');
         $('#description_active').val(descriptionActive);
 
+        // var retentionInactive = selectedOption.data('value-inactive');
+        // $('#period_inactive').val(calculateExpiration(retentionInactive));
+
         var retentionInactive = selectedOption.data('value-inactive');
-        $('#period_inactive').val(calculateExpiration(retentionInactive));
+        var sum41 = retentionInactive + retentionActive;
+        $('#period_inactive').val(calculateExpiration(sum41));
+
 
         var descriptionInactive = selectedOption.data('description-inactive');
         $('#description_inactive').val(descriptionInactive);

@@ -4,15 +4,18 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
 use Laravel\Jetstream\HasProfilePhoto;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
-use App\Models\ManagementAccess\DetailUser;
 use App\Models\MasterData\Company\Company;
+use App\Models\ManagementAccess\DetailUser;
+use Spatie\Activitylog\Traits\LogsActivity;
 use App\Models\MasterData\WorkUnits\Division;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+
 
 class User extends Authenticatable
 {
@@ -22,7 +25,31 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
+    use LogsActivity;
 
+    /**
+     * Get the options for the activity log.
+     *
+     * @return \Spatie\Activitylog\LogOptions
+     */
+    public function getActivitylogOptions() : LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'password', 'division_id', 'company_id']) // Specify the attributes you want to log
+            ->logOnlyDirty() // Log only changed attributes
+            ->useLogName('user'); // Specify the log name
+    }
+
+    /**
+     * Get the description for the given event.
+     *
+     * @param  string  $eventName
+     * @return string
+     */
+    public function getDescriptionForEvent(string $eventName) : string
+    {
+        return "User has been {$eventName}";
+    }
     /**
      * The attributes that are mass assignable.
      *

@@ -118,9 +118,9 @@
                 @foreach ($files as $file)
                   <tr>
                     <td class="text-center">{{ $loop->iteration }}</td>
-                    <td class="text-center">{{ $file->folder_item->number ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $file->folder_item->date ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $file->folder_item->description ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $file->number ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $file->date ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $file->description ?? 'N/A' }}</td>
                     <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
                         class="btn btn-warning btn-sm text-white " download>Unduh</a>
                       <p class="mt-1"><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }}</small></p>

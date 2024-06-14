@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 //Dashboard
@@ -67,7 +68,6 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     Route::resource('dashboard', DashboardController::class)->only('index');
     Route::get('/division-archive/{id}', [DashboardController::class, 'division_archive'])->name('division-archive');
 
-
     //Company
     Route::resource('company', CompanyController::class);
 
@@ -81,21 +81,22 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
 
     Route::get('/show-qr/{id}', [ContainerLocationController::class, 'showBarcode'])->name('showBarcode');
 
-
-
     //WorkUnits
     Route::resource('division', DivisionController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::resource('department', DepartmentController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::resource('section', SectionController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     Route::get('/get-department', [SectionController::class, 'getDepartments'])->name('getDepartments');
 
-    //Classification
+    //MainClassification
     Route::resource('main-classification', MainClassificationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
-    Route::resource('sub-classification', SubClassificationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
+    Route::get('/get-main-classification', [MainClassificationController::class, 'getMainClassifications'])->name('getMainClassifications');
+    Route::get('/get-sub-classification', [MainClassificationController::class, 'getSubClassifications'])->name('getSubClassifications');
 
+    //MainClassification
+    Route::resource('sub-classification', SubClassificationController::class)->only('index', 'create', 'store', 'edit', 'update', 'destroy');
     //Retention
     Route::resource('retention', RetentionArchivesController::class);
-    Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
+    // Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
     Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 
     //Management Access
@@ -109,6 +110,7 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
         Route::get('/get-number-container', 'getNumberContainer')->name('getNumberContainer');
         Route::get('/get-data-container', 'getDataContainer')->name('getDataContainer');
         Route::get('/show-qr-container/{id}', 'showBarcode')->name('showBarcodeContainer');
+        Route::get('/archive', 'dataArchive')->name('dataArchive');
     });
 
 
@@ -126,7 +128,15 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     });
 
     Route::resource('destruction-archive', DestructionArchiveController::class);
-    Route::put('/approval-destruction', [DestructionArchiveController::class, 'approvalDestruction'])->name('approvalDestruction');
+    Route::controller(DestructionArchiveController::class)->group(function () {
+        Route::get('/division-destruction/{id}', 'divisionDestruct')->name('division-destruct');
+        Route::get('/destroying-archive', 'archiveDestroy')->name('archive-destroy');
+        Route::put('/check-to-destroy', 'checkDestroy')->name('check-destroy');
+        Route::put('/check-not-destroyed/{id}', 'checkNotDestroy')->name('checkNotDestroy');
+        Route::put('/cancel-destroy/{id}', 'cancelDestroy')->name('cancelDestroy');
+        // Route::put('/approval-destruction', [DestructionArchiveController::class, 'approvalDestruction'])->name('approvalDestruction');
+    });
+
 
     Route::get('/get-division', [UserManagementController::class, 'getDivisions'])->name('getDivisions');
 
@@ -146,7 +156,7 @@ Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
     Route::resource('user', UserManagementController::class)->only('index', 'store', 'update', 'destroy');
 
     Route::prefix('user')->group(function () {
-        Route::resource('profile', UserProfileController::class)->only('index', 'edit');
+        Route::resource('profile', UserProfileController::class)->only('index', 'show', 'edit');
     });
     Route::resource('setting', SettingController::class)->only('index', 'update');
     Route::resource('contoh', SettingController::class)->only('index', 'update');
@@ -157,6 +167,8 @@ Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
 
     Route::resource('menu', MenuGroupController::class)->only('index', 'store', 'update', 'destroy');
     Route::resource('menu.item', MenuItemController::class)->only('index', 'store', 'update', 'destroy');
+
+    Route::resource('activity-log', ActivityLogController::class)->only('index');
 
 });
 
