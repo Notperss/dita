@@ -11,8 +11,8 @@
  <link rel="stylesheet" href="{{ asset('') }}/assets/extensions/sweetalert2/sweetalert2.min.css">
  {{-- <link rel="stylesheet" crossorigin href="{{ asset('/assets/compiled/css/extra-component-sweetalert.css') }}"> --}}
 
- <link rel="stylesheet" crossorigin href="{{ asset('./assets/compiled/css/app.css') }}">
- <link rel="stylesheet" crossorigin href="{{ asset('./assets/compiled/css/app-dark.css') }}">
+ <link rel="stylesheet" crossorigin href="{{ asset('dist/assets/compiled/css/app.css') }}">
+ <link rel="stylesheet" crossorigin href="{{ asset('dist/assets/compiled/css/app-dark.css') }}">
  <link rel="stylesheet" crossorigin href="{{ asset('/assets/compiled/css/iconly.css') }}">
 
  <link rel="stylesheet" href="{{ asset('/assets/extensions/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}">

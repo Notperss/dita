@@ -30,11 +30,9 @@ class LendingArchiveController extends Controller
 
             if (Gate::allows('super_admin')) {
                 $archiveContainers = ArchiveContainer::with('division')->where('status', 1);
-
             } else {
                 $archiveContainers = ArchiveContainer::with('division')->where('company_id', $companies)->where('status', 1);
             }
-
 
             // Apply year filter if present
             if ($request->has('year') && ! empty($request->year)) {
@@ -76,7 +74,7 @@ class LendingArchiveController extends Controller
                 ->addColumn('action', function ($item) {
                     return '
                 <div class="buttons">
-                    <a href="#" class="btn btn-sm btn-success lend-btn" data-row-id="' . $item->id . '">Pinjam</a>
+                    <button  class="btn btn-sm btn-success lend-btn" data-row-id="' . $item->id . '">Pinjam</button>
                 </div>
                 ';
                 })
@@ -89,7 +87,8 @@ class LendingArchiveController extends Controller
             $lendingArchives = LendingArchive::where('approval', 1)->get();
 
         } elseif (Gate::allows('admin')) {
-            $lendings = Lending::where('status', null)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
+            // $lendings = Lending::where('status', null)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
+            $lendings = Lending::where('company_id', $companies)->orderBy('created_at', 'desc')->get();
             $lendingArchives = LendingArchive::where('approval', 1)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
         } else {
             $lendings = Lending::where('status', null)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
@@ -415,49 +414,61 @@ class LendingArchiveController extends Controller
         return redirect()->back();
     }
 
+    public function historyDetail($id)
+    {
+        // $ids = auth()->user();
+        // if (Gate::allows('super_admin')) {
+        //     $lendingArchives = LendingArchive::find($id);
+        // } elseif (Gate::allows('admin')) {
+        //     $lendingArchives = LendingArchive::where('company_id', $ids->company_id)->find($id);
+        // } else {
+        //     $lendingArchives = LendingArchive::where('user_id', $ids->id)->find($id);
+        // }
+        $ids = auth()->user();
+        if (Gate::allows('super_admin')) {
+            $lendingArchives = LendingArchive::find($id);
+        } else {
+            $lendingArchives = LendingArchive::where('user_id', $ids->id)->find($id);
+        }
+        return view('pages.transaction-archive.lending-archive.historyDetail', compact('lendingArchives'));
+    }
+
+
     public function history()
     {
-        $id = auth()->user()->id;
+        $id = auth()->user();
         if (Gate::allows('super_admin')) {
             $lendingArchives = LendingArchive::where('status', 2)->orderBy('created_at', 'desc')->get();
+        } elseif (Gate::allows('admin')) {
+            $lendingArchives = LendingArchive::where('status', 2)->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
         } else {
-
-            $lendingArchives = LendingArchive::where('status', 2)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 2)->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
         }
 
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }
 
-    public function historyDetail($id)
-    {
-        $ids = auth()->user()->id;
-        if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::find($id);
-        } else {
-            $lendingArchives = LendingArchive::where('user_id', $ids)->find($id);
-        }
-        return view('pages.transaction-archive.lending-archive.historyDetail', compact('lendingArchives'));
-    }
-
     public function fisik()
     {
-        $id = auth()->user()->id;
+        $id = auth()->user();
         if (Gate::allows('super_admin')) {
             $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->orderBy('created_at', 'desc')->get();
+        } elseif (Gate::allows('admin')) {
+            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
         } else {
-
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
         }
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }
     public function digital()
     {
-        $id = auth()->user()->id;
+        $id = auth()->user();
         if (Gate::allows('super_admin')) {
             $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->orderBy('created_at', 'desc')->get();
+        } elseif (Gate::allows('admin')) {
+            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
         } else {
-
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
         }
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }

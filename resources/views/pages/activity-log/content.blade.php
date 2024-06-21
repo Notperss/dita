@@ -6,7 +6,7 @@
     </td>
   </tr>
   <tr>
-    <th>User</th>
+    <th>User (Causer)</th>
     <td>
       {{ isset($item->causer->name) ? $item->causer->name : 'N/A' }}
       {{ optional($item->causer)->getRoleNames() ?? 'N/A' }}
@@ -17,8 +17,10 @@
     <td>{{ isset($item->description) ? $item->description : 'N/A' }}</td>
   </tr>
   <tr>
-    <th>User</th>
-    <td>{{ isset($item->employee->name) ? $item->employee->name : 'N/A' }}</td>
+    <th>User (Subject)</th>
+    <td>
+      {{ isset($item->subject->name) ? $item->subject->name : 'N/A' }}
+    </td>
   </tr>
   <tr>
     <th>Properties</th>

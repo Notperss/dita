@@ -291,7 +291,7 @@ class ArchiveContainerController extends Controller
             'year' => 'required|string',
 
             // 'file' => 'required|file|mimes:pdf|max:290',
-            'file' => 'file|mimes:pdf|max:290',
+            'file' => 'file|mimes:pdf',
             'division_id' => 'required|confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
@@ -324,7 +324,7 @@ class ArchiveContainerController extends Controller
 
             if ($files->getClientOriginalExtension() == 'pdf') {
 
-                //Microsoft
+                // Microsoft
 
                 // // Specify the path to pdftotext executable
                 // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';

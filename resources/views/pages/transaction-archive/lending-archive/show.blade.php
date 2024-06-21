@@ -6,8 +6,8 @@
     </td>
   </tr>
   <tr>
-    <th>Divisi</th>
-    <td>{{ isset($lendings->divisi) ? $lendings->divisi : 'N/A' }}</td>
+    <th>Peminjam</th>
+    <td>{{ isset($lendings->user->name) ? $lendings->user->name : 'N/A' }}</td>
   </tr>
   <tr>
     <th>Tanggal Pinjam</th>

@@ -5,6 +5,7 @@ namespace App\Models\TransactionArchive\LendingArchive;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LendingArchive extends Model
@@ -31,5 +32,10 @@ class LendingArchive extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(ArchiveContainer::class, 'archive_container_id');
+    }
+    public function user()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

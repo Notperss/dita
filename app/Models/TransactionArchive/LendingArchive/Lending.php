@@ -2,6 +2,7 @@
 
 namespace App\Models\TransactionArchive\LendingArchive;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,6 +24,11 @@ class Lending extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->hasMany(LendingArchive::class, 'lending_id', 'id');
+    }
+    public function user()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     // Fungsi untuk menghasilkan nomor peminjaman arsip dengan format PA-YYYY-MM-NNN

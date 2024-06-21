@@ -27,9 +27,11 @@
                 <table class="table table-striped mb-0" id="table1">
                   <thead>
                     <tr>
+                      <th>#</th>
                       <th>Nomor Dokumen</th>
+                      <th>Peminjam</th>
                       <th>Divisi</th>
-                      <th>Jangka Peminjaman</th>
+                      <th>Masa Peminjaman</th>
                       <th>Tipe</th>
                       <th>status</th>
                       <th>Action</th>
@@ -38,7 +40,9 @@
                   <tbody>
                     @foreach ($lendingArchives as $lending)
                       <tr>
+                        <td class="text-bold-500">{{ $loop->iteration }}</td>
                         <td class="text-bold-500">{{ $lending->archiveContainer->number_document ?? 'N/A' }}</td>
+                        <td>{{ $lending->user->name ?? 'N/A' }}</td>
                         <td>{{ $lending->archiveContainer->division->name ?? 'N/A' }}</td>
                         <td>
                           {{ isset($lending->period) ? Carbon\Carbon::parse($lending->period)->translatedFormat('l, d F Y') : '-' }}

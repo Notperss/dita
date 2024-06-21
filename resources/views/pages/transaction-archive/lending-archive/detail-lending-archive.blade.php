@@ -3,7 +3,9 @@
     @csrf
     @method('PUT')
     @can('approval')
-      <button type="submit" class="btn btn-primary bg-primary my-2">Submit</button>
+      @if (!$lending_archives->first()->approval ?? false)
+        <button type="submit" class="btn btn-primary bg-primary my-2">Submit</button>
+      @endif
     @endcan
     <table class="table table-bordered">
       <thead>
@@ -44,8 +46,9 @@
               @endif
             </td>
             <td>
-              @can('approval')
-                {{-- <div class="form-check">
+              @if ($lendings->lending->status == null)
+                @can('approval')
+                  {{-- <div class="form-check">
                   <input class="form-check-input" type="radio" name="approval[{{ $lendings->id }}]"
                     id="izinkan{{ $lendings->id }}" value="1">
                   <label class="form-check-label" for="izinkan{{ $lendings->id }}">
@@ -59,19 +62,19 @@
                     Tolak
                   </label>
                 </div> --}}
-                <div class="form-check">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="form-check-input form-check-primary"
-                      name="approval[{{ $lendings->id }}]" id="customColorCheck{{ $loop->index }}"
-                      @if ($lendings->approval == 1) checked @endif>
-                    <label class="form-check-label mx-1" for="customColorCheck{{ $loop->index }}">
-                      Ijinkan
-                    </label>
+                  <div class="form-check">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="form-check-input form-check-primary"
+                        name="approval[{{ $lendings->id }}]" id="customColorCheck{{ $loop->index }}"
+                        @if ($lendings->approval == 1) checked @endif>
+                      <label class="form-check-label mx-1" for="customColorCheck{{ $loop->index }}">
+                        Ijinkan
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                <div class="btn-group">
-                  {{-- @if ($lendings->type_document == 'DIGITAL')
+                  <div class="btn-group">
+                    {{-- @if ($lendings->type_document == 'DIGITAL')
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{ $loop->index }}"
                         name="approval[]" value="{{ $lendings->id }}" @checked($lendings->approval == 1 ?? 0)>
@@ -84,42 +87,39 @@
                       </label>
                     </div>
                 @endif --}}
-
-
-
-
-                  {{-- @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
+                    {{-- @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
                   <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
                     data-src="{{ asset('storage/' . $lendings->archiveContainer->file) }}" class="dropdown-item">
                     Lihat File
                   </a>
                 @endif --}}
-                @endcan
-                @if ($lendings->type_document == 'DIGITAL')
-                  @can('view_archive')
-                    @if ($lendings->archiveContainer->file)
-                      <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
-                        data-src="{{ asset('storage/' . $lendings->archiveContainer->file) }}" class="dropdown-item">
-                        Lihat File
-                      </a>
-                    @else
-                      <span><small>"No file found."</small> </span>
-                    @endif
-                  @else
-                    @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
+                  @endcan
+                  @if ($lendings->type_document == 'DIGITAL')
+                    @can('view_archive')
                       @if ($lendings->archiveContainer->file)
-                        {{-- <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
+                        <a type="button" class="btn btn-sm btn-success mx-1" data-fancy data-custom-class="pdf"
                           data-src="{{ asset('storage/' . $lendings->archiveContainer->file) }}" class="dropdown-item">
                           Lihat File
-                        </a> --}}
-                        <button onclick="downloadWatermarkedPDF()">Download Watermarked PDF</button>
+                        </a>
                       @else
-                        <span><small>"No file found."</small></span>
+                        <span><small>"No file found."</small> </span>
                       @endif
-                    @endif
-                  @endcan
-                @endif
-              </div>
+                    @else
+                      @if ($lendings->period && strtotime($lendings->period) >= strtotime('now'))
+                        @if ($lendings->archiveContainer->file)
+                          <a type="button" class="btn btn-success mx-1" data-fancy data-custom-class="pdf"
+                            data-src="{{ asset('storage/' . $lendings->archiveContainer->file) }}" class="dropdown-item">
+                            Lihat File
+                          </a>
+                        @else
+                          <span><small>"No file found."</small></span>
+                        @endif
+                      @endif
+                    @endcan
+                  @endif
+                </div>
+              @endif
+
             </td>
           </tr>
         @empty
