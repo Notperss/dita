@@ -132,7 +132,7 @@
 
         @foreach ($workUnits as $company)
           <div class="row">
-            <h5>{{ $company->name }}</h5>
+            <h5>Data Arsip {{ $company->name }}</h5>
             @forelse($company->division as $division)
               <div class="col-6 col-lg-2 col-md-6">
                 <div class="card">
@@ -203,6 +203,57 @@
           </div>
         </div>
 
+        @foreach ($workUnits as $company)
+          <div class="row">
+            <h5>Data Peminjaman Arsip {{ $company->name }}</h5>
+            @forelse($company->division as $division)
+              <div class="col-6 col-lg-2 col-md-6">
+                <div class="card">
+                  <div class="card-body ">
+                    <div class="row">
+                      <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted font-semibold">
+                          <a href="{{ route('backsite.division-lending', $division->id) }}"> {{ $division->code }} </a>
+                        </h6>
+                        <h6 class="font-extrabold mb-0">
+                          {{ $division->lendingArchive->count() }}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            @empty
+              <div class="col-12 col-lg-12 col-md-12">
+                <div class="card">
+                  <div class="card-body ">
+                    <div class="row">
+                      <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                        <h6 class="text-muted text-center font-semibold">
+                          Empty
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            @endforelse
+          </div>
+        @endforeach
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4>Data Peminjaman Arsip Per Bulan ({{ date('Y') }})</h4>
+              </div>
+              <div class="card-body">
+                <div id="lending-chart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col-12 col-xl-6">
             <div class="card">
@@ -223,7 +274,7 @@
                         </tr>
                       </thead>
                       <tbody>
-                        @forelse ($lendingArchives as $lending)
+                        @forelse ($lendingTopten as $lending)
                           <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $lending->archiveContainer->number_document ?? 'N/A' }}</td>
@@ -235,7 +286,7 @@
                                 <span class="badge bg-light-info">Dikembalikan</span>
                               @endif
                             </td>
-                            {{-- <td>{{ $lending->type_document }}</td> --}}
+                            {{-- <td>{{ $lending->document_type }}</td> --}}
                           </tr>
                         @empty
                           <tr>
@@ -378,6 +429,58 @@
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
   </script>
+
+  <script>
+    var totalLendingCounts = [
+      @foreach ($lendingMonthCounts as $count)
+        {{ $count }},
+      @endforeach
+    ];
+
+    var digitalLendingCounts = [
+      @foreach ($digitalLendingMonthCounts as $count)
+        {{ $count }},
+      @endforeach
+    ];
+
+    var physicLendingCounts = [
+      @foreach ($physicLendingMonthCounts as $count)
+        {{ $count }},
+      @endforeach
+    ];
+
+    var options = {
+      chart: {
+        type: 'bar',
+        height: 300,
+      },
+      series: [{
+          name: 'Total Peminjaman Arsip',
+          data: totalLendingCounts,
+        },
+        {
+          name: 'Total Peminjaman Digital',
+          data: digitalLendingCounts
+        },
+        {
+          name: 'Total Peminjaman Fisik',
+          data: physicLendingCounts
+        }
+      ],
+      xaxis: {
+        categories: [
+          @foreach (range(1, 12) as $month)
+            '{{ date('F', mktime(0, 0, 0, $month, 1)) }}',
+          @endforeach
+        ]
+      },
+      // Annotations or any other chart options...
+    };
+
+    var chart = new ApexCharts(document.querySelector("#lending-chart"), options);
+    chart.render();
+  </script>
+
 
 @endsection
 <script src="{{ asset('/assets/extensions/apexcharts/apexcharts.min.js') }}"></script>

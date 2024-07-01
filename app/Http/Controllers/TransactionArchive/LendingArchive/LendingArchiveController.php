@@ -84,15 +84,15 @@ class LendingArchiveController extends Controller
 
         if (Gate::allows('super_admin')) {
             $lendings = Lending::where('status', null)->orderBy('created_at', 'desc')->get();
-            $lendingArchives = LendingArchive::where('approval', 1)->get();
+            $lendingArchives = LendingArchive::where('approval', 1)->where('status', 2)->get();
 
         } elseif (Gate::allows('admin')) {
             // $lendings = Lending::where('status', null)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
             $lendings = Lending::where('company_id', $companies)->orderBy('created_at', 'desc')->get();
-            $lendingArchives = LendingArchive::where('approval', 1)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('approval', 1)->where('status', 2)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
         } else {
             $lendings = Lending::where('status', null)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
-            $lendingArchives = LendingArchive::where('approval', 1)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('approval', 1)->where('status', 2)->where('status', 2)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
         }
 
         $newLendingNumber = Lending::generateLendingNumber();
@@ -128,21 +128,21 @@ class LendingArchiveController extends Controller
         // }
         $validator = Validator::make($request->all(), [
             'lending_number' => ['required', Rule::unique('lendings'),],
-            'division' => ['required'],
+            // 'division_id' => ['required'],
             // 'archive_container_id' => 'required|array', // Ensure archive_container_id is present and is an array
             // 'archive_container_id.*' => 'exists:lending_archives,id', // Validate each lending item ID exists in the database
             // Add more validation rules for other fields if necessary
             'inputs' => 'required|array',
-            'inputs.*.type_document' => 'required', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
+            'inputs.*.document_type' => 'required', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
             'inputs.*.archive_container_id' => 'required', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
 
             // Add other validation rules as needed
         ], [
             'lending_number.required' => 'Nomor Peminjaman harus diisi.',
-            'division.required' => 'Divisi harus diisi.',
+            // 'division_id.required' => 'Divisi harus diisi.',
             // 'inputs' => 'Arsip tidak boleh kosong.',
             // 'inputs.*.archive_container_id.required' => 'Arsip tidak boleh kosong',
-            // 'inputs.*.type_document.required' => 'Pilih setidaknya satu Tipe Dokumen',
+            // 'inputs.*.document_type.required' => 'Pilih setidaknya satu Tipe Dokumen',
             'lending_number.unique' => 'Nomor Peminjaman sudah digunakan.',
 
 
@@ -154,11 +154,13 @@ class LendingArchiveController extends Controller
         }
         $user_id = Auth::user()->id;
         $company_id = Auth::user()->company_id;
+        $division_id = Auth::user()->division_id;
 
         // Merge the user_id into the request data
         $requestData = array_merge($request->all(), [
             'user_id' => $user_id,
             'company_id' => $company_id,
+            'division_id' => $division_id,
         ]
         );
         // If the validation passes, create the Divisi record
@@ -170,9 +172,10 @@ class LendingArchiveController extends Controller
                 LendingArchive::create([
                     'user_id' => $user_id,
                     'company_id' => $company_id,
+                    'division_id' => $division_id,
                     'lending_id' => $lending_id,
                     'archive_container_id' => $value['archive_container_id'],
-                    'type_document' => $value['type_document'],
+                    'document_type' => $value['document_type'],
                     'status' => '1',
                 ]);
 
@@ -180,11 +183,8 @@ class LendingArchiveController extends Controller
                 $archiveContainer->update(['status' => 2]);
             }
         }
-
-
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.lending-archive.index');
-
     }
 
     /**
@@ -226,7 +226,7 @@ class LendingArchiveController extends Controller
             ],
             'division' => ['required'],
             'inputs' => 'required|array',
-            'inputs.*.type_document' => 'required',
+            'inputs.*.document_type' => 'required',
             'inputs.*.archive_container_id' => 'required',
 
             // Add other validation rules as needed
@@ -235,7 +235,7 @@ class LendingArchiveController extends Controller
             'division.required' => 'Divisi harus diisi.',
             'inputs' => 'Arsip tidak boleh kosong.',
             'inputs.*.archive_container_id.required' => 'Arsip tidak boleh kosong',
-            'inputs.*.type_document.required' => 'Pilih setidaknya satu Tipe Dokumen',
+            'inputs.*.document_type.required' => 'Pilih setidaknya satu Tipe Dokumen',
             'lending_number.unique' => 'Nomor Peminjaman sudah digunakan.', // Pesan khusus untuk aturan validasi unique
 
             // Add custom error messages for other rules
@@ -272,8 +272,9 @@ class LendingArchiveController extends Controller
         if ($request->ajax()) {
             $id = $request->id;
 
-            $lending_archive = LendingArchive::where('lending_id', $id)->get();
-            $row = LendingArchive::find($id);
+            $lending_archive = LendingArchive::with('lending')->where('lending_id', $id)->get();
+            $row = Lending::find($id);
+            // $row = LendingArchive::find($id);
 
             $data = [
                 'lending_archives' => $lending_archive,
@@ -313,7 +314,8 @@ class LendingArchiveController extends Controller
         $approvedIds = is_array($id) ? $id : [$id];
 
         // Get the current date plus 14 days
-        $period = Carbon::now()->addDays(14)->toDateString();
+        // $period = Carbon::now()->addDays(7)->toDateString();
+        // $periodDigital = Carbon::now()->addDays(3)->toDateString();
 
         // Get the approval values from the request
         $approvals = $request->input('approval');
@@ -322,13 +324,22 @@ class LendingArchiveController extends Controller
         foreach ($approvedIds as $approvedId) {
             $approval = isset($approvals[$approvedId]);
 
-            LendingArchive::where('id', $approvedId)->update([
-                'period' => $approval ? $period : null,
-                'status' => $approval ? 2 : 1,
-                'approval' => $approval,
-            ]);
-        }
+            // Fetch the LendingArchive record
+            $lendingArchive = LendingArchive::find($approvedId);
 
+            if ($lendingArchive) {
+                // Determine the period based on the document type
+                $period = $lendingArchive->document_type === 'DIGITAL'
+                    ? Carbon::now()->addDays(3)->toDateString()
+                    : Carbon::now()->addDays(7)->toDateString();
+
+                LendingArchive::where('id', $approvedId)->update([
+                    'period' => $approval ? $period : null,
+                    'status' => $approval ? 2 : 1,
+                    'approval' => $approval,
+                ]);
+            }
+        }
 
 
         // // Get the IDs of the lending archive records where the checkbox is not checked
@@ -390,6 +401,8 @@ class LendingArchiveController extends Controller
 
             // Loop through each lending archive
             foreach ($lendingArchives as $lendingArchive) {
+                $lendingArchive->update(['status' => 3]);
+
                 // Check if the archive container relationship exists
                 if ($archiveContainer = $lendingArchive->archiveContainer) {
                     // Store the archive container ID
@@ -406,10 +419,6 @@ class LendingArchiveController extends Controller
                 }
             }
         }
-
-
-
-
         alert()->success('Success', 'Data updated successfully.');
         return redirect()->back();
     }
@@ -433,16 +442,15 @@ class LendingArchiveController extends Controller
         return view('pages.transaction-archive.lending-archive.historyDetail', compact('lendingArchives'));
     }
 
-
     public function history()
     {
         $id = auth()->user();
         if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::where('status', 2)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->orderBy('created_at', 'desc')->get();
         } elseif (Gate::allows('admin')) {
-            $lendingArchives = LendingArchive::where('status', 2)->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
         } else {
-            $lendingArchives = LendingArchive::where('status', 2)->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
         }
 
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
@@ -452,11 +460,11 @@ class LendingArchiveController extends Controller
     {
         $id = auth()->user();
         if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'FISIK')->orderBy('created_at', 'desc')->get();
         } elseif (Gate::allows('admin')) {
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'FISIK')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
         } else {
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'FISIK')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'FISIK')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
         }
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }
@@ -464,11 +472,11 @@ class LendingArchiveController extends Controller
     {
         $id = auth()->user();
         if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'DIGITAL')->orderBy('created_at', 'desc')->get();
         } elseif (Gate::allows('admin')) {
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'DIGITAL')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
         } else {
-            $lendingArchives = LendingArchive::where('status', 2)->where('type_document', 'DIGITAL')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'DIGITAL')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
         }
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }

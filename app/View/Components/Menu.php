@@ -24,10 +24,10 @@ class Menu extends Component
     {
         $menus = MenuGroup::query()
             ->with('items', function ($query) {
-                return $query->where('status', true)->orderBy('posision');
+                return $query->where('status', true)->orderBy('position');
             })
             ->where('status', true)
-            ->orderBy('posision')
+            ->orderBy('position')
             ->get();
         return view('components.menu', compact('menus'));
     }

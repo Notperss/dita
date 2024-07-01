@@ -67,6 +67,7 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
     //Dashboard
     Route::resource('dashboard', DashboardController::class)->only('index');
     Route::get('/division-archive/{id}', [DashboardController::class, 'division_archive'])->name('division-archive');
+    Route::get('/division-lending/{id}', [DashboardController::class, 'division_lending'])->name('division-lending');
 
     //Company
     Route::resource('company', CompanyController::class);

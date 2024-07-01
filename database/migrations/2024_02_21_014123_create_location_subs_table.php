@@ -12,10 +12,12 @@ return new class extends Migration {
     {
         Schema::create('location_subs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('main_location_id');
             $table->string('name');
             $table->timestamps();
 
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('main_location_id')->references('id')->on('location_mains')->onDelete('cascade');
         });
     }

@@ -21,6 +21,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "meilisearch/meilisearch-php": "^1.6",
+        "milon/barcode": "^11.0",
         "realrashid/sweet-alert": "^7.1",
         "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "^4.2",

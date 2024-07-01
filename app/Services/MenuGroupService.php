@@ -7,22 +7,22 @@ use App\Models\MenuGroup;
 
 class MenuGroupService
 {
-  public function create(Request $request): MenuGroup
+  public function create(Request $request) : MenuGroup
   {
     return MenuGroup::create(array_merge(
       $request->validated(),
       array(
-        'status' => !blank($request->status) ? true : false,
-        'posision' => MenuGroup::max('posision') + 1
+        'status' => ! blank($request->status) ? true : false,
+        'position' => MenuGroup::max('position') + 1
       ),
     ));
   }
 
-  public function update(Request $request, MenuGroup $menuGroup): MenuGroup|bool
+  public function update(Request $request, MenuGroup $menuGroup) : MenuGroup|bool
   {
     return $menuGroup->update(array_merge(
       $request->validated(),
-      array('status' => !blank($request->status) ? true : false)
+      array('status' => ! blank($request->status) ? true : false)
     ));
   }
 }

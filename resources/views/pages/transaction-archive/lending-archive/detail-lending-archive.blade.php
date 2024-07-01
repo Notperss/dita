@@ -3,7 +3,7 @@
     @csrf
     @method('PUT')
     @can('approval')
-      @if (!$lending_archives->first()->approval ?? false)
+      @if (!$id->status)
         <button type="submit" class="btn btn-primary bg-primary my-2">Submit</button>
       @endif
     @endcan
@@ -28,9 +28,9 @@
             <td>{{ $lendings->archiveContainer->regarding }}</td>
             <td>{{ $lendings->archiveContainer->division->name }}</td>
             <td>
-              @if ($lendings->type_document === 'DIGITAL')
+              @if ($lendings->document_type === 'DIGITAL')
                 <span class="badge bg-light-info">Digital</span>
-              @elseif ($lendings->type_document === 'FISIK')
+              @elseif ($lendings->document_type === 'FISIK')
                 <span class="badge bg-light-secondary">Fisik</span>
               @else
                 <span class="badge bg-light-warning"> - </span>
@@ -74,7 +74,7 @@
                   </div>
 
                   <div class="btn-group">
-                    {{-- @if ($lendings->type_document == 'DIGITAL')
+                    {{-- @if ($lendings->document_type == 'DIGITAL')
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{ $loop->index }}"
                         name="approval[]" value="{{ $lendings->id }}" @checked($lendings->approval == 1 ?? 0)>
@@ -94,7 +94,7 @@
                   </a>
                 @endif --}}
                   @endcan
-                  @if ($lendings->type_document == 'DIGITAL')
+                  @if ($lendings->document_type == 'DIGITAL')
                     @can('view_archive')
                       @if ($lendings->archiveContainer->file)
                         <a type="button" class="btn btn-sm btn-success mx-1" data-fancy data-custom-class="pdf"
@@ -148,7 +148,7 @@
     });
   });
 </script> --}}
-<script>
+{{-- <script>
   function downloadWatermarkedPDF() {
     // Make an AJAX request to fetch the watermarked PDF
     fetch('/download-watermarked-pdf?id={{ $id }}')
@@ -174,4 +174,4 @@
         console.error('Error fetching watermarked PDF:', error);
       });
   }
-</script>
+</script> --}}

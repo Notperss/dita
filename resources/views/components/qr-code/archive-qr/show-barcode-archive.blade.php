@@ -13,7 +13,13 @@
     </style>
     <table class="table table-borderless text-left table-no-gap ">
       <tr>
-        <th class="text-center">{{ $qr }}</th>
+        <th class="text-center">
+          {{-- @php
+            echo '<img src="data:image/png;base64,' .
+                DNS1D::getBarcodePNG($archiveContainer->number_app, 'c39+', 3, 44) .
+                '" alt="barcode"   />';
+          @endphp --}}{{ $qr }}
+        </th>
         <td>
           <div class="row">Nomor Aplikasi</div>
           <div class="row mb-3"><strong>

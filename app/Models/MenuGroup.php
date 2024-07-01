@@ -10,7 +10,7 @@ class MenuGroup extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'status', 'permission_name', 'posision'];
+    protected $fillable = ['name', 'status', 'permission_name', 'position'];
 
     protected $casts = ['status' => 'boolean'];
 

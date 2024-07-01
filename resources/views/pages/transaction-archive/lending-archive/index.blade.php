@@ -31,11 +31,11 @@
                   <h6 class="text-muted font-semibold">Riwayat Semua Arsip</h6>
                   <h6 class="font-extrabold mb-0">
                     @can('super_admin')
-                      {{ DB::table('lending_archives')->where('status', 2)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->count() }}
                     @elsecan('admin')
-                      {{ DB::table('lending_archives')->where('status', 2)->where('company_id', auth()->user()->company_id)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('company_id', auth()->user()->company_id)->count() }}
                     @else
-                      {{ DB::table('lending_archives')->where('status', 2)->where('user_id', auth()->user()->id)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('user_id', auth()->user()->id)->count() }}
                     @endcan
                   </h6>
                 </a>
@@ -58,11 +58,11 @@
                 <h6 class="font-extrabold mb-0">
                   <a href="{{ route('backsite.fisik') }}">
                     @can('super_admin')
-                      {{ DB::table('lending_archives')->where('status', 2)->where('type_document', 'FISIK')->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->count() }}
                     @elsecan('admin')
-                      {{ DB::table('lending_archives')->where('status', 2)->where('type_document', 'FISIK')->where('company_id', auth()->user()->company_id)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->where('company_id', auth()->user()->company_id)->count() }}
                     @else
-                      {{ DB::table('lending_archives')->where('status', 2)->where('type_document', 'FISIK')->where('user_id', auth()->user()->id)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->where('user_id', auth()->user()->id)->count() }}
                     @endcan
                 </h6>
                 </a>
@@ -85,11 +85,11 @@
                   <h6 class="text-muted font-semibold">Riwayat Digital</h6>
                   <h6 class="font-extrabold mb-0">
                     @can('super_admin')
-                      {{ DB::table('lending_archives')->where('status', 2)->where('type_document', 'DIGITAL')->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'DIGITAL')->count() }}
                     @elsecan('admin')
-                      {{ DB::table('lending_archives')->where('status', 2)->where('type_document', 'DIGITAL')->where('company_id', auth()->user()->company_id)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'DIGITAL')->where('company_id', auth()->user()->company_id)->count() }}
                     @else
-                      {{ DB::table('lending_archives')->where('status', 2)->where('type_document', 'DIGITAL')->where('user_id', auth()->user()->id)->count() }}
+                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'DIGITAL')->where('user_id', auth()->user()->id)->count() }}
                     @endcan
                   </h6>
                 </a>
@@ -100,9 +100,9 @@
       </div>
     </div>
 
-    <a href="#mymodal" data-toggle="modal" data-target="#mymodal" class="btn btn-primary my-2"> <i
+    {{-- <a href="#mymodal" data-toggle="modal" data-target="#mymodal" class="btn btn-primary my-2"> <i
         class="bi bi-plus-lg"></i>
-      Pinjam Arsip</a>
+      Pinjam Arsip</a> --}}
 
     <div class="row match-height">
       <div class="col-12">
@@ -260,6 +260,9 @@
                         <div class="card-body">
                           <h4 class="card-title mb-0">List Arsip Yang Ingin Dipinjam</h4>
                         </div>
+                        <a href="#mymodal" data-toggle="modal" data-target="#mymodal" class="btn btn-primary my-2"> <i
+                            class="bi bi-plus-lg"></i>
+                          Pinjam Arsip</a>
                         <div class="card-body">
                           <div class="table-responsive">
 
@@ -272,7 +275,7 @@
                                   <th class="text-center">No. Arsip</th>
                                   <th class="text-center">Tahun</th>
                                   <th class="text-center">Perihal</th>
-                                  <th class="text-center">Tag</th>
+                                  {{-- <th class="text-center">Tag</th> --}}
                                   <th class="text-center">Divisi</th>
                                   <th class="text-center">Tipe</th>
                                 </tr>
@@ -280,8 +283,8 @@
                               <tbody>
                               </tbody>
                             </table>
-                          </div>
 
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -440,9 +443,9 @@
                                   @endif
                                 </td> --}}
                                 <td class="text-bold-500">
-                                  @if ($archives->type_document == 'FISIK')
+                                  @if ($archives->document_type == 'FISIK')
                                     <span class="badge bg-light-secondary">FISIK</span>
-                                  @elseif ($archives->type_document == 'DIGITAL')
+                                  @elseif ($archives->document_type == 'DIGITAL')
                                     <span class="badge bg-light-info">DIGITAL</span>
                                   @else
                                     <span>N/A</span>
@@ -499,7 +502,7 @@
                                 </form> --}}
 
                                   @if ($archives->period && strtotime($archives->period) >= strtotime('now'))
-                                    @if ($archives->archiveContainer->file && $archives->type_document == 'DIGITAL')
+                                    @if ($archives->archiveContainer->file && $archives->document_type == 'DIGITAL')
                                       <a type="button" class="btn btn-sm btn-success mx-1" data-fancy
                                         data-custom-class="pdf"
                                         data-src="{{ asset('storage/' . $archives->archiveContainer->file) }}"
@@ -509,9 +512,9 @@
                                     @else
                                       <span><small>"N/A"</small></span>
                                     @endif
-                                  @else
-                                    {{-- <span style="color: red"> Batas Waktu Peminjaman Habis</span> --}}
-                                    <button class="btn btn-sm btn-primary">Sudah Dikembalikan</button>
+                                    {{-- @else
+                                    <span style="color: red"> Batas Waktu Peminjaman Habis</span>
+                                    <button class="btn btn-sm btn-primary">Sudah Dikembalikan</button> --}}
                                   @endif
 
                                 </td>
@@ -579,8 +582,7 @@
                   }
                 @endphp
                 <label for="division">Divisi <code>*</code></label>
-                <input type="text" id="division" name="division" class="form-control"
-                  value="{{ $divisionName }}" readonly>
+                <input type="text" class="form-control" value="{{ $divisionName }}" readonly>
               </div>
               <div class="form-group">
                 <label for="description">keterangan</label>
@@ -595,14 +597,14 @@
             <div class="form-group row">
               <table class="table col-md-12 lending-temp-table">
                 <thead>
-                  <tr>
+                  <tr style="font-size:80%;">
                     <th class="text-center" scope="col">#</th>
                     <th class="text-center" scope="col">No. Katalog/PP</th>
                     <th class="text-center" scope="col">No. Dokumen</th>
                     <th class="text-center" scope="col">No. Arsip</th>
                     <th class="text-center" scope="col">Tahun</th>
                     <th class="text-center" scope="col">Perihal</th>
-                    <th class="text-center" scope="col">Tag</th>
+                    {{-- <th class="text-center" scope="col">Tag</th> --}}
                     <th class="text-center" scope="col">Divisi</th>
                     <th class="text-center" scope="col">Tipe</th>
                     <th class="text-center" scope="col">Kategori<span style="color:red;">*</span>
@@ -825,22 +827,22 @@
 
           // Common row HTML
           var commonRowHtml = '<tr data-row-id="' + rowId + '" style="font-size:80%;">' +
-            '<td><input type="hidden" name="inputs[' + rowId + '][archive_container_id]" value="' + rowId +
-            '" readonly hidden></td>' +
-            '<td class="text-center">' + rowCount + '</td>' + // Auto-incremented number
+            '<td class="text-center"> <input type="hidden" name="inputs[' + rowId +
+            '][archive_container_id]" value="' + rowId +
+            '" readonly hidden>' + rowCount + '</td>' + // Auto-incremented number
             '<td class="text-center">' + rowData.number_catalog + '</td>' +
             '<td class="text-center">' + rowData.number_document + '</td>' +
             '<td class="text-center">' + rowData.number_archive + '</td>' +
             '<td class="text-center">' + rowData.year + '</td>' +
             '<td class="text-center">' + rowData.regarding + '</td>' +
-            '<td class="text-center">' + rowData.tag + '</td>' +
+            // '<td class="text-center">' + rowData.tag + '</td>' +
             '<td class="text-center">' + rowData.division.code + '</td>' +
             '<td class="text-center">' + rowData.archive_type + '</td>';
 
           // Complete row HTML for lending-temp-table
           var lendingRowHtml = commonRowHtml +
             '<td class="text-center">' +
-            '<select name="inputs[' + rowId + '][type_document]" class="form-control" required>' +
+            '<select name="inputs[' + rowId + '][document_type]" class="form-control" required>' +
             '<option value="" selected disabled>Choose</option>' +
             '<option value="FISIK">FISIK</option>' +
             '<option value="DIGITAL">DIGITAL</option>' +
@@ -851,7 +853,7 @@
             '</td>' +
             '</tr>';
 
-          // Complete row HTML for another-table-class (without type_document and action columns)
+          // Complete row HTML for another-table-class (without document_type and action columns)
           var anotherRowHtml = commonRowHtml + '</tr>';
 
           // Append the new row to both tables
@@ -879,7 +881,7 @@
     //       .val(); // Get the selected copy type
     //     lendingItems.push({
     //       id: rowId,
-    //       type_document: typeDocument,
+    //       document_type: typeDocument,
     //     });
     //   });
     //   $('#archive_container_id').val(JSON.stringify(lendingItems));
@@ -893,7 +895,7 @@
       let selectedIds = [];
 
       // Event listener for change event on select element
-      $(document).on('change', 'select[name^="inputs["]:not([name$="[type_document]"])', function() {
+      $(document).on('change', 'select[name^="inputs["]:not([name$="[document_type]"])', function() {
         // Get the selected ID
         let selectedId = $(this).val();
 
@@ -908,7 +910,7 @@
         selectedIds.push(selectedId);
 
         // Disable the option with the selected ID in all other select elements
-        $('select[name^="inputs["]:not([name$="[type_document]"])').not(this).find('option').prop('disabled',
+        $('select[name^="inputs["]:not([name$="[document_type]"])').not(this).find('option').prop('disabled',
           function() {
             return $(this).val() === selectedId;
           });
@@ -917,7 +919,7 @@
       $('#add-archive').click(function() {
         // Check if the select value is filled
         let selectValueFilled = true;
-        $('select[name^="inputs["]:not([name$="[type_document]"])').each(function() {
+        $('select[name^="inputs["]:not([name$="[document_type]"])').each(function() {
           if ($(this).val() === "") {
             selectValueFilled = false;
             return false; // Exit the loop early if any select value is not filled
@@ -947,7 +949,7 @@
             </td>
             <td><input type="text" class="form-control version" id="version_${a}" readonly></td>
             <td><input type="text" class="form-control product" id="product_${a}" readonly></td>
-            <td><select type="text" class="form-control" name="inputs[${a}][type_document]" readonly>
+            <td><select type="text" class="form-control" name="inputs[${a}][document_type]" readonly>
               <option value="" selected disabled>Choose</option>
               <option value="FISIK">Fisik</option>
               <option value="DIGITAL">Digital</option>
@@ -964,7 +966,7 @@
         });
 
         // Disable options that have been selected in other rows
-        $('select[name^="inputs["]:not([name$="[type_document]"]').each(function() {
+        $('select[name^="inputs["]:not([name$="[document_type]"]').each(function() {
           let selectedId = $(this).val();
           $(this).find('option').prop('disabled', function() {
             return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
@@ -972,7 +974,7 @@
         });
       });
 
-      $(document).on('change', 'select[name^="inputs["]:not([name$="[type_document]"])', function() {
+      $(document).on('change', 'select[name^="inputs["]:not([name$="[document_type]"])', function() {
         var selectedOption = $(this).find(':selected');
         var versionValue = selectedOption.data('value') || '';
         var productValue = selectedOption.data('value2') || '';
@@ -992,8 +994,8 @@
         $(this).closest('tr').remove();
 
         // Enable the option with the removed ID in all other select elements
-        $('select[name^="inputs["]:not([name$="[type_document]"])').find('option').prop('disabled', false);
-        $('select[name^="inputs["]:not([name$="[type_document]"])').each(function() {
+        $('select[name^="inputs["]:not([name$="[document_type]"])').find('option').prop('disabled', false);
+        $('select[name^="inputs["]:not([name$="[document_type]"])').each(function() {
           let selectedId = $(this).val();
           $(this).find('option').prop('disabled', function() {
             return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;

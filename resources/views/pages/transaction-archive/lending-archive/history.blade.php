@@ -48,9 +48,9 @@
                           {{ isset($lending->period) ? Carbon\Carbon::parse($lending->period)->translatedFormat('l, d F Y') : '-' }}
                         </td>
                         <td>
-                          @if ($lending->type_document == 'DIGITAL')
+                          @if ($lending->document_type == 'DIGITAL')
                             <span class="badge bg-light-info">DIGITAL</span>
-                          @elseif ($lending->type_document == 'FISIK')
+                          @elseif ($lending->document_type == 'FISIK')
                             <span class="badge bg-light-secondary">FISIK</span>
                           @else
                             <span class="badge bg-light-warning">-</span>

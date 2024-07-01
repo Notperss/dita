@@ -30,10 +30,12 @@ class FolderDivisionController extends Controller
         if (Gate::allows('super_admin')) {
             $folders = $folderQuery->get();
             $folderFiles = $folderFilesQuery->get();
-        } elseif (Gate::allows('admin')) {
-            $folders = $folderQuery->where('company_id', $auth->company_id)->get();
-            $folderFiles = $folderFilesQuery->where('company_id', $auth->company_id)->get();
-        } else {
+        }
+        //  elseif (Gate::allows('admin')) {
+        //     $folders = $folderQuery->where('company_id', $auth->company_id)->get();
+        //     $folderFiles = $folderFilesQuery->where('company_id', $auth->company_id)->get();
+        // }
+        else {
             $folders = $folderQuery->where('company_id', $auth->company_id)->where('division_id', $auth->division_id)->get();
             $folderFiles = $folderFilesQuery->where('company_id', $auth->company_id)->where('division_id', $auth->division_id)->get();
         }

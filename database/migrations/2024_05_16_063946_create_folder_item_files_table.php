@@ -12,14 +12,15 @@ return new class extends Migration {
     {
         Schema::create('folder_item_files', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('folder_item_id');
-            $table->unsignedBigInteger('folder_id')->nullable();
+            $table->unsignedBigInteger('folder_id');
             $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('division_id')->nullable();
+            $table->string('number');
+            $table->date('date');
             $table->string('file');
+            $table->longText('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('folder_item_id')->references('id')->on('folder_items')->onDelete('cascade');
             $table->foreign('folder_id')->references('id')->on('folder_divisions')->onDelete('cascade');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('division_id')->references('id')->on('divisions')->onDelete('cascade');

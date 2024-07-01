@@ -22,7 +22,7 @@
       <div class="card-body">
         <!-- end cardheader -->
         <!-- Hoverable Rows -->
-        <table class="table table-hover table-nowrap mb-0" id="table1">
+        <table class="table table-striped" id="table1">
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -106,4 +106,5 @@
       });
     }
   </script>
+
 @endsection

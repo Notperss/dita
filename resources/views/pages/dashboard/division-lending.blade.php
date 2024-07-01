@@ -6,7 +6,7 @@
     <div class="page-title">
       <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
-          <h3> {{ $divisions->name }}</h3>
+          <h3>Peminjaman {{ $divisions->name }}</h3>
           <p class="text-subtitle text-muted">List all archive from {{ $divisions->name }}.</p>
         </div>
         <div class="col-12 col-md-6 order-md-2 order-first">
@@ -30,18 +30,18 @@
               <th class="text-center">No.Kontainer</th>
               <th class="text-center">No.Dokumen</th>
               <th class="text-center">Perihal</th>
-              <th class="text-center">Detail Lokasi</th>
-              {{-- <th class="text-center">Status</th> --}}
+              {{-- <th class="text-center">Detail Lokasi</th>
+              <th class="text-center">Status</th> --}}
             </tr>
           </thead>
           <tbody>
-            @foreach ($archiveContainers as $archiveContainer)
+            @foreach ($lendingArchives as $lend)
               <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
-                <td class="text-center">{{ $archiveContainer->number_container ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->number_document ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->regarding ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->detail_location ?? 'N/A' }}</td>
+                <td class="text-center">{{ $lend->archiveContainer->number_container ?? 'N/A' }}</td>
+                <td class="text-center">{{ $lend->archiveContainer->number_document ?? 'N/A' }}</td>
+                <td class="text-center">{{ $lend->archiveContainer->regarding ?? 'N/A' }}</td>
+                {{-- <td class="text-center">{{ $archiveContainer->detail_location ?? 'N/A' }}</td> --}}
                 {{-- <td class="text-center">{{ $archiveContainer->status ?? 'N/A' }}</td> --}}
               </tr>
             @endforeach

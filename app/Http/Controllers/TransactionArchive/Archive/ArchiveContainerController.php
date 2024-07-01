@@ -468,8 +468,11 @@ class ArchiveContainerController extends Controller
     {
         // $decrypt_id = decrypt($id);
         // $barang = Barang::find($decrypt_id);
+        // $archiveContainer = ArchiveContainer::find($id);
+        // $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('qr-archive', $id));
+        // return view('components.qr-code.archive-qr.show-barcode-archive', compact('archiveContainer', 'qr'));
         $archiveContainer = ArchiveContainer::find($id);
-        $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('qr-archive', $id));
+        $qr = QrCode::size(170)->style('round')->margin(1)->generate($archiveContainer->number_app);
         return view('components.qr-code.archive-qr.show-barcode-archive', compact('archiveContainer', 'qr'));
     }
 

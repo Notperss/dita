@@ -14,8 +14,13 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('main_classification_id');
             $table->unsignedBigInteger('company_id');
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->string('name');
+            $table->string('document_type');
+            $table->string('period_active');
+            $table->string('period_inactive');
+            $table->longText('description_active')->nullable();
+            $table->longText('description_inactive')->nullable();
             $table->longText('description')->nullable();
             $table->timestamps();
 

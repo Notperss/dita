@@ -30,35 +30,72 @@ class DashboardController extends Controller
             // $divisions = Division::with('archive_container')->get();
             $workUnits = Company::orderBy('name', 'asc')->with('division')->get();
             $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')->take(10)->get();
-            $lendingArchives = LendingArchive::orderBy('created_at', 'desc')->take(10)->get();
+
+            $lendingArchives = LendingArchive::orderBy('created_at', 'desc');
+            $lendingTopten = $lendingArchives->take(10)->get();
+            $lendingData = $lendingArchives->get();
 
             $currentYear = date('Y'); // Get the current year
             $monthCounts = [];
+            $lendingMonthCounts = [];
+            $digitalLendingMonthCounts = [];
+            $physicLendingMonthCounts = [];
             foreach (range(1, 12) as $month) {
                 $count = ArchiveContainer::whereYear('created_at', $currentYear)
                     ->whereMonth('created_at', $month)
                     ->count();
+                $lendingCount = LendingArchive::whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+                $digitalLendingCount = LendingArchive::where('document_type', 'DIGITAL')->whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+                $physicLendingCount = LendingArchive::where('document_type', 'FISIK')->whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
                 $monthCounts[] = $count;
+                $digitalLendingMonthCounts[] = $digitalLendingCount;
+                $physicLendingMonthCounts[] = $physicLendingCount;
+                $lendingMonthCounts[] = $lendingCount;
             }
         } else {
             // $workUnits = Division::where('company_id', $companies)->with('archive_container')->get();
-            $workUnits = Company::orderBy('name', 'asc')->where('id', $companies)->with('division')->get();
+            $workUnits = Company::orderBy('name', 'asc')->where('id', $companies)->with('division', 'lendingArchive', 'lending')->get();
 
             $archiveContainers = ArchiveContainer::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
-            $lendingArchives = LendingArchive::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
+
+            $lendingArchives = LendingArchive::where('company_id', $companies)->orderBy('created_at', 'desc');
+            $lendingTopten = $lendingArchives->take(10)->get();
+            $lendingData = $lendingArchives->get();
 
             $currentYear = date('Y'); // Get the current year
             $monthCounts = [];
+            $lendingMonthCounts = [];
+            $digitalLendingMonthCounts = [];
+            $physicLendingMonthCounts = [];
             foreach (range(1, 12) as $month) {
                 $count = ArchiveContainer::where('company_id', $companies)->whereYear('created_at', $currentYear)
                     ->whereMonth('created_at', $month)
                     ->count();
+                $lendingCount = LendingArchive::where('company_id', $companies)->whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+                $digitalLendingCount = LendingArchive::where('company_id', $companies)->where('document_type', 'DIGITAL')->whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+                $physicLendingCount = LendingArchive::where('company_id', $companies)->where('document_type', 'FISIK')->whereYear('created_at', $currentYear)
+                    ->whereMonth('created_at', $month)
+                    ->count();
                 $monthCounts[] = $count;
+                $digitalLendingMonthCounts[] = $digitalLendingCount;
+                $physicLendingMonthCounts[] = $physicLendingCount;
+                $lendingMonthCounts[] = $lendingCount;
             }
         }
 
 
-        return view('pages.dashboard.index', compact('workUnits', 'archiveContainers', 'lendingArchives', 'monthCounts', 'companies'));
+        return view('pages.dashboard.index',
+            compact('workUnits', 'archiveContainers', 'lendingTopten', 'lendingData', 'lendingMonthCounts', 'monthCounts', 'companies', 'digitalLendingMonthCounts', 'physicLendingMonthCounts'));
     }
 
     /**
@@ -116,5 +153,12 @@ class DashboardController extends Controller
         $divisions = Division::with('archive_container')->findOrFail($id);
         $archiveContainers = ArchiveContainer::where('division_id', $divisions->id)->get();
         return view('pages.dashboard.division-archive', compact('divisions', 'archiveContainers'));
+    }
+
+    public function division_lending($id)
+    {
+        $divisions = Division::with('lendingArchive')->findOrFail($id);
+        $lendingArchives = LendingArchive::where('division_id', $divisions->id)->get();
+        return view('pages.dashboard.division-lending', compact('divisions', 'lendingArchives'));
     }
 }

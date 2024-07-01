@@ -17,7 +17,7 @@ class SubClassification extends Model
         'company_id',
         'code',
         'name',
-        'type_document',
+        'document_type',
         'period_active',
         'description_active',
         'period_inactive',

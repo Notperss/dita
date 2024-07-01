@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
+use App\Models\TransactionArchive\LendingArchive\LendingArchive;
 use App\Models\User;
 
 class Division extends Model
@@ -49,5 +50,10 @@ class Division extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->hasMany(MainClassification::class, 'division_id', 'id');
+    }
+    public function lendingArchive()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->hasMany(LendingArchive::class, 'division_id', 'id');
     }
 }

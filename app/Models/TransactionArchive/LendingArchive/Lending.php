@@ -12,10 +12,10 @@ class Lending extends Model
     protected $fillable = [
         'user_id',
         'company_id',
+        'division_id',//
         'lending_number',//
         'start_date',
         'end_date',
-        'division',//
         'status',//
         'description',//
     ];

@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('division_id');
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->string('name');
             $table->longText('description')->nullable();
             $table->timestamps();

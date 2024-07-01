@@ -9,7 +9,7 @@ class StoreMenuGroupRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize() : bool
     {
         return true;
     }
@@ -19,13 +19,13 @@ class StoreMenuGroupRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules() : array
     {
         return [
             'name' => ['required', 'string'],
             'permission_name' => ['required', 'string'],
             'status' => ['nullable', 'required', 'boolean'],
-            'posision' => ['nullable', 'numeric'],
+            'position' => ['nullable', 'numeric'],
         ];
     }
 }

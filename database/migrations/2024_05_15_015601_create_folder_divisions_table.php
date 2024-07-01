@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('folder_divisions', function (Blueprint $table) {
             $table->id();
-            $table->nestedSet();
+            $table->nestedSet(); //nestedset by lazychaser
             $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('division_id')->nullable();
             $table->string('name');
