@@ -64,8 +64,16 @@
                           {{ $errors->first('description') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="logo">Logo<code>*</code></label>
+                      <input type="file" id="logo" class="form-control" name="logo" required>
+                      @if ($errors->has('logo'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('logo') }}</p>
+                      @endif
+                    </div>
                   </div>
-                  <div class="col-12 d-flex justify-content-end">
+                  <div class="col-12 d-flex justify-content-end mt-3">
                     <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
                     <a href="{{ route('backsite.company.index') }}" class="btn btn-light-secondary me-1 mb-1">Cancel</a>
                   </div>
@@ -77,5 +85,7 @@
       </div>
     </div>
   </section>
-
 @endsection
+{{-- @push('after-script')
+  <script src="assets/extensions/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
+@endpush --}}

@@ -24,9 +24,15 @@ class DetailLocationController extends Controller
 
         $company_id = auth()->user()->company_id;
         if (Gate::allows('super_admin')) {
-            $detailLocations = DetailLocation::orderBy('name', 'asc')->get();
+            $detailLocations = DetailLocation::select('location_details.*')
+                ->join('location_subs', 'location_details.sub_location_id', '=', 'location_subs.id')
+                ->orderBy('location_subs.name', 'asc')
+                ->get();
         } else {
-            $detailLocations = DetailLocation::where('company_id', $company_id)->orderBy('name', 'asc')->get();
+            $detailLocations = DetailLocation::select('location_details.*')
+                ->join('location_subs', 'location_details.sub_location_id', '=', 'location_subs.id')
+                ->orderBy('location_subs.name', 'asc')->where('location_details.company_id', $company_id)
+                ->get();
         }
 
         // $detailLocations = DetailLocation::with('mainLocation', 'subLocation')->orderBy('name', 'asc')->get();

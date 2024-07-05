@@ -64,6 +64,19 @@
                           {{ $errors->first('description') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="logo">Logo<code>*</code></label>
+                      <input type="file" id="logo" class="image-resize-filepond" name="logo"
+                        value="{{ $companies->logo }}" required>
+
+                      <p class="mt-3">Current Logo : <img src="{{ asset('storage/' . $companies->logo) }}"
+                          alt="Current Logo" style="max-width: 150px;"></p>
+
+                      @if ($errors->has('logo'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('logo') }}</p>
+                      @endif
+                    </div>
                   </div>
                   <div class="col-12 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>

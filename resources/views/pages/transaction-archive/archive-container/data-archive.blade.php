@@ -14,7 +14,7 @@
             <ol class="breadcrumb">
               {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
               {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Master Data</a></li> --}}
-              <li class="breadcrumb-item active" aria-current="page">Archives</li>
+              {{-- <li class="breadcrumb-item active" aria-current="page">Archives</li> --}}
             </ol>
           </nav>
         </div>

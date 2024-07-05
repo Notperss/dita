@@ -54,6 +54,8 @@ Route::get('/qr/{id}', [ContainerLocationController::class, 'detailContainer'])-
 
 Route::get('/qr-cont/{id}', [ArchiveContainerController::class, 'detailArchive'])->name('qr-archive');
 
+Route::get('/archives/search', [ArchiveContainerController::class, 'search'])->name('archives.search');
+
 
 Route::get('/', function () {
     // cek apakah sudah login atau belum

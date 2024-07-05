@@ -27,9 +27,14 @@
           padding: -3mm;
           margin: -3mm;
           /* Adjust padding to reduce space inside the cell */
-          font-size: 10pt;
+          font-size: 18pt;
           /* Optionally adjust font size for print */
           text-align: center;
+        }
+
+        .number-container-cell {
+          font-size: 77pt;
+
         }
 
         .container {
@@ -48,6 +53,13 @@
 
 
     <table class="table table-borderless text-left table-no-gap ">
+      <tr>
+        <th class="text-center" colspan="2">
+          <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
+            alt="Current Logo" style="max-width: 40px; margin-right: 2pt">
+          {{ auth()->user()->company->name ?? '' }}
+        </th>
+      </tr>
       <tr>
         <th class="text-center no-margin">{{ $qr }} </th>
         <td>
@@ -78,12 +90,12 @@
         </td>
       </tr>
       <tr>
-        <th class="text-center" style="font-size: 130%;">
+        <th class="text-center font-semibold number-container-cell"colspan="2">
           {{ isset($location_container->number_container) ? str_pad($location_container->number_container, 3, '0', STR_PAD_LEFT) : 'N/A' }}
         </th>
       </tr>
       <tr>
-        <td class="text-center description-cell">
+        <td class="text-center description-cell" colspan="2">
           {{ isset($location_container->description) ? $location_container->description : 'N/A' }}
         </td>
       </tr>

@@ -61,8 +61,8 @@
                       <select name="sub_location_id" id="sub_location_id" class="form-control" required>
                         @foreach ($subLocations as $subLocation)
                           <option
-                            value="{{ $subLocation->id }}"{{ $subLocation->id == $detailLocations->sub_location_id ? 'selected' : '' }}
-                            selected>{{ $subLocation->name }}</option>
+                            value="{{ $subLocation->id }}"{{ $subLocation->id == $detailLocations->sub_location_id ? 'selected' : '' }}>
+                            {{ $subLocation->name }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('sub_location_id'))
@@ -70,6 +70,10 @@
                           {{ $errors->first('sub_location_id') }}</p>
                       @endif
                     </div>
+                    <a type="button" data-fancy data-src="{{ asset('storage/assets/Denah-ruang.jpg') }}"
+                      class="btn btn-info btn-sm text-white">
+                      Lihat Denah Ruangan
+                    </a>
                   </div>
 
                   <div class="col-md-8 col-12 mx-auto">
@@ -142,3 +146,10 @@
   </script>
 
 @endsection
+@push('after-script')
+  <script>
+    Fancybox.bind('[data-fancy]', {
+      // infinite: false,
+    });
+  </script>
+@endpush

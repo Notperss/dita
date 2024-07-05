@@ -91,7 +91,7 @@ class ContainerLocationController extends Controller
                 ';
                 })
                 ->editColumn('number_container', function ($item) {
-                    return isset ($item->number_container) ? str_pad($item->number_container, 3, '0', STR_PAD_LEFT) : 'N/A';
+                    return isset($item->number_container) ? str_pad($item->number_container, 3, '0', STR_PAD_LEFT) : 'N/A';
                 })
                 ->filterColumn('number_container', function ($query, $keyword) {
                     // Use a where clause to search for 'number_container' column
@@ -297,7 +297,8 @@ class ContainerLocationController extends Controller
         // $decrypt_id = decrypt($id);
         // $barang = Barang::find($decrypt_id);
         $location_container = ContainerLocation::find($id);
-        $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('show-qr', $id));
+        $qr = QrCode::size(170)->style('round')->margin(1)->generate($location_container->id);
+        // $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('show-qr', $id));
         return view('components.qr-code.container-qr.show-barcode-container', compact('location_container', 'qr'));
     }
 

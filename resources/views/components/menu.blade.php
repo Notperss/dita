@@ -2,10 +2,15 @@
       <div class="sidebar-wrapper active">
         <div class="sidebar-header position-relative">
           <div class="d-flex justify-content-between align-items-center">
-            <div class="logo">
+            <div class="logo mx-1">
               <a href="{{ route('backsite.dashboard.index') }}">
-                <img src="{{ asset('/dist/assets/img/cmnplogo.png') }}" alt="Logo" srcset=""
-                  style="width: 150px; height: auto;">
+                @if (auth()->user()->company)
+                  <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
+                    alt="Logo" srcset="" style="width: 150px; height: auto; border-radius: 3%">
+                @else
+                  <img src="{{ asset('/dist/assets/img/cmnplogo.png') }}" alt="Logo" srcset=""
+                    style="width: 150px; height: auto;">
+                @endif
               </a>
             </div>
             <div class="theme-toggle d-flex gap-2  align-items-center mt-2">

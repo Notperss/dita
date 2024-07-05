@@ -38,7 +38,7 @@
               <th class="text-center">Sub Lokasi</th>
               <th class="text-center">Detail Lokasi</th>
               <th class="text-center">Keterangan</th>
-              <th class="text-center">Action</th>
+              <th class="text-center" style="width: 20%">Action</th>
             </tr>
           </thead>
           <tbody>

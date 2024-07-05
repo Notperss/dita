@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Company\Company;
 
@@ -49,9 +50,7 @@ class CompanyController extends Controller
             'name' => ['required', 'max:255', Rule::unique('companies')],
             'address' => ['required', 'max:255'],
             'description' => ['required', 'max:255'],
-
-
-
+            'logo' => ['required', 'max:2048'],
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Perusahaan harus diisi.',
@@ -64,6 +63,9 @@ class CompanyController extends Controller
             'description.required' => 'Keterangan harus diisi.',
             'description.max' => 'Keterangan tidak boleh lebih dari :max karakter.',
 
+            'logo.required' => 'Logo tidak boleh kosong.',
+            'logo.max' => 'Nama Logo tidak boleh lebih dari :max karakter.',
+
             // Add custom error messages for other rules
         ]);
         // Check if validation fails
@@ -71,8 +73,16 @@ class CompanyController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $data = $request->all();
+
+        // upload process here
+        if ($request->hasFile('logo')) {
+            $extension = $data['logo']->getClientOriginalExtension();
+            $data['logo'] = $request->file('logo')->storeAs('assets/logo-company', $data['name'] . '-' . time() . '.' . $extension);
+        }
+
         // If the validation passes, create the Divisi record
-        Company::create($request->all());
+        Company::create($data);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
         return redirect()->route('backsite.company.index');
@@ -108,7 +118,7 @@ class CompanyController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'max:255', Rule::unique('companies')],
+            'name' => ['required', 'max:255', Rule::unique('companies')->ignore($company->id)],
             'address' => ['required', 'max:255'],
             'description' => ['required', 'max:255'],
 
@@ -133,8 +143,25 @@ class CompanyController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        // get data
+        $path_icon = $company->logo;
+
         // If the validation passes, create the Divisi record
         $data = $request->all();
+
+        // upload icon
+        if ($request->hasFile('logo')) {
+            $extension = $data['logo']->getClientOriginalExtension();
+            $data['logo'] = $request->file('logo')->storeAs('assets/logo-company', $data['name'] . '-' . time() . '.' . $extension);
+            // hapus file
+            if ($path_icon != null || $path_icon != '') {
+                Storage::delete($path_icon);
+            }
+        } else {
+            $data['logo'] = $path_icon;
+        }
+
+        // dd($data);
 
         $company->update($data);
 
@@ -153,6 +180,14 @@ class CompanyController extends Controller
         // Decrypt id
         $decrypt_id = decrypt($id);
         $company = Company::find($decrypt_id);
+
+        // cari old icon
+        $path_icon = $company['logo'];
+        // hapus icon
+        if ($path_icon != null || $path_icon != '') {
+            Storage::delete($path_icon);
+        }
+
 
         // Delete
         $company->forceDelete();

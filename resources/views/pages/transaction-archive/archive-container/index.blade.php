@@ -47,40 +47,7 @@
             </tr>
           </thead>
           <tbody>
-            {{-- @foreach ($archiveContainers as $archiveContainer)
-              <tr>
-                <td class="text-center">{{ $loop->iteration }}</td>
-                <td class="text-center">{{ $archiveContainer->number_container ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->division->name ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->main_location ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->sub_location ?? 'N/A' }}</td>
-                <td class="text-center">{{ $archiveContainer->detail_location ?? 'N/A' }}</td>
-                <td class="text-center">
-                  <a type="button" title="Tambah File" class="btn icon btn-sm btn-info" onclick=""><i
-                      class="bi bi-files"></i></a>
-                  <div class="btn-group mb-1">
-                    <div class="dropdown">
-                      <button class="btn btn-primary btn-sm dropdown-toggle me-1" type="button" id="dropdownMenuButton"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Action
-                      </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Option 2</a>
-                        <a class="dropdown-item"
-                          href="{{ route('backsite.archive-container.edit', $archiveContainer->id) }}">Edit</a>
-                        <a class="dropdown-item" onclick="showSweetAlert('{{ $archiveContainer->id }}')">Delete</a>
-                      </div>
-                    </div>
-                  </div>
-                  <form id="deleteForm_{{ $archiveContainer->id }}"
-                    action="{{ route('backsite.archive-container.destroy', encrypt($archiveContainer->id)) }}"
-                    method="POST">
-                    @method('DELETE')
-                    @csrf
-                  </form>
-                </td>
-              </tr>
-            @endforeach --}}
+
           </tbody>
         </table>
       </div>

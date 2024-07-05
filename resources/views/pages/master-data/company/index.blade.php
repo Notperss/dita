@@ -37,6 +37,7 @@
               <th class="text-center">Nama</th>
               <th class="text-center">Alamat</th>
               <th class="text-center">Nomor Telp/Email</th>
+              <th class="text-center">Logo</th>
               <th class="text-center">Action</th>
             </tr>
           </thead>
@@ -47,11 +48,14 @@
                 <td class="text-center">{{ $company->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $company->address ?? 'N/A' }}</td>
                 <td class="text-center">{{ $company->description ?? 'N/A' }}</td>
+                <td class="text-center"><img src="{{ asset('storage/' . ($company->logo ?? 'assets/logo-default.png')) }}"
+                    alt="Logo" width="60px">
+                </td>
                 <td class="text-center">
                   <a href="{{ route('backsite.company.edit', $company->id) }}" class="btn icon btn-primary"
                     title="Edit"><i class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $company->id }}')"
-                    {{-- @if (DB::table('departments')->where('company_id', $company->id)->exists()) style="display: none;" @endif --}}>
+                    @if (DB::table('users')->where('company_id', $company->id)->exists()) style="display: none;" @endif>
                     <i class="bi bi-x-lg"></i>
                   </a>
 

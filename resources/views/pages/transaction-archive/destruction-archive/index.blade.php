@@ -41,9 +41,10 @@
                       // Assuming $archivesContainer is a collection
                       $expirationDate += $archivesContainer
                           ->filter(function ($archive) {
-                              return $archive->expiration_inactive < now()->toDateString();
+                              return $archive->expiration_inactive < now()->toDateString() &&
+                                  $archive->expiration_inactive != null &&
+                                  $archive->status == 1;
                           })
-                          ->where('status', 1)
                           ->count();
                     @endphp
                     {{ $expirationDate }}

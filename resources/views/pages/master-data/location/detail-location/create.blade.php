@@ -63,6 +63,10 @@
                           {{ $errors->first('sub_location_id') }}</p>
                       @endif
                     </div>
+                    <a type="button" data-fancy data-src="{{ asset('storage/assets/Denah-ruang.jpg') }}"
+                      class="btn btn-info btn-sm text-white">
+                      Lihat Denah Ruangan
+                    </a>
                   </div>
 
                   <div class="col-md-8 col-12 mx-auto">
@@ -137,4 +141,9 @@
 @endsection
 
 @push('after-script')
+  <script>
+    Fancybox.bind('[data-fancy]', {
+      // infinite: false,
+    });
+  </script>
 @endpush

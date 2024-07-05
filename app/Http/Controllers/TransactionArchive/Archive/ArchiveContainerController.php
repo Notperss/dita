@@ -486,9 +486,9 @@ class ArchiveContainerController extends Controller
 
     public function dataArchive(Request $request)
     {
-        if (! Gate::allows('archive_container_index')) {
-            abort(403);
-        }
+        // if (! Gate::allows('archive_container_index')) {
+        //     abort(403);
+        // }
 
         if (request()->ajax()) {
 
@@ -567,4 +567,21 @@ class ArchiveContainerController extends Controller
         // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
         return view('pages.transaction-archive.archive-container.data-archive', compact('divisions'));
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        if ($query) {
+            // Perform the search query
+            $results = ArchiveContainer::where('number_app', 'LIKE', "{$query}")
+                // ->orWhere('description', 'LIKE', "%{$query}%")
+                ->get();
+        } else {
+            $results = collect();
+        }
+
+        // Return the view with the search results
+        return view('components.qr-code.archive-qr.detail-qr-archive', compact('results'));
+    }
+
 }

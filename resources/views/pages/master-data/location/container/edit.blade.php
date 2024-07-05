@@ -11,7 +11,7 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Master Data</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item" aria-current="page">Container Location</li>
               <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
@@ -87,6 +87,10 @@
                           {{ $errors->first('detail_location_id') }}</p>
                       @endif
                     </div>
+                    <a type="button" data-fancy data-src="{{ asset('storage/Denah-ruang.jpg') }}"
+                      class="btn btn-info btn-sm text-white">
+                      Lihat Denah Ruangan
+                    </a>
                   </div>
 
                   <div class="col-md-8 col-12 mx-auto">
@@ -208,3 +212,11 @@
     });
   </script>
 @endsection
+
+@push('after-script')
+  <script>
+    Fancybox.bind('[data-fancy]', {
+      // infinite: false,
+    });
+  </script>
+@endpush
