@@ -48,11 +48,20 @@
           display: none;
           /* Hide buttons on print */
         }
+
+        .width-50 {
+          width: 50%;
+          word-break: break-all;
+        }
+
+        .leeft {
+          text-align: left;
+        }
       }
     </style>
 
 
-    <table class="table table-borderless text-left table-no-gap ">
+    <table class="table table-borderless text-left table-no-gap width-50">
       <tr>
         <th class="text-center" colspan="2">
           <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
@@ -60,9 +69,9 @@
           {{ auth()->user()->company->name ?? '' }}
         </th>
       </tr>
-      <tr>
-        <th class="text-center no-margin">{{ $qr }} </th>
-        <td>
+      <tr class="leeft">
+        <th class="text-center no-margin" style="width: 30%">{{ $qr }} </th>
+        <td class="no-margin" style="text-align: left">
           <div class="row">Lokasi Utama</div>
           <div class="row mb-3">
             <strong>

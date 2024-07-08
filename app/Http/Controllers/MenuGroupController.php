@@ -8,6 +8,7 @@ use App\Services\MenuGroupService;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\StoreMenuGroupRequest;
+use App\Http\Requests\UpdateMenuGroupRequest;
 
 class MenuGroupController extends Controller
 {
@@ -82,7 +83,7 @@ class MenuGroupController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreMenuGroupRequest $request, MenuGroup $menu, MenuGroupService $menuGroupService)
+    public function update(UpdateMenuGroupRequest $request, MenuGroup $menu, MenuGroupService $menuGroupService)
     {
         return $menuGroupService->update($request, $menu)
             ? back()->with('success', 'Menu group has been updated successfully!')

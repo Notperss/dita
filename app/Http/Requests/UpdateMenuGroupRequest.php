@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMenuGroupRequest extends FormRequest
+class UpdateMenuGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class StoreMenuGroupRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'permission_name' => ['required', 'string'],
-            'status' => ['nullable', 'required', 'boolean'],
+            'status' => ['nullable', 'boolean'],
             'position' => ['nullable', 'numeric'],
         ];
     }

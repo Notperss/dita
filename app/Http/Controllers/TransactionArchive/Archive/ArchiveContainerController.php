@@ -472,7 +472,7 @@ class ArchiveContainerController extends Controller
         // $qr = QrCode::size(170)->style('round')->margin(1)->generate(route('qr-archive', $id));
         // return view('components.qr-code.archive-qr.show-barcode-archive', compact('archiveContainer', 'qr'));
         $archiveContainer = ArchiveContainer::find($id);
-        $qr = QrCode::size(170)->style('round')->margin(1)->generate($archiveContainer->number_app);
+        $qr = QrCode::size(150)->style('round')->margin(1)->generate($archiveContainer->number_app);
         return view('components.qr-code.archive-qr.show-barcode-archive', compact('archiveContainer', 'qr'));
     }
 

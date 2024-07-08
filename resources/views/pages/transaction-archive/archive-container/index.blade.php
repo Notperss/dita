@@ -38,7 +38,7 @@
             <tr>
               <th class="text-center">#</th>
               <th class="text-center">No. Container</th>
-              <th class="text-center">Nomor Dokumen</th>
+              <th class="text-center" style="word-break: break-all">Nomor Dokumen</th>
               <th class="text-center">Perihal</th>
               <th class="text-center">Divisi</th>
               <th class="text-center">Detail Lokasi</th>
@@ -106,6 +106,9 @@
           {
             data: 'number_document',
             name: 'number_document',
+            createdCell: function(td, cellData, rowData, row, col) {
+              $(td).css('word-break', 'break-all');
+            }
           },
           {
             data: 'regarding',

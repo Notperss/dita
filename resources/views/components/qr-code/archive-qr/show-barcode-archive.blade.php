@@ -11,7 +11,20 @@
         /* Adjust the padding as needed */
       }
     </style>
-    <table class="table table-borderless text-left table-no-gap ">
+    <style>
+      @media print {
+        .word-break {
+          word-break: break-word;
+          overflow-wrap: break-word;
+          /* width: 100%; */
+        }
+
+        .width-50 {
+          width: 50%;
+        }
+      }
+    </style>
+    <table class="table table-borderless text-left table-no-gap width-50">
       <tr>
         <th class="text-center" colspan="2">
           <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
@@ -20,10 +33,10 @@
         </th>
       </tr>
       <tr>
-        <th class="text-center">
+        <th class="text-center" style="width: 30%">
           {{ $qr }}
         </th>
-        <td>
+        <td class="word-break">
           <div class="row">Nomor Katalog</div>
           <div class="row mb-3"><strong>
               {{ isset($archiveContainer->number_catalog) ? $archiveContainer->number_catalog : '-' }}</th>
