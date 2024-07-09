@@ -41,7 +41,7 @@
                 <div class="row">
                   <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
                     <div class="stats-icon blue mb-2">
-                      <i class="iconly-boldProfile"></i>
+                      <i class="ri-archive-fill"></i>
                     </div>
                   </div>
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
@@ -64,7 +64,7 @@
                 <div class="row">
                   <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
                     <div class="stats-icon green mb-2">
-                      <i class="iconly-boldAdd-User"></i>
+                      <i class="ri-archive-line"></i>
                     </div>
                   </div>
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
@@ -87,8 +87,8 @@
               <div class="card-body px-4 py-4-5">
                 <div class="row">
                   <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
-                    <div class="stats-icon red mb-2">
-                      <i class="iconly-boldBookmark"></i>
+                    <div class="stats-icon mb-2">
+                      <i class="ri-file-check-line"></i>
                     </div>
                   </div>
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
@@ -111,7 +111,7 @@
                 <div class="row">
                   <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
                     <div class="stats-icon red mb-2">
-                      <i class="iconly-boldBookmark"></i>
+                      <i class="ri-file-close-line"></i>
                     </div>
                   </div>
                   <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
@@ -260,13 +260,13 @@
               <div class="card-header">
                 <h4>10 Peminjaman Terakhir</h4>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="word-break: break-all">
                 <div class="container">
                   <div class="table-responsive">
                     <table class="table">
                       <thead>
                         <tr>
-                          <th scope="col">#</th>
+                          <th scope="col" style="width: 10%">#</th>
                           <th scope="col">No. Dokumen</th>
                           <th scope="col">Divisi</th>
                           <th scope="col">Status</th>
@@ -305,12 +305,12 @@
               <div class="card-header">
                 <h4>10 Arsip Terakhir</h4>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="word-break: break-all">
                 <div class="container">
                   <table class="table">
                     <thead>
                       <tr>
-                        <th scope="col">#</th>
+                        <th scope="col" style="width: 10%">#</th>
                         <th scope="col">No. Dokumen</th>
                         <th scope="col">Divisi</th>
                         {{-- <th scope="col">Perihal</th> --}}
