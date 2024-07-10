@@ -16,7 +16,7 @@
     <div class="card">
       <div class="card-header">
         {{-- <h5 class="card-title">
-          <a href="{{ route('backsite.archive-container.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('archive-container.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
           <a onclick="upload()" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data File</a>
@@ -123,7 +123,7 @@
           },
         ],
         ajax: {
-          url: "{{ route('backsite.archive-container.index') }}",
+          url: "{{ route('archive-container.index') }}",
         },
 
         columns: [{
@@ -178,7 +178,7 @@
 
       $.ajax({
         type: "get",
-        url: "{{ route('backsite.form_upload') }}",
+        url: "{{ route('form_upload') }}",
         dataType: "json",
         success: function(response) {
           $('.viewmodal').html(response.data).show();

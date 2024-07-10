@@ -73,7 +73,7 @@ class DivisionController extends Controller
         Division::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.division.index');
+        return redirect()->route('division.index');
     }
 
     /**
@@ -129,7 +129,7 @@ class DivisionController extends Controller
         $division->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.division.index');
+        return redirect()->route('division.index');
     }
 
     /**

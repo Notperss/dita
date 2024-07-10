@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Archive Container</li>
             </ol>
           </nav>
@@ -25,8 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.archive-container.create') }}" class="btn btn-primary"> <i
-              class="bi bi-plus-lg"></i>
+          <a href="{{ route('archive-container.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
           {{-- <a onclick="upload()" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data File</a> --}}
@@ -43,7 +42,7 @@
               <th class="text-center">Divisi</th>
               <th class="text-center">Detail Lokasi</th>
               {{-- <th class="text-center">keterangan</th> --}}
-              <th class="text-center">Action</th>
+              <th class="text-center" style="width: 15%">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -89,7 +88,7 @@
         lengthChange: true,
         pageLength: 15,
         ajax: {
-          url: "{{ route('backsite.archive-container.index') }}",
+          url: "{{ route('archive-container.index') }}",
         },
 
         columns: [{
@@ -147,7 +146,7 @@
 
       $.ajax({
         type: "get",
-        url: "{{ route('backsite.form_upload') }}",
+        url: "{{ route('form_upload') }}",
         dataType: "json",
         success: function(response) {
           $('.viewmodal').html(response.data).show();

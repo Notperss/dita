@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Section</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.section.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('section.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -48,14 +48,14 @@
                 <td class="text-center">{{ $section->department->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $section->name ?? 'N/A' }}</td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.section.edit', $section->id) }}" class="btn icon btn-primary"
-                    title="Edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{{ route('section.edit', $section->id) }}" class="btn icon btn-primary" title="Edit"><i
+                      class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $section->id }}')">
                     <i class="bi bi-x-lg"></i>
                   </a>
 
-                  <form id="deleteForm_{{ $section->id }}"
-                    action="{{ route('backsite.section.destroy', encrypt($section->id)) }}" method="POST">
+                  <form id="deleteForm_{{ $section->id }}" action="{{ route('section.destroy', encrypt($section->id)) }}"
+                    method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

@@ -52,7 +52,7 @@
     let id = $('#id').val();
     $.ajax({
       type: "get",
-      url: "{{ route('backsite.show_file') }}",
+      url: "{{ route('show_file') }}",
       data: {
         id: id
       },

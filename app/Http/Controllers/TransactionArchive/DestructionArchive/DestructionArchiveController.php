@@ -188,7 +188,7 @@ class DestructionArchiveController extends Controller
         }
 
         alert()->success('Success', 'Data updated successfully.');
-        return redirect()->route('backsite.destruction-archive.index');
+        return redirect()->route('destruction-archive.index');
     }
     public function checkNotDestroy(Request $request)
     {

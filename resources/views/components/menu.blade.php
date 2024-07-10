@@ -3,13 +3,17 @@
         <div class="sidebar-header position-relative">
           <div class="d-flex justify-content-between align-items-center">
             <div class="logo mx-1">
-              <a href="{{ route('backsite.dashboard.index') }}">
-                @if (auth()->user()->company)
-                  <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
-                    alt="Logo" srcset="" style="width: 150px; height: auto; border-radius: 3%">
+              <a href="{{ route('dashboard.index') }}">
+                @if (Auth::check())
+                  @if (auth()->user()->company)
+                    <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
+                      alt="Logo" srcset="" style="width: 150px; height: auto; border-radius: 3%">
+                  @else
+                    <img src="{{ asset('/dist/assets/img/cmnplogo.png') }}" alt="Logo" srcset=""
+                      style="width: 150px; height: auto;">
+                  @endif
                 @else
-                  <img src="{{ asset('/dist/assets/img/cmnplogo.png') }}" alt="Logo" srcset=""
-                    style="width: 150px; height: auto;">
+                  <h3 class="my-auto">Welcome!</h3>
                 @endif
               </a>
             </div>

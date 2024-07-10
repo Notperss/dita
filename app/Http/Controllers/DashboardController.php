@@ -20,9 +20,9 @@ class DashboardController extends Controller
         if (auth()->check() && ! (auth()->user()->can('super_admin') || auth()->user()->can('admin'))) {
             // If the user has either 'super_admin' or 'admin' permission, redirect to the lending page
             if (auth()->user()->can('user')) {
-                return redirect()->route('backsite.dataArchive');
+                return redirect()->route('dataArchive');
             }
-            return redirect()->route('backsite.lending-archive.index');
+            return redirect()->route('lending-archive.index');
         }
 
         $companies = auth()->user()->company_id;

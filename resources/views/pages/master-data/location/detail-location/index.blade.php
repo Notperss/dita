@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Detail Location</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.detail-location.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('detail-location.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -50,7 +50,7 @@
                 <td class="text-center">{{ $detailLocation->name }}</td>
                 <td class="text-center">{{ $detailLocation->description }}</td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.detail-location.edit', $detailLocation->id) }}" class="btn icon btn-primary"
+                  <a href="{{ route('detail-location.edit', $detailLocation->id) }}" class="btn icon btn-primary"
                     title="Edit"><i class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $detailLocation->id }}')"
                     @if (DB::table('location_containers')->where('detail_location_id', $detailLocation->id)->exists()) style="display: none;" @endif>
@@ -58,8 +58,7 @@
                   </a>
 
                   <form id="deleteForm_{{ $detailLocation->id }}"
-                    action="{{ route('backsite.detail-location.destroy', encrypt($detailLocation->id)) }}"
-                    method="POST">
+                    action="{{ route('detail-location.destroy', encrypt($detailLocation->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

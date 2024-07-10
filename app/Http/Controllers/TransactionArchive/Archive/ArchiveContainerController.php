@@ -39,17 +39,16 @@ class ArchiveContainerController extends Controller
             $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
             if (Gate::allows('super_admin')) {
-                $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
+                $archiveContainers = ArchiveContainer::with('division')->where('status', 1)->orderBy('created_at', 'desc');
             } else {
-                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division')->orderBy('created_at', 'desc');
-
+                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->where('status', 1)->with('division')->orderBy('created_at', 'desc');
             }
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
                     return '
-             <a href="#mymodal" data-remote="' . route('backsite.showBarcodeContainer', $item->id) . '" data-toggle="modal"
+             <a href="#mymodal" data-remote="' . route('showBarcodeContainer', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
                         <i class="bi bi-qr-code-scan"></i>
                     </a>
@@ -60,18 +59,18 @@ class ArchiveContainerController extends Controller
                         <i class="bi bi-three-dots-vertical"></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                       <a href="#mymodal" data-remote="' . route('backsite.archive-container.show', $item->id) . '" data-toggle="modal"
+                       <a href="#mymodal" data-remote="' . route('archive-container.show', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                          <i class="bi bi-eye"></i> Detail
                     </a>
                         <a class="dropdown-item"
-                          href="' . route('backsite.archive-container.edit', $item->id) . '"><i class="bi bi-pencil"></i> Edit</a>
+                          href="' . route('archive-container.edit', $item->id) . '"><i class="bi bi-pencil"></i> Edit</a>
                         <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')"><i class="bi bi-x-lg"></i> Delete</a>
                       </div>
                     </div>
                   </div>
                   <form id="deleteForm_' . $item->id . '"
-                    action="' . route('backsite.archive-container.destroy', $item->id) . '"
+                    action="' . route('archive-container.destroy', $item->id) . '"
                     method="POST">
                     ' . method_field('delete') . csrf_field() . '
                   </form>
@@ -373,7 +372,7 @@ class ArchiveContainerController extends Controller
         $archiveContainer->update($data);
 
         alert()->success('Success', 'Data successfully added');
-        return redirect()->route('backsite.archive-container.index');
+        return redirect()->route('archive-container.index');
         // return redirect()->back()->withInput();
     }
 
@@ -448,8 +447,11 @@ class ArchiveContainerController extends Controller
     public function getDataContainer(Request $request)
     {
         $numberId = $request->input('number_container');
-        $detailNumbers = ArchiveContainer::where('number_container', $numberId)->orderBy('created_at', 'desc')->get();
-
+        if (Gate::allows('super_admin')) {
+            $detailNumbers = ArchiveContainer::where('number_container', $numberId)->orderBy('created_at', 'desc')->get();
+        } else {
+            $detailNumbers = ArchiveContainer::where('number_container', $numberId)->where('company_id', auth()->user()->company_id)->orderBy('created_at', 'desc')->get();
+        }
         // Extracting relevant data and adding 'name' property
         $formattedDetailLocations = $detailNumbers->map(function ($detailNumber) {
             return [
@@ -496,10 +498,10 @@ class ArchiveContainerController extends Controller
 
             if (Gate::allows('super_admin')) {
                 // Super admin: can view all archive containers
-                $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
+                $archiveContainers = ArchiveContainer::with('division')->where('status', 1)->orderBy('created_at', 'desc');
             } else {
                 // Non-super admin: view archive containers limited to their company
-                $archiveContainers = ArchiveContainer::where('company_id', $company_id)
+                $archiveContainers = ArchiveContainer::where('company_id', $company_id)->where('status', 1)
                     ->with('division')
                     ->orderBy('created_at', 'desc');
             }
@@ -550,7 +552,7 @@ class ArchiveContainerController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a href="#mymodal" data-remote="' . route('backsite.archive-container.show', $item->id) . '" data-toggle="modal"
+                            <a href="#mymodal" data-remote="' . route('archive-container.show', $item->id) . '" data-toggle="modal"
                             data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                                 <i class="bi bi-eye"></i> Detail
                             </a>

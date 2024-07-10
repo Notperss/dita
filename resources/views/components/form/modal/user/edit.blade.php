@@ -96,7 +96,7 @@
       if (companyId) {
         // AJAX request to fetch divisions for the selected company
         $.ajax({
-          url: "{{ route('backsite.getDivisions') }}",
+          url: "{{ route('getDivisions') }}",
           type: 'GET',
           dataType: 'json',
           data: {

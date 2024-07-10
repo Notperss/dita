@@ -139,8 +139,8 @@
                   <div class="card-body ">
                     <div class="row">
                       <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                        <h6 class="text-muted font-semibold"><a
-                            href="{{ route('backsite.division-archive', $division->id) }}"> {{ $division->code }}</a>
+                        <h6 class="text-muted font-semibold"><a href="{{ route('division-archive', $division->id) }}">
+                            {{ $division->code }}</a>
                         </h6>
                         <h6 class="font-extrabold mb-0">
                           {{ $division->archive_container->count() }}
@@ -177,7 +177,7 @@
                   <div class="row">
                     <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                       <h6 class="text-muted font-semibold"><a
-                          href="{{ route('backsite.division-archive', $division->id) }}"> {{ $division->code }}</a>
+                          href="{{ route('division-archive', $division->id) }}"> {{ $division->code }}</a>
                       </h6>
                       <h6 class="font-extrabold mb-0">
                         {{ $division->archive_container->count() }}
@@ -213,7 +213,7 @@
                     <div class="row">
                       <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                         <h6 class="text-muted font-semibold">
-                          <a href="{{ route('backsite.division-lending', $division->id) }}"> {{ $division->code }} </a>
+                          <a href="{{ route('division-lending', $division->id) }}"> {{ $division->code }} </a>
                         </h6>
                         <h6 class="font-extrabold mb-0">
                           {{ $division->lendingArchive->count() }}
@@ -268,7 +268,7 @@
                         <tr>
                           <th scope="col" style="width: 10%">#</th>
                           <th scope="col">No. Dokumen</th>
-                          <th scope="col">Divisi</th>
+                          <th scope="col" style="width: 20%">Divisi</th>
                           <th scope="col">Status</th>
                           {{-- <th scope="col">Tipe</th> --}}
                         </tr>
@@ -278,7 +278,7 @@
                           <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $lending->archiveContainer->number_document ?? 'N/A' }}</td>
-                            <td>{{ $lending->archiveContainer->division->name ?? 'N/A' }}</td>
+                            <td>{{ $lending->archiveContainer->division->code ?? 'N/A' }}</td>
                             <td>
                               @if ($lending->archiveContainer->status == 2)
                                 <span class="badge bg-light-warning">Dipinjam</span>
@@ -312,7 +312,7 @@
                       <tr>
                         <th scope="col" style="width: 10%">#</th>
                         <th scope="col">No. Dokumen</th>
-                        <th scope="col">Divisi</th>
+                        <th scope="col" style="width:20%">Divisi</th>
                         {{-- <th scope="col">Perihal</th> --}}
                       </tr>
                     </thead>
@@ -321,7 +321,7 @@
                         <tr>
                           <td>{{ $loop->iteration }}</td>
                           <td>{{ $archive->number_document ?? 'N/A' }}</td>
-                          <td>{{ $archive->division->name ?? 'N/A' }}</td>
+                          <td>{{ $archive->division->code ?? 'N/A' }}</td>
                           {{-- <td>{{ $archive->tag }}</td> --}}
                         </tr>
                       @empty

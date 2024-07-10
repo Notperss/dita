@@ -69,14 +69,14 @@
                           <div class="btn-group mb-1">
                             {{-- @can('approval')
                               <a class="btn btn-sm btn-info" onclick="update({{ $lending->id }})">Close</a>
-                              <form id="update_{{ $lending->id }}" action="{{ route('backsite.closing', $lending->id) }}"
+                              <form id="update_{{ $lending->id }}" action="{{ route('closing', $lending->id) }}"
                                 method="POST">
                                 @method('put')
                                 @csrf
                               </form>
                             @endcan --}}
                             {{-- <a href="#historyDetail"
-                            data-remote="{{ route('backsite.lending-archive.show', $lending->id) }}" data-toggle="modal"
+                            data-remote="{{ route('lending-archive.show', $lending->id) }}" data-toggle="modal"
                             data-target="#historyDetail" data-title="Detail Peminjaman" class="btn btn-success">
                             a
                           </a> --}}
@@ -88,7 +88,7 @@
                                 </i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a href="#historyDetail" data-remote="{{ route('backsite.historyDetail', $lending->id) }}"
+                                <a href="#historyDetail" data-remote="{{ route('historyDetail', $lending->id) }}"
                                   data-toggle="modal" data-target="#historyDetail" data-title="Detail Peminjaman"
                                   class="dropdown-item">
                                   <i class="bi bi-eye"></i> Detail
@@ -109,7 +109,7 @@
                             </div>
                           </div>
                           {{-- <form id="deleteForm_{{ $lending->id }}"
-                          action="{{ route('backsite.lending-archive.destroy', $lending->id) }}" method="POST">
+                          action="{{ route('lending-archive.destroy', $lending->id) }}" method="POST">
                           @method('DELETE')
                           @csrf
                         </form> --}}

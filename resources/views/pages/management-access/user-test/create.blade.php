@@ -12,7 +12,7 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item" aria-current="page">User</li>
               <li class="breadcrumb-item active" aria-current="page">Create</li>
             </ol>
@@ -32,8 +32,8 @@
           <div class="card-content">
             <div class="card-body">
               <p>Isi input <code>Required (*)</code>, Sebelum menekan tombol submit. </p>
-              <form class="form" method="POST" action="{{ route('backsite.user.store') }}"
-                enctype="multipart/form-data" id=myForm>
+              <form class="form" method="POST" action="{{ route('user.store') }}" enctype="multipart/form-data"
+                id=myForm>
                 @csrf
                 <div class="row ">
                   <div class="col-md-8 col-12 mx-auto">
@@ -181,7 +181,7 @@
                   </div>
                   <div class="col-12 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
-                    <a href="{{ route('backsite.user.index') }}" class="btn btn-light-secondary me-1 mb-1">Cancel</a>
+                    <a href="{{ route('user.index') }}" class="btn btn-light-secondary me-1 mb-1">Cancel</a>
                   </div>
                 </div>
               </form>

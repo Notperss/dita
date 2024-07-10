@@ -76,7 +76,7 @@ class MainLocationController extends Controller
         MainLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.main-location.index');
+        return redirect()->route('main-location.index');
     }
 
     /**
@@ -130,7 +130,7 @@ class MainLocationController extends Controller
         $mainLocation->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.main-location.index');
+        return redirect()->route('main-location.index');
     }
 
     /**

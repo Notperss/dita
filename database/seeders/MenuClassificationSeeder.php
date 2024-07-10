@@ -23,14 +23,14 @@ class MenuClassificationSeeder extends Seeder
                     [
                         'name' => 'Klasifikasi Utama',
                         'icon' => 'ri-git-merge-line',
-                        'route' => 'backsite.main-classification.index',
+                        'route' => 'main-classification.index',
                         'permission_name' => 'main_classification_index',
                         'position' => 1,
                     ],
                     [
                         'name' => 'Sub Klasifikasi',
                         'icon' => 'ri-archive-stack-fill',
-                        'route' => 'backsite.sub-classification.index',
+                        'route' => 'sub-classification.index',
                         'permission_name' => 'sub_classification_index',
                         'position' => 2,
                     ],

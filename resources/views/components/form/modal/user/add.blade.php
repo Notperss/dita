@@ -81,7 +81,7 @@
         var companyId = $(this).val();
         if (companyId) {
           $.ajax({
-            url: "{{ route('backsite.getDivisions') }}",
+            url: "{{ route('getDivisions') }}",
             type: 'GET',
             dataType: 'json',
             data: {

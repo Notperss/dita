@@ -60,12 +60,13 @@ Route::get('/archives/search', [ArchiveContainerController::class, 'search'])->n
 Route::get('/', function () {
     // cek apakah sudah login atau belum
     if (Auth::user() != null) {
-        return redirect()->intended('backsite/dashboard');
+        return redirect()->intended('/dashboard');
     }
     return view('auth.login');
 });
 
-Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['auth:sanctum', 'verified']], function () {
+// Route::group(['prefix' => '', 'as' => '', 'middleware' => ['auth:sanctum', 'verified']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     //Dashboard
     Route::resource('dashboard', DashboardController::class)->only('index');
     Route::get('/division-archive/{id}', [DashboardController::class, 'division_archive'])->name('division-archive');
@@ -139,7 +140,6 @@ Route::group(['prefix' => 'backsite', 'as' => 'backsite.', 'middleware' => ['aut
         Route::put('/cancel-destroy/{id}', 'cancelDestroy')->name('cancelDestroy');
         // Route::put('/approval-destruction', [DestructionArchiveController::class, 'approvalDestruction'])->name('approvalDestruction');
     });
-
 
     Route::get('/get-division', [UserManagementController::class, 'getDivisions'])->name('getDivisions');
 

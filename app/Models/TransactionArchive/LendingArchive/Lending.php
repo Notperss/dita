@@ -2,6 +2,7 @@
 
 namespace App\Models\TransactionArchive\LendingArchive;
 
+use App\Models\MasterData\WorkUnits\Division;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,11 @@ class Lending extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    public function division()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(Division::class, 'division_id');
     }
 
     // Fungsi untuk menghasilkan nomor peminjaman arsip dengan format PA-YYYY-MM-NNN

@@ -71,7 +71,7 @@ class DepartmentController extends Controller
         Department::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.department.index');
+        return redirect()->route('department.index');
     }
 
     /**
@@ -128,7 +128,7 @@ class DepartmentController extends Controller
         $department->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.department.index');
+        return redirect()->route('department.index');
     }
 
     /**

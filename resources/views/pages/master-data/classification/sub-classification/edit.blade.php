@@ -11,7 +11,7 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item" aria-current="page">Sub Classification</li>
               <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
@@ -32,8 +32,7 @@
             <div class="card-body">
               <p>Isi input <code>Required (*)</code>, Sebelum menekan tombol submit. </p>
               <form id="myForm" class="form" method="POST"
-                action="{{ route('backsite.sub-classification.update', $subClassifications->id) }}"
-                enctype="multipart/form-data">
+                action="{{ route('sub-classification.update', $subClassifications->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="row ">
@@ -174,7 +173,7 @@
                   </div>
                   <div class="col-12 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
-                    <a href="{{ route('backsite.sub-classification.index') }}"
+                    <a href="{{ route('sub-classification.index') }}"
                       class="btn btn-light-secondary me-1 mb-1">Cancel</a>
                   </div>
                 </div>

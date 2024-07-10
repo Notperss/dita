@@ -12,15 +12,14 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             {{-- <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Folder Divisi</li>
             </ol> --}}
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.folder.index') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('folder.index') }}">Home</a></li>
               @foreach ($ancestors as $ancestor)
-                <li class="breadcrumb-item"><a
-                    href="{{ route('backsite.folder.show', $ancestor->id) }}">{{ $ancestor->name }}</a>
+                <li class="breadcrumb-item"><a href="{{ route('folder.show', $ancestor->id) }}">{{ $ancestor->name }}</a>
                 </li>
               @endforeach
               <li class="breadcrumb-item active" aria-current="page">{{ $folders->name }}</li>
@@ -46,14 +45,14 @@
                 <a href="#" onclick="deleteFolder({{ $descendant->id }})">
                   <i class="bi bi-x"></i>
                 </a>
-                <form id="deleteForm_{{ $descendant->id }}" action="{{ route('backsite.folder.destroy', $descendant->id) }}"
+                <form id="deleteForm_{{ $descendant->id }}" action="{{ route('folder.destroy', $descendant->id) }}"
                   method="POST" style="display:inline;">
                   @csrf
                   @method('DELETE')
                 </form>
               </div>
             @endcanany
-            <a href="{{ route('backsite.folder.show', $descendant->id ?? $descendants->id) }}">
+            <a href="{{ route('folder.show', $descendant->id ?? $descendants->id) }}">
               <div class="card-body d-flex align-items-center">
                 <div class="stats-icon red me-2"> <!-- Added margin to the right -->
                   <i class="ri-folder-6-line"></i>
@@ -82,7 +81,7 @@
 
     <div class="row">
       <div class="container">
-        <a href="{{ $folders->parent_id ? route('backsite.folder.show', $folders->parent_id) : url('backsite/folder') }}"
+        <a href="{{ $folders->parent_id ? route('folder.show', $folders->parent_id) : url('/folder') }}"
           class="btn btn-outline-primary mb-5"><i class="bi bi-arrow-left"></i>Back</a>
       </div>
     </div>
@@ -138,9 +137,8 @@
                         <button onclick="deleteFile({{ $file->id }})" class="btn btn-sm btn-danger">
                           </i>Delete</button>
 
-                        <form id="deleteFile_{{ $file->id }}"
-                          action="{{ route('backsite.folder.delete_file', $file->id) }}" method="POST"
-                          style="display:inline;">
+                        <form id="deleteFile_{{ $file->id }}" action="{{ route('folder.delete_file', $file->id) }}"
+                          method="POST" style="display:inline;">
                           @csrf
                           @method('DELETE')
                         </form>
@@ -150,9 +148,8 @@
                             Delete
                           </button>
 
-                          <form id="deleteFile_{{ $file->id }}"
-                            action="{{ route('backsite.folder.delete_file', $file->id) }}" method="POST"
-                            style="display:inline;">
+                          <form id="deleteFile_{{ $file->id }}" action="{{ route('folder.delete_file', $file->id) }}"
+                            method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                           </form>
@@ -184,8 +181,8 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form class="form" method="POST" action="{{ route('backsite.folder.store') }}"
-            enctype="multipart/form-data" id="myForm">
+          <form class="form" method="POST" action="{{ route('folder.store') }}" enctype="multipart/form-data"
+            id="myForm">
             @csrf
             <div class="modal-body">
               <div class="row">
@@ -322,7 +319,7 @@
           },
         ],
         ajax: {
-          url: "{{ route('backsite.archive-container.index') }}",
+          url: "{{ route('archive-container.index') }}",
         },
 
         columns: [{
@@ -379,7 +376,7 @@
 
       $.ajax({
         type: "post",
-        url: "{{ route('backsite.folder.form_upload') }}",
+        url: "{{ route('folder.form_upload') }}",
         data: {
           id: id
         },

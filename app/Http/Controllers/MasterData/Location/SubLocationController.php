@@ -78,7 +78,7 @@ class SubLocationController extends Controller
         SubLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.sub-location.index');
+        return redirect()->route('sub-location.index');
 
     }
 
@@ -136,7 +136,7 @@ class SubLocationController extends Controller
         $subLocation->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.sub-location.index');
+        return redirect()->route('sub-location.index');
     }
 
     /**

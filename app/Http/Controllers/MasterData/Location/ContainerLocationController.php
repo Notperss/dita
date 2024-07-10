@@ -60,7 +60,7 @@ class ContainerLocationController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
                     return '
-                    <a href="#mymodal" data-remote="' . route('backsite.showBarcode', $item->id) . '" data-toggle="modal"
+                    <a href="#mymodal" data-remote="' . route('showBarcode', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
                         <i class="bi bi-qr-code-scan"></i>
                     </a>
@@ -73,18 +73,18 @@ class ContainerLocationController extends Controller
                         Action
                     </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="#mymodal" data-remote="' . route('backsite.container-location.show', $item->id) . '" data-toggle="modal"
+                    <a href="#mymodal" data-remote="' . route('container-location.show', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                         Show
                     </a>
                         <a class="dropdown-item"
-                        href="' . route('backsite.container-location.edit', $item->id) . '">Edit</a>
+                        href="' . route('container-location.edit', $item->id) . '">Edit</a>
                     <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')">Delete</a>
                 </div>
                     </div>
                 </div>
                 <form id="deleteForm_' . $item->id . '"
-                    action="' . route('backsite.container-location.destroy', encrypt($item->id)) . '"
+                    action="' . route('container-location.destroy', encrypt($item->id)) . '"
                     method="POST">
                     ' . method_field('delete') . csrf_field() . '
                 </form>
@@ -195,7 +195,7 @@ class ContainerLocationController extends Controller
         ContainerLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.container-location.index');
+        return redirect()->route('container-location.index');
     }
 
     /**
@@ -268,7 +268,7 @@ class ContainerLocationController extends Controller
         $containerLocation->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.container-location.index');
+        return redirect()->route('container-location.index');
     }
 
     /**

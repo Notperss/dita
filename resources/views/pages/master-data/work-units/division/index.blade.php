@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Division</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.division.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('division.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -46,15 +46,15 @@
                 <td class="text-center">{{ $division->code }}</td>
                 <td class="text-center">{{ $division->name }}</td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.division.edit', $division->id) }}" class="btn icon btn-primary"
-                    title="Edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{{ route('division.edit', $division->id) }}" class="btn icon btn-primary" title="Edit"><i
+                      class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $division->id }}')"
-                    @if (DB::table('departments')->where('division_id', $division->id)->exists()) style="display: none;" @endif>
+                    @if (DB::table('users')->where('division_id', $division->id)->exists()) style="display: none;" @endif>
                     <i class="bi bi-x-lg"></i>
                   </a>
 
                   <form id="deleteForm_{{ $division->id }}"
-                    action="{{ route('backsite.division.destroy', encrypt($division->id)) }}" method="POST">
+                    action="{{ route('division.destroy', encrypt($division->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

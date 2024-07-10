@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Type User</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.type_user.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('type_user.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -44,15 +44,15 @@
                 <td class="text-center">{{ $loop->iteration }}</td>
                 <td class="text-center">{{ $type_user->name ?? 'N/A' }}</td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.type_user.edit', $type_user->id) }}" class="btn icon btn-primary"
-                    title="Edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{{ route('type_user.edit', $type_user->id) }}" class="btn icon btn-primary" title="Edit"><i
+                      class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $type_user->id }}')"
                     {{-- @if (DB::table('departments')->where('type_user_id', $type_user->id)->exists()) style="display: none;" @endif --}}>
                     <i class="bi bi-x-lg"></i>
                   </a>
 
                   <form id="deleteForm_{{ $type_user->id }}"
-                    action="{{ route('backsite.type_user.destroy', encrypt($type_user->id)) }}" method="POST">
+                    action="{{ route('type_user.destroy', encrypt($type_user->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

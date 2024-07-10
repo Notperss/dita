@@ -31,7 +31,7 @@ class MenuGeneralSeederTableSeeder extends Seeder
         // MenuItem::create([
         //     'name' => 'Perusahaan',
         //     'icon' => 'ri-building-4-fill',
-        //     'route' => 'backsite.company.index',
+        //     'route' => 'company.index',
         //     'permission_name' => 'company_index',
         //     'menu_group_id' => $general->id,
         //     'position' => 2,
@@ -39,7 +39,7 @@ class MenuGeneralSeederTableSeeder extends Seeder
         // MenuItem::create([
         //     'name' => 'Divisi',
         //     'icon' => 'ri-group-line',
-        //     'route' => 'backsite.division.index',
+        //     'route' => 'division.index',
         //     'permission_name' => 'division_index',
         //     'menu_group_id' => $general->id,
         //     'position' => 3,
@@ -61,14 +61,14 @@ class MenuGeneralSeederTableSeeder extends Seeder
                     [
                         'name' => 'Perusahaan',
                         'icon' => 'ri-building-4-fill',
-                        'route' => 'backsite.company.index',
+                        'route' => 'company.index',
                         'permission_name' => 'company_index',
                         'position' => 2,
                     ],
                     [
                         'name' => 'Divisi',
                         'icon' => 'ri-group-line',
-                        'route' => 'backsite.division.index',
+                        'route' => 'division.index',
                         'permission_name' => 'division_index',
                         'position' => 3,
                     ],

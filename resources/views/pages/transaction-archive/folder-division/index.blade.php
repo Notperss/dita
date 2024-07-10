@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
               <li class="breadcrumb-item active" aria-current="page">Folder Divisi</li>
             </ol>
           </nav>
@@ -29,7 +29,7 @@
     @endcan
 
     {{-- <div class="row">
-      <form class="form" method="POST" action="{{ route('backsite.folder.store') }}" enctype="multipart/form-data"
+      <form class="form" method="POST" action="{{ route('folder.store') }}" enctype="multipart/form-data"
         id="myForm">
         @csrf
         <div class="form-group">
@@ -62,7 +62,7 @@
             @canany(['admin', 'super_admin'])
               <div class="container">
                 <a href="#" onclick="showSweetAlert({{ $folder->id }})"><i class="bi bi-x"></i></a>
-                <form id="deleteForm_{{ $folder->id }}" action="{{ route('backsite.folder.destroy', $folder->id) }}"
+                <form id="deleteForm_{{ $folder->id }}" action="{{ route('folder.destroy', $folder->id) }}"
                   method="POST" style="display:inline;">
                   @csrf
                   @method('DELETE')
@@ -71,7 +71,7 @@
             @endcanany
             <div class="card-body ">
               <div class="row">
-                <a href="{{ route('backsite.folder.show', $folder->id ?? $folders->id) }}">
+                <a href="{{ route('folder.show', $folder->id ?? $folders->id) }}">
                   <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
                     <div class="stats-icon red mb-2">
                       <i class="ri-folder-6-line"></i>
@@ -111,14 +111,14 @@
                 <a href="#" onclick="showSweetAlert({{ $folder->id }})">
                   <i class="bi bi-x"></i>
                 </a>
-                <form id="deleteForm_{{ $folder->id }}" action="{{ route('backsite.folder.destroy', $folder->id) }}"
-                  method="POST" style="display:inline;">
+                <form id="deleteForm_{{ $folder->id }}" action="{{ route('folder.destroy', $folder->id) }}" method="POST"
+                  style="display:inline;">
                   @csrf
                   @method('DELETE')
                 </form>
               </div>
             @endcanany
-            <a href="{{ route('backsite.folder.show', $folder->id ?? $folders->id) }}">
+            <a href="{{ route('folder.show', $folder->id ?? $folders->id) }}">
               <div class="card-body d-flex align-items-center">
                 <div class="stats-icon red me-2"> <!-- Added margin to the right -->
                   <i class="ri-folder-6-line"></i>
@@ -207,7 +207,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form class="form" method="POST" action="{{ route('backsite.folder.store') }}" enctype="multipart/form-data"
+          <form class="form" method="POST" action="{{ route('folder.store') }}" enctype="multipart/form-data"
             id="myForm">
             @csrf
             <div class="modal-body">
@@ -313,7 +313,7 @@
           },
         ],
         ajax: {
-          url: "{{ route('backsite.archive-container.index') }}",
+          url: "{{ route('archive-container.index') }}",
         },
 
         columns: [{
@@ -368,7 +368,7 @@
 
       $.ajax({
         type: "get",
-        url: "{{ route('backsite.form_upload') }}",
+        url: "{{ route('form_upload') }}",
         dataType: "json",
         success: function(response) {
           $('.viewmodal').html(response.data).show();

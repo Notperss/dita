@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Company</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.company.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('company.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -52,15 +52,15 @@
                     alt="Logo" width="60px">
                 </td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.company.edit', $company->id) }}" class="btn icon btn-primary"
-                    title="Edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{{ route('company.edit', $company->id) }}" class="btn icon btn-primary" title="Edit"><i
+                      class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $company->id }}')"
                     @if (DB::table('users')->where('company_id', $company->id)->exists()) style="display: none;" @endif>
                     <i class="bi bi-x-lg"></i>
                   </a>
 
                   <form id="deleteForm_{{ $company->id }}"
-                    action="{{ route('backsite.company.destroy', encrypt($company->id)) }}" method="POST">
+                    action="{{ route('company.destroy', encrypt($company->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

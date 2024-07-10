@@ -27,7 +27,7 @@
                 </div>
               </div>
               <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                <a href="{{ route('backsite.history') }}">
+                <a href="{{ route('history') }}">
                   <h6 class="text-muted font-semibold">Riwayat Semua Arsip</h6>
                   <h6 class="font-extrabold mb-0">
                     @can('super_admin')
@@ -56,7 +56,7 @@
               <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                 <h6 class="text-muted font-semibold">Riwayat Fisik</h6>
                 <h6 class="font-extrabold mb-0">
-                  <a href="{{ route('backsite.fisik') }}">
+                  <a href="{{ route('fisik') }}">
                     @can('super_admin')
                       {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->count() }}
                     @elsecan('admin')
@@ -81,7 +81,7 @@
                 </div>
               </div>
               <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                <a href="{{ route('backsite.digital') }}">
+                <a href="{{ route('digital') }}">
                   <h6 class="text-muted font-semibold">Riwayat Digital</h6>
                   <h6 class="font-extrabold mb-0">
                     @can('super_admin')
@@ -145,7 +145,7 @@
                           <div class="btn-group mb-1">
                             @can('approval')
                               <a class="btn btn-sm btn-info" onclick="update({{ $lending->id }})">Close</a>
-                              <form id="update_{{ $lending->id }}" action="{{ route('backsite.closing', $lending->id) }}"
+                              <form id="update_{{ $lending->id }}" action="{{ route('closing', $lending->id) }}"
                                 method="POST">
                                 @method('put')
                                 @csrf
@@ -159,7 +159,7 @@
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a href="#detailLending"
-                                  data-remote="{{ route('backsite.lending-archive.show', $lending->id) }}"
+                                  data-remote="{{ route('lending-archive.show', $lending->id) }}"
                                   data-toggle="modal" data-target="#detailLending" data-title="Detail Peminjaman"
                                   class="dropdown-item">
                                   <i class="bi bi-eye"></i> Detail
@@ -180,7 +180,7 @@
                           </div>
                         </div>
                         <form id="deleteForm_{{ $lending->id }}"
-                          action="{{ route('backsite.lending-archive.destroy', $lending->id) }}" method="POST">
+                          action="{{ route('lending-archive.destroy', $lending->id) }}" method="POST">
                           @method('DELETE')
                           @csrf
                         </form>
@@ -322,7 +322,7 @@
                                   <td class="text-bold-500">{{ $loop->iteration }}</td>
                                   <td class="text-bold-500">{{ $lending->lending_number ?? 'N/A' }}</td>
                                   <td class="text-bold-500">{{ $lending->user->name ?? 'N/A' }}</td>
-                                  <td>{{ $lending->division ?? 'N/A' }}</td>
+                                  <td>{{ $lending->division->code ?? 'N/A' }}</td>
                                   <td>
                                     {{ Carbon\Carbon::parse($lending->start_date)->translatedFormat('l, d F Y ') ?? 'N/A' }}
                                   </td>
@@ -340,7 +340,7 @@
                                         @can('approval')
                                           <a class="btn btn-sm btn-info" onclick="update({{ $lending->id }})">Close</a>
                                           <form id="update_{{ $lending->id }}"
-                                            action="{{ route('backsite.closing', $lending->id) }}" method="POST">
+                                            action="{{ route('closing', $lending->id) }}" method="POST">
                                             @method('put')
                                             @csrf
                                           </form>
@@ -355,7 +355,7 @@
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                           <a href="#detailLending"
-                                            data-remote="{{ route('backsite.lending-archive.show', $lending->id) }}"
+                                            data-remote="{{ route('lending-archive.show', $lending->id) }}"
                                             data-toggle="modal" data-target="#detailLending"
                                             data-title="Detail Peminjaman" class="dropdown-item">
                                             <i class="bi bi-eye"></i> Detail
@@ -376,8 +376,7 @@
                                     </div>
                                   </div>
                                   <form id="deleteForm_{{ $lending->id }}"
-                                    action="{{ route('backsite.lending-archive.destroy', $lending->id) }}"
-                                    method="POST">
+                                    action="{{ route('lending-archive.destroy', $lending->id) }}" method="POST">
                                     @method('DELETE')
                                     @csrf
                                   </form>
@@ -424,7 +423,7 @@
                                 <td class="text-bold-500">{{ $archives->archiveContainer->regarding ?? 'N/A' }}
                                 </td>
                                 <td class="text-bold-500">{{ $archives->user->name ?? 'N/A' }}</td>
-                                <td>{{ $archives->lending->division ?? 'N/A' }}</td>
+                                <td>{{ $archives->division->code ?? 'N/A' }}</td>
                                 <td>
                                   {{ Carbon\Carbon::parse($archives->lending->start_date)->translatedFormat('l, d F Y ') ?? 'N/A' }}
                                 </td>
@@ -458,7 +457,7 @@
                                         <a class="btn btn-sm btn-info"
                                           onclick="update({{ $archives->lending->id }})">Close</a>
                                         <form id="update_{{ $archives->lending->id }}"
-                                          action="{{ route('backsite.closing', $archives->lending->id) }}"
+                                          action="{{ route('closing', $archives->lending->id) }}"
                                           method="POST">
                                           @method('put')
                                           @csrf
@@ -474,7 +473,7 @@
                                       </button>
                                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         <a href="#detailLending"
-                                          data-remote="{{ route('backsite.lending-archive.show', $archives->lending->id) }}"
+                                          data-remote="{{ route('lending-archive.show', $archives->lending->id) }}"
                                           data-toggle="modal" data-target="#detailLending"
                                           data-title="Detail Peminjaman" class="dropdown-item">
                                           <i class="bi bi-eye"></i> Detail
@@ -495,7 +494,7 @@
                                   </div>
                                 </div>
                                 <form id="deleteForm_{{ $archives->lending->id }}"
-                                  action="{{ route('backsite.lending-archive.destroy', $archives->lending->id) }}"
+                                  action="{{ route('lending-archive.destroy', $archives->lending->id) }}"
                                   method="POST">
                                   @method('DELETE')
                                   @csrf
@@ -550,7 +549,7 @@
       <div class="modal-body">
         <i class="fa fa-spinner fa spin"></i>
         <p>Isi input <code>Required (*)</code>, Sebelum menekan tombol submit. </p>
-        <form class="form" method="POST" action="{{ route('backsite.lending-archive.store') }}"
+        <form class="form" method="POST" action="{{ route('lending-archive.store') }}"
           enctype="multipart/form-data" id=myForm>
           @csrf
           <div class="row">
@@ -571,7 +570,7 @@
                   value="{{ now()->toDateString() }}">
               </div>
               <div class="form-group">
-                @php
+                {{-- @php
                   $divisionId = auth()->user()->division_id;
                   $division = DB::table('divisions')->find($divisionId); // Assuming Division is your model representing divisions
 
@@ -580,9 +579,10 @@
                   } else {
                       $divisionName = ''; // Provide a default value or handle the case where the division is not found
                   }
-                @endphp
+                @endphp --}}
                 <label for="division">Divisi <code>*</code></label>
-                <input type="text" class="form-control" value="{{ $divisionName }}" readonly>
+                <input type="text" class="form-control" value="{{ auth()->user()->division->name ?? '' }}"
+                  readonly>
               </div>
               <div class="form-group">
                 <label for="description">keterangan</label>
@@ -675,7 +675,7 @@
       lengthChange: true,
       pageLength: 5,
       ajax: {
-        url: "{{ route('backsite.lending-archive.index') }}",
+        url: "{{ route('lending-archive.index') }}",
         data: function(d) {
           // Add the year filter to the AJAX request data
           d.catalog = $('#catalogSearch').val();

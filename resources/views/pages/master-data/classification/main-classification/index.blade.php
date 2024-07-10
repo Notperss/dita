@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Main Classification</li>
             </ol>
           </nav>
@@ -25,8 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.main-classification.create') }}" class="btn btn-primary"> <i
-              class="bi bi-plus-lg"></i>
+          <a href="{{ route('main-classification.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -51,16 +50,15 @@
                 <td class="text-center">{{ $mainClassification->division->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $mainClassification->description ?? 'N/A' }}</td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.main-classification.edit', $mainClassification->id) }}"
-                    class="btn icon btn-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{{ route('main-classification.edit', $mainClassification->id) }}" class="btn icon btn-primary"
+                    title="Edit"><i class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $mainClassification->id }}')"
                     {{-- @if (DB::table('classification_subs')->where('main_classification_id', $mainClassification->id)->exists()) style="display: none;" @endif> --}}>
                     <i class="bi bi-x-lg"></i>
                   </a>
 
                   <form id="deleteForm_{{ $mainClassification->id }}"
-                    action="{{ route('backsite.main-classification.destroy', encrypt($mainClassification->id)) }}"
-                    method="POST">
+                    action="{{ route('main-classification.destroy', encrypt($mainClassification->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

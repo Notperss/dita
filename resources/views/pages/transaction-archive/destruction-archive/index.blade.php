@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Pemusnahan Arsip</li>
             </ol>
           </nav>
@@ -32,7 +32,7 @@
               <div class="row">
                 <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                   <h6 class="text-muted font-semibold">
-                    <a href="{{ route('backsite.division-destruct', encrypt($division->id)) }}">{{ $division->code }}</a>
+                    <a href="{{ route('division-destruct', encrypt($division->id)) }}">{{ $division->code }}</a>
                   </h6>
                   <h6 class="font-extrabold mb-0">
                     @php
@@ -61,10 +61,10 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          {{-- <a href="{{ route('backsite.archive-container.create') }}" class="btn btn-primary">
+          {{-- <a href="{{ route('archive-container.create') }}" class="btn btn-primary">
             Pratinjau Pemusnahan Arsip
           </a> --}}
-          <a href="{{ route('backsite.archive-destroy') }}" class="btn btn-primary">
+          <a href="{{ route('archive-destroy') }}" class="btn btn-primary">
             Arsip yang Dimusnahkan
           </a>
           {{-- <a onclick="upload()" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
@@ -73,7 +73,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <form class="form" method="POST" action="{{ route('backsite.check-destroy') }}" enctype="multipart/form-data"
+          <form class="form" method="POST" action="{{ route('check-destroy') }}" enctype="multipart/form-data"
             id="myForm">
             @csrf
             @method('PUT')
@@ -196,7 +196,7 @@
           ['All']
         ], // Add 'All' option to the length menu
         ajax: {
-          url: "{{ route('backsite.destruction-archive.index') }}",
+          url: "{{ route('destruction-archive.index') }}",
         },
         columns: [{
             data: 'DT_RowIndex',
@@ -273,7 +273,7 @@
 
       $.ajax({
         type: "get",
-        url: "{{ route('backsite.form_upload') }}",
+        url: "{{ route('form_upload') }}",
         dataType: "json",
         success: function(response) {
           $('.viewmodal').html(response.data).show();

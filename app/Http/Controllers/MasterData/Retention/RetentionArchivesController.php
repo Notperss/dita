@@ -100,7 +100,7 @@ class RetentionArchivesController extends Controller
         RetentionArchives::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.retention.index');
+        return redirect()->route('retention.index');
 
     }
 
@@ -179,7 +179,7 @@ class RetentionArchivesController extends Controller
         $retention->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.retention.index');
+        return redirect()->route('retention.index');
     }
 
     /**

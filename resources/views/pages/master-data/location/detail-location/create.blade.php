@@ -12,7 +12,7 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item" aria-current="page">Detail Location</li>
               <li class="breadcrumb-item active" aria-current="page">Create</li>
             </ol>
@@ -32,7 +32,7 @@
           <div class="card-content">
             <div class="card-body">
               <p>Isi input <code>Required (*)</code>, Sebelum menekan tombol submit. </p>
-              <form class="form" method="POST" action="{{ route('backsite.detail-location.store') }}"
+              <form class="form" method="POST" action="{{ route('detail-location.store') }}"
                 enctype="multipart/form-data" id=myForm>
                 @csrf
                 <div class="row ">
@@ -94,8 +94,7 @@
 
                   <div class="col-12 d-flex justify-content-end">
                     <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
-                    <a href="{{ route('backsite.detail-location.index') }}"
-                      class="btn btn-light-secondary me-1 mb-1">Cancel</a>
+                    <a href="{{ route('detail-location.index') }}" class="btn btn-light-secondary me-1 mb-1">Cancel</a>
                   </div>
                 </div>
               </form>
@@ -112,7 +111,7 @@
         var mainLocationId = $(this).val();
         if (mainLocationId) {
           $.ajax({
-            url: "{{ route('backsite.getSubLocations') }}",
+            url: "{{ route('getSubLocations') }}",
             type: 'GET',
             dataType: 'json',
             data: {

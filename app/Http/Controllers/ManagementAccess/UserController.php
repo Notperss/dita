@@ -70,7 +70,7 @@ class UserController extends Controller
         $detail_user->save();
 
         alert()->success('Sukses', 'User berhasil ditambahkan');
-        return redirect()->route('backsite.user.index');
+        return redirect()->route('user.index');
     }
 
     /**
@@ -139,7 +139,7 @@ class UserController extends Controller
         $detail_user->save();
 
         alert()->success('Sukses', 'User berhasil diupdate');
-        return redirect()->route('backsite.user.index');
+        return redirect()->route('user.index');
     }
 
     /**

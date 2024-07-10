@@ -53,7 +53,7 @@ class TypeUserController extends Controller
         TypeUser::create($data);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.type_user.index');
+        return redirect()->route('type_user.index');
 
     }
 
@@ -101,7 +101,7 @@ class TypeUserController extends Controller
         // update to database
         $typeUser->update($data);
         alert()->success('Sukses', 'Data berhasil diupdate');
-        return redirect()->route('backsite.type_user.index');
+        return redirect()->route('type_user.index');
     }
 
     /**

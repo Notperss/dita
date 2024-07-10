@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">User</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.user.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('user.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -62,15 +62,15 @@
                   @endif
                 </td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.user.edit', $user->id) }}" class="btn icon btn-primary" title="Edit"><i
+                  <a href="{{ route('user.edit', $user->id) }}" class="btn icon btn-primary" title="Edit"><i
                       class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $user->id }}')"
                     {{-- @if (DB::table('departments')->where('user_id', $user->id)->exists()) style="display: none;" @endif --}}>
                     <i class="bi bi-x-lg"></i>
                   </a>
 
-                  <form id="deleteForm_{{ $user->id }}"
-                    action="{{ route('backsite.user.destroy', encrypt($user->id)) }}" method="POST">
+                  <form id="deleteForm_{{ $user->id }}" action="{{ route('user.destroy', encrypt($user->id)) }}"
+                    method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

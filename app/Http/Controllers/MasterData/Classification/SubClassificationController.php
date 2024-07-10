@@ -87,7 +87,7 @@ class SubClassificationController extends Controller
         SubClassification::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.sub-classification.index');
+        return redirect()->route('sub-classification.index');
 
     }
 
@@ -153,7 +153,7 @@ class SubClassificationController extends Controller
         $subClassification->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.sub-classification.index');
+        return redirect()->route('sub-classification.index');
     }
 
     /**

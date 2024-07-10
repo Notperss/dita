@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Department</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.department.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('department.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -46,15 +46,15 @@
                 <td class="text-center">{{ $department->division->name ?? 'N/A' }}</td>
                 <td class="text-center">{{ $department->name ?? 'N/A' }}</td>
                 <td class="text-center">
-                  <a href="{{ route('backsite.department.edit', $department->id) }}" class="btn icon btn-primary"
-                    title="Edit"><i class="bi bi-pencil"></i></a>
+                  <a href="{{ route('department.edit', $department->id) }}" class="btn icon btn-primary" title="Edit"><i
+                      class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $department->id }}')"
                     @if (DB::table('sections')->where('department_id', $department->id)->exists()) style="display: none;" @endif>
                     <i class="bi bi-x-lg"></i>
                   </a>
 
                   <form id="deleteForm_{{ $department->id }}"
-                    action="{{ route('backsite.department.destroy', encrypt($department->id)) }}" method="POST">
+                    action="{{ route('department.destroy', encrypt($department->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

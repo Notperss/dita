@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item active" aria-current="page">Retention Archives</li>
             </ol>
           </nav>
@@ -25,7 +25,7 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-title">
-          <a href="{{ route('backsite.retention.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
+          <a href="{{ route('retention.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
         </h5>
       </div>
@@ -91,12 +91,12 @@
                         <i class="bi bi-three-dots-vertical"></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonIcon">
-                        <a href="#mymodal" data-remote="{{ route('backsite.retention.show', $retention->id) }}"
-                          data-toggle="modal" data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
+                        <a href="#mymodal" data-remote="{{ route('retention.show', $retention->id) }}" data-toggle="modal"
+                          data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                           <i class="bi bi-eye"></i> Show
                         </a>
-                        <a href="{{ route('backsite.retention.edit', $retention->id) }}" class="dropdown-item"
-                          title="Edit"><i class="bi bi-pencil"></i> Edit</a>
+                        <a href="{{ route('retention.edit', $retention->id) }}" class="dropdown-item" title="Edit"><i
+                            class="bi bi-pencil"></i> Edit</a>
                         <a class="dropdown-item" title="Delete" onclick="showSweetAlert('{{ $retention->id }}')"
                           {{-- @if (DB::table('departments')->where('retention_id', $retention->id)->exists()) style="display: none;" @endif --}}>
                           <i class="bi bi-x-lg"> Delete</i>
@@ -107,7 +107,7 @@
 
 
                   <form id="deleteForm_{{ $retention->id }}"
-                    action="{{ route('backsite.retention.destroy', encrypt($retention->id)) }}" method="POST">
+                    action="{{ route('retention.destroy', encrypt($retention->id)) }}" method="POST">
                     @method('DELETE')
                     @csrf
                   </form>

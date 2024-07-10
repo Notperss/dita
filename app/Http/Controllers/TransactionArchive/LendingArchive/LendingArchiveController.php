@@ -184,7 +184,7 @@ class LendingArchiveController extends Controller
             }
         }
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.lending-archive.index');
+        return redirect()->route('lending-archive.index');
     }
 
     /**
@@ -378,7 +378,7 @@ class LendingArchiveController extends Controller
         //     }
         // }
         alert()->success('Success', 'Data updated successfully.');
-        return redirect()->route('backsite.lending-archive.index');
+        return redirect()->route('lending-archive.index');
     }
 
     public function closing($id)

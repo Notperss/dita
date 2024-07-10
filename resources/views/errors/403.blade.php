@@ -11,7 +11,7 @@
             height="auto">
           <h1 class="error-title">Forbidden</h1>
           <p class="fs-5 text-gray-600">You are unauthorized to see this page.</p>
-          <a href="{{ route('backsite.dashboard.index') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
+          <a href="{{ route('dashboard.index') }}" class="btn btn-lg btn-outline-primary mt-3">Go Home</a>
         </div>
       </div>
     </div>

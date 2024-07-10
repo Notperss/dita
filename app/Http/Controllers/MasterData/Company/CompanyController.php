@@ -85,7 +85,7 @@ class CompanyController extends Controller
         Company::create($data);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.company.index');
+        return redirect()->route('company.index');
     }
 
     /**
@@ -166,7 +166,7 @@ class CompanyController extends Controller
         $company->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.company.index');
+        return redirect()->route('company.index');
     }
 
     /**

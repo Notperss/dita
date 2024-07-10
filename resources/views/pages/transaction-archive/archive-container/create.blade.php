@@ -12,7 +12,7 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
               <li class="breadcrumb-item" aria-current="page">Archive Container</li>
               <li class="breadcrumb-item active" aria-current="page">Create</li>
             </ol>
@@ -32,7 +32,7 @@
           <div class="card-content">
             <div class="card-body">
               <p>Isi input <code>Required (*)</code>, Sebelum menekan tombol submit. </p>
-              <form class="form" method="POST" action="{{ route('backsite.archive-container.store') }}"
+              <form class="form" method="POST" action="{{ route('archive-container.store') }}"
                 enctype="multipart/form-data" id=myForm>
                 @csrf
                 {{-- <input type="text" id="container-id" value="{{  }}"> --}}
@@ -354,8 +354,7 @@
 
                 <div class="col-12 d-flex justify-content-end my-3">
                   <button type="button" class="btn btn-primary me-1 mb-1" onclick="submitForm()">Submit</button>
-                  <a href="{{ route('backsite.archive-container.index') }}"
-                    class="btn btn-light-secondary me-1 mb-1">Cancel</a>
+                  <a href="{{ route('archive-container.index') }}" class="btn btn-light-secondary me-1 mb-1">Cancel</a>
                 </div>
 
               </form>
@@ -384,7 +383,7 @@
 
         if (divisionId) {
           $.ajax({
-            url: "{{ route('backsite.getNumberContainer') }}",
+            url: "{{ route('getNumberContainer') }}",
             type: 'GET',
             dataType: 'json',
             data: {
@@ -443,7 +442,7 @@
       var numberId = $(this).val();
       if (numberId) {
         $.ajax({
-          url: "{{ route('backsite.getDataContainer') }}",
+          url: "{{ route('getDataContainer') }}",
           type: 'GET',
           dataType: 'json',
           data: {
@@ -504,7 +503,7 @@
       $('#number_container').change(function() {
         var numberId = $(this).val();
         if (numberId) {
-          $.getJSON("{{ route('backsite.getDataContainer') }}", {
+          $.getJSON("{{ route('getDataContainer') }}", {
               number_container: numberId
             })
             .done(function(data) {
@@ -525,11 +524,11 @@
                 row.append('<td>' + value.archive_type + '</td>');
                 // Add action buttons
                 let editButton = '<a class="btn btn-sm btn-primary" href="' +
-                  '{{ route('backsite.archive-container.edit', ['archive_container' => ':id']) }}'.replace(
+                  '{{ route('archive-container.edit', ['archive_container' => ':id']) }}'.replace(
                     ':id', value.id) + '">Edit</a>';
 
                 let deleteButton = '<form id="deleteForm_' + value.id +
-                  '" action="{{ route('backsite.archive-container.destroy', ['archive_container' => ':id']) }}'
+                  '" action="{{ route('archive-container.destroy', ['archive_container' => ':id']) }}'
                   .replace(
                     ':id', value.id) + '" method="POST" style="display: inline;">' +
                   '@csrf' +
@@ -635,7 +634,7 @@
         var divisionId = $(this).val();
         if (divisionId) {
           $.ajax({
-            url: "{{ route('backsite.getNumberContainer') }}",
+            url: "{{ route('getNumberContainer') }}",
             type: 'GET',
             dataType: 'json',
             data: {
@@ -693,7 +692,7 @@
         var divisionId = $(this).val();
         if (divisionId) {
           $.ajax({
-            url: "{{ route('backsite.getMainClassifications') }}",
+            url: "{{ route('getMainClassifications') }}",
             type: 'GET',
             dataType: 'json',
             data: {
@@ -725,7 +724,7 @@
         var mainclassificationId = $(this).val();
         if (mainclassificationId) {
           $.ajax({
-            url: "{{ route('backsite.getSubClassifications') }}",
+            url: "{{ route('getSubClassifications') }}",
             type: 'GET',
             dataType: 'json',
             data: {
@@ -809,7 +808,7 @@
     //     var subclassificationId = $(this).val();
     //     if (subclassificationId) {
     //       $.ajax({
-    //         url: "{{ route('backsite.getSeriesClassifications') }}",
+    //         url: "{{ route('getSeriesClassifications') }}",
     //         type: 'GET',
     //         dataType: 'json',
     //         data: {

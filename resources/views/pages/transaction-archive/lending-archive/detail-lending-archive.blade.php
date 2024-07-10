@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <form class="form" method="POST" action="{{ route('backsite.approval') }}" enctype="multipart/form-data" id="myForm">
+  <form class="form" method="POST" action="{{ route('approval') }}" enctype="multipart/form-data" id="myForm">
     @csrf
     @method('PUT')
     @can('approval')

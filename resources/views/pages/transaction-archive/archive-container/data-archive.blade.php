@@ -12,8 +12,8 @@
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
-              {{-- <li class="breadcrumb-item"><a href="{{ route('backsite.dashboard.index') }}">Dashboard</a></li> --}}
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
+              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
               {{-- <li class="breadcrumb-item active" aria-current="page">Archives</li> --}}
             </ol>
           </nav>
@@ -68,7 +68,7 @@
               <th class="text-center" scope="col">Tag</th>
               <th class="text-center" scope="col">Divisi</th>
               <th class="text-center" scope="col">Tipe</th>
-              <th class="text-center" scope="col">Action</th>
+              <th class="text-center" scope="col" style="width: 6%">Action</th>
             </tr>
             <tr>
               <th scope="col">Cari:</th>
@@ -134,7 +134,7 @@
         lengthChange: true,
         pageLength: 10,
         ajax: {
-          url: "{{ route('backsite.dataArchive') }}",
+          url: "{{ route('dataArchive') }}",
           data: function(d) {
             // Add the year filter to the AJAX request data
             d.catalog = $('#catalogSearch').val();
@@ -269,7 +269,7 @@
 
       $.ajax({
         type: "get",
-        url: "{{ route('backsite.form_upload') }}",
+        url: "{{ route('form_upload') }}",
         dataType: "json",
         success: function(response) {
           $('.viewmodal').html(response.data).show();

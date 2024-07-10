@@ -73,7 +73,7 @@ class SectionController extends Controller
         Section::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.section.index');
+        return redirect()->route('section.index');
     }
 
     /**
@@ -135,7 +135,7 @@ class SectionController extends Controller
         $section->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.section.index');
+        return redirect()->route('section.index');
     }
 
     /**

@@ -91,7 +91,7 @@ class DetailLocationController extends Controller
         DetailLocation::create($requestData);
 
         alert()->success('Sukses', 'Data berhasil ditambahkan');
-        return redirect()->route('backsite.detail-location.index');
+        return redirect()->route('detail-location.index');
 
     }
 
@@ -153,7 +153,7 @@ class DetailLocationController extends Controller
         $detailLocation->update($data);
 
         alert()->success('Sukses', 'Data berhasil di ubah');
-        return redirect()->route('backsite.detail-location.index');
+        return redirect()->route('detail-location.index');
     }
 
     /**
