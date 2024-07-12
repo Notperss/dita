@@ -73,6 +73,14 @@
 
 
             @if (Auth::check())
+              @can('admin')
+                <li class="sidebar-title">
+                  <a class="dropdown-item" href="https://nugrohos-organization.gitbook.io/data-input-tapersip"
+                    target="_blank" title="User Guide">
+                    User Guide <i class="icon-mid bi bi-info-circle me-2"></i></a>
+                </li>
+              @endcan
+              </li>
               <li class="sidebar-title"></li>
               {{-- Log Out --}}
               <li class="sidebar-item  ">

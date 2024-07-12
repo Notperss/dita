@@ -205,7 +205,7 @@
             targets: '_all'
           },
           {
-            targets: [1, 2, 3],
+            targets: '_all',
             createdCell: function(td) {
               $(td).css('font-size', '80%');
             }

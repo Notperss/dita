@@ -24,6 +24,7 @@ return new class extends Migration {
             // $table->boolean('approval')->default(true);
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('lending_id')->references('id')->on('lendings')->onDelete('cascade');
             $table->foreign('archive_container_id')->references('id')->on('archive_containers')->onDelete('cascade');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');

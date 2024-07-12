@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Retention Archives')
+@section('title', 'Penyimpanan Arsip')
 @section('content')
   <div class="page-heading">
     <div class="page-title">
       <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
-          <h3>Retention Archives</h3>
+          <h3>Penyimpanan Arsip</h3>
         </div>
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
-              <li class="breadcrumb-item" aria-current="page">Retention Archives</li>
+              <li class="breadcrumb-item" aria-current="page">Penyimpanan Arsip</li>
               <li class="breadcrumb-item active" aria-current="page">Edit</li>
             </ol>
           </nav>
