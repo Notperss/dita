@@ -2,6 +2,7 @@
 
 namespace App\Models\TransactionArchive\FolderDivision;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Kalnoy\Nestedset\NodeTrait;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +16,7 @@ class FolderDivision extends Model
     use NodeTrait;
     use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
 
     /**
      * Get the options for the activity log.

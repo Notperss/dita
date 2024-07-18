@@ -134,9 +134,39 @@ class FolderDivisionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, FolderDivision $folderDivision)
+    public function update(Request $request, $id)
     {
-        //
+        // Custom validation messages
+        $messages = [
+            'name.required' => 'The name field is required.',
+            'name.max' => 'The name may not be greater than 255 characters.',
+        ];
+
+        // Validation rules
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+        ], $messages);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            // Get the error messages
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Retrieve the validated input data
+        $data = $validator->validated();
+
+        // Find the folder division by ID
+        $folderDivision = FolderDivision::findOrFail($id);
+
+        // Update the folder division with validated data
+        $folderDivision->update($data);
+
+        // Display a success message
+        alert()->success('Sukses', 'Data berhasil diperbarui');
+
+        // Redirect back to the previous page
+        return redirect()->back();
     }
 
     /**
@@ -211,7 +241,7 @@ class FolderDivisionController extends Controller
 
         $path = 'assets/file-folder/' . $companyName . '/' . $divisionName;
 
-        foreach ($ancestors as $ancestor) {
+        foreach ($ancestors->slice(-2) as $ancestor) {
             $path .= '/' . $ancestor->name;
         }
         $path .= '/' . $folder->name;

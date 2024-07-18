@@ -48,6 +48,7 @@ return new class extends Migration {
 
             $table->tinyInteger('status')->default('1')->comment('1 = Available, 2 = lend,');
 
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');

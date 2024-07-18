@@ -115,7 +115,7 @@
               </li>
               <li class="nav-item" role="presentation">
                 <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab"
-                  aria-controls="profile" aria-selected="false">Arsip Yang Dipinjam</a>
+                  aria-controls="profile" aria-selected="false">Pengajuan Arsip</a>
               </li>
             </ul>
           </div>
@@ -298,7 +298,7 @@
                   <div class="col-12">
                     <div class="card">
                       <div class="card-header">
-                        <h4 class="card-title">List Arsip Yang Dipinjam</h4>
+                        <h4 class="card-title">List Pengajuan Arsip</h4>
                       </div>
                       <div class="card-body">
 

@@ -7,13 +7,11 @@
       <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
           <h3>Folder Divisi</h3>
-          {{-- <p class="text-subtitle text-muted">List all data from the Folder Division.</p> --}}
         </div>
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
-              {{-- <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li> --}}
               <li class="breadcrumb-item active" aria-current="page">Folder Divisi</li>
             </ol>
           </nav>
@@ -107,10 +105,15 @@
         <div class="col-6 col-lg-3 col-md-6">
           <div class="card">
             @canany(['admin', 'super_admin'])
-              <div class="container">
+              <div class="container d-flex justify-content-between">
                 <a href="#" onclick="showSweetAlert({{ $folder->id }})">
                   <i class="bi bi-x"></i>
                 </a>
+
+                <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $folder->id }}" class="ms-auto"
+                  title="Edit"> <i class="bi bi-three-dots"></i></a>
+                @include('pages.transaction-archive.folder-division.edit')
+
                 <form id="deleteForm_{{ $folder->id }}" action="{{ route('folder.destroy', $folder->id) }}" method="POST"
                   style="display:inline;">
                   @csrf
@@ -120,11 +123,11 @@
             @endcanany
             <a href="{{ route('folder.show', $folder->id ?? $folders->id) }}">
               <div class="card-body d-flex align-items-center">
-                <div class="stats-icon red me-2"> <!-- Added margin to the right -->
+                <div class="stats-icon red me-2 col-1"> <!-- Added margin to the right -->
                   <i class="ri-folder-6-line"></i>
                 </div>
                 <div class="folder-name">
-                  <h6 class="text-muted font-semibold">
+                  <h6 class="text-muted font-semibold" style="font-size: 80%">
                     {{ $folder->name ?? $folders->name }}
                   </h6>
                 </div>
@@ -168,15 +171,19 @@
                 <tr>
                   <td class="text-center">{{ $loop->iteration }}</td>
                   <td class="text-center">{{ $file->number ?? 'N/A' }}</td>
-                  <td class="text-center">{{ $file->date ?? 'N/A' }}</td>
+                  <td class="text-center">{{ Carbon\Carbon::parse($file->date)->translatedFormat('l, d F Y') ?? 'N/A' }}
+                  </td>
                   <td class="text-center">{{ $file->description ?? 'N/A' }}</td>
                   <td class="text-center">
-                    @forelse ($file->folder->ancestors as $ancestor)
+                    @if ($file->folder->ancestors->count() > 3)
+                      .../
+                    @endif
+                    @forelse ($file->folder->ancestors->slice(-3) as $ancestor)
                       <small>{{ $ancestor->name }}</small> /
                     @empty
                     @endforelse
                     <strong>
-                      {{ $file->folder->name }}
+                      <a href="{{ route('folder.show', $file->folder->id) }}">{{ $file->folder->name }}</a>
                     </strong>
                   </td>
                   <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
@@ -252,25 +259,10 @@
 @endsection
 @push('after-script')
   <script>
-    // function buttonSweet() {
-    //   Swal.fire({
-    //     title: 'Are you sure?',
-    //     text: 'You won\'t be able to revert this!',
-    //     icon: 'warning',
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Yes!'
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       // If the user clicks "Yes, delete it!", submit the corresponding form
-    //       document.getElementById('myForm').submit();
-    //     }
-    //   });
-    // }
-
     function showSweetAlert(folderId) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'Jika menghapus folder semua data didalam akan terhapus!',
+        html: 'Jika menghapus folder, semua data di dalamnya akan terhapus!<br><small class="text-danger">Pastikan folder kosong sebelum dihapus!</small>',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!'

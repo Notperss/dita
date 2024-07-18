@@ -2,6 +2,7 @@
 
 namespace App\Models\TransactionArchive\Archive;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
@@ -16,6 +17,7 @@ class ArchiveContainer extends Model
 {
     use HasFactory;
     use LogsActivity;
+    use SoftDeletes;
     /**
      * Get the options for the activity log.
      *
@@ -43,7 +45,6 @@ class ArchiveContainer extends Model
                 'description_active',
                 'description_inactive',
                 'description_retention',
-
 
                 'number_app',
                 'number_catalog',

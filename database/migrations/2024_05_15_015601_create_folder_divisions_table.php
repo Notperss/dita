@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('division_id')->nullable();
             $table->string('name');
             $table->longText('description')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('division_id')->references('id')->on('divisions')->onDelete('cascade');

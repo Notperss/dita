@@ -182,14 +182,21 @@ class ArchiveContainerController extends Controller
                 $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
                 // Get the first 100 characters from the filtered text
-                $first100Chars = substr($filteredText, 0, 100);
+                // $first100Chars = substr($filteredText, 0, 100);
 
                 // Store the filtered text in the 'content_file' column
                 $data['content_file'] = $filteredText;
             }
 
+            $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
+
+            $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
+            $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
+            $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
+
             $file = $files->getClientOriginalName();
-            $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first100Chars . ' )' . '-' . Str::random(5);
+            // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first100Chars . ' )' . '-' . Str::random(5);
+            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . $regarding . '_' . Str::random(3);
             $extension = $files->getClientOriginalExtension();
             $fullname = $basename . '.' . $extension;
 
@@ -323,8 +330,7 @@ class ArchiveContainerController extends Controller
 
             if ($files->getClientOriginalExtension() == 'pdf') {
 
-                // Microsoft
-
+                // // Microsoft
                 // // Specify the path to pdftotext executable
                 // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
@@ -333,8 +339,7 @@ class ArchiveContainerController extends Controller
                 //     ->setPdf($files->getRealPath())
                 //     ->text();
 
-                //Linux
-
+                // Linux
                 $text = (new Pdf())
                     ->setPdf($files->getRealPath())
                     ->text();
@@ -343,15 +348,21 @@ class ArchiveContainerController extends Controller
                 $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
                 // Get the first 100 characters from the filtered text
-                $first200Chars = substr($filteredText, 0, 180);
+                // $first200Chars = substr($filteredText, 0, 180);
 
                 // Store the filtered text in the 'content_file' column
                 $data['content_file'] = $filteredText;
             }
+            $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
+
+            $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
+            $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
+            $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
 
             $file = $files->getClientOriginalName();
-            $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
+            // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
             $extension = $files->getClientOriginalExtension();
+            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . $regarding . '_' . Str::random(3);
             $fullname = $basename . '.' . $extension;
 
             // Store the file in the specified directory
@@ -394,7 +405,7 @@ class ArchiveContainerController extends Controller
             Storage::delete($path_file);
         }
         // hapus location
-        $archiveContainer->forceDelete();
+        $archiveContainer->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

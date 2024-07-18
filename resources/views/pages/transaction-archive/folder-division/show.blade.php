@@ -7,18 +7,17 @@
       <div class="row">
         <div class="col-12 col-md-6 order-md-1 order-last">
           <h3>{{ $folders->name }}</h3>
-          {{-- <p class="text-subtitle text-muted">List all data from {{ $folders->name }}.</p> --}}
+          <p class="text-subtitle text-muted">{{ $folders->description }}</p>
         </div>
         <div class="col-12 col-md-6 order-md-2 order-first">
           <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-            {{-- <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
-              <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}">Dashboard</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Folder Divisi</li>
-            </ol> --}}
-            <ol class="breadcrumb">
+            <ol class="breadcrumb" style="font-size: 80%">
               <li class="breadcrumb-item"><a href="{{ route('folder.index') }}">Home</a></li>
-              @foreach ($ancestors as $ancestor)
+              @if ($ancestors->count() > 3)
+                <li class="breadcrumb-item">...</li> <!-- Menampilkan ellipsis jika ada lebih dari 3 ancestor -->
+              @endif
+              @foreach ($ancestors->slice(-3) as $ancestor)
+                <!-- Menampilkan 3 ancestor terakhir -->
                 <li class="breadcrumb-item"><a href="{{ route('folder.show', $ancestor->id) }}">{{ $ancestor->name }}</a>
                 </li>
               @endforeach
@@ -41,10 +40,14 @@
         <div class="col-6 col-lg-3 col-md-6">
           <div class="card">
             @canany(['admin', 'super_admin'])
-              <div class="container">
+              <div class="container d-flex justify-content-between">
                 <a href="#" onclick="deleteFolder({{ $descendant->id }})">
                   <i class="bi bi-x"></i>
                 </a>
+
+                <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $descendant->id }}" class="ms-auto"
+                  title="Edit"> <i class="bi bi-three-dots"></i></a>
+                @include('pages.transaction-archive.folder-division.edit-descendants')
                 <form id="deleteForm_{{ $descendant->id }}" action="{{ route('folder.destroy', $descendant->id) }}"
                   method="POST" style="display:inline;">
                   @csrf
@@ -54,7 +57,7 @@
             @endcanany
             <a href="{{ route('folder.show', $descendant->id ?? $descendants->id) }}">
               <div class="card-body d-flex align-items-center">
-                <div class="stats-icon red me-2"> <!-- Added margin to the right -->
+                <div class="stats-icon red me-2 col-1"> <!-- Added margin to the right -->
                   <i class="ri-folder-6-line"></i>
                 </div>
                 <div class="folder-name">
@@ -218,7 +221,7 @@
     function deleteFolder(folderId) {
       Swal.fire({
         title: 'Are you sure?',
-        text: 'Jika menghapus folder semua data didalam akan terhapus!',
+        html: 'Jika menghapus folder, semua data di dalamnya akan terhapus!<br><small class="text-danger">Pastikan folder kosong sebelum dihapus!</small>',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!'
