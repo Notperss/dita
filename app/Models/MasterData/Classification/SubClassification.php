@@ -5,6 +5,7 @@ namespace App\Models\MasterData\Classification;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use App\Models\MasterData\Retention\RetentionArchives;
+use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SubClassification extends Model
@@ -35,9 +36,9 @@ class SubClassification extends Model
         return $this->belongsTo(MainClassification::class, 'main_classification_id');
     }
 
-    public function retention()
+    public function archiveContainers()
     {
         // 2 parameter (path model, field foreign key)
-        return $this->hasMany(RetentionArchives::class, 'sub_classification_id', 'id');
+        return $this->hasMany(ArchiveContainer::class, 'sub_classification_id', 'id');
     }
 }

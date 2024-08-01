@@ -46,8 +46,7 @@
                           <option value="{{ $mainClassification->id }}"
                             {{ $subClassifications->main_classification_id == $mainClassification->id ? 'selected' : '' }}>
                             ({{ $mainClassification->division->code }})
-                            .
-                            -{{ $mainClassification->name }}</option>
+                            - {{ $mainClassification->name }}</option>
                         @endforeach
                       </select>
                       @if ($errors->has('sub_classification_id'))
@@ -110,7 +109,8 @@
                         </option>
                         <option value="10" {{ $subClassifications->period_active == 10 ? 'selected' : '' }}>10 Tahun
                         </option>
-                        <option value="PERMANEN">Permanen</option>
+                        <option value="PERMANEN"
+                          {{ $subClassifications->period_active == 'PERMANEN' ? 'selected' : '' }}>Permanen</option>
                       </select>
                       @if ($errors->has('period_active'))
                         <p style="font-style: bold; color: red;">
@@ -119,7 +119,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_active">Keterangan Aktif</label>
-                      <textarea type="text" id="description_active" class="form-control" name="description_active"> {{ $subClassifications->description_active }} </textarea>
+                      <textarea type="text" id="description_active" class="form-control" rows="1" name="description_active"> {{ $subClassifications->description_active }} </textarea>
                       @if ($errors->has('description_active'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_active') }}</p>
@@ -145,7 +145,8 @@
                         <option value="10" {{ $subClassifications->period_inactive == 10 ? 'selected' : '' }}>10
                           Tahun
                         </option>
-                        <option value="PERMANEN">Permanen</option>
+                        <option value="PERMANEN"
+                          {{ $subClassifications->period_inactive == 'PERMANEN' ? 'selected' : '' }}>Permanen</option>
                       </select>
                       @if ($errors->has('period_inactive'))
                         <p style="font-style: bold; color: red;">
@@ -154,7 +155,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_inactive">Keterangan Inaktif</label>
-                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive">{{ $subClassifications->description_inactive }} </textarea>
+                      <textarea type="text" id="description_inactive" class="form-control" rows="1" name="description_inactive">{{ $subClassifications->description_inactive }} </textarea>
                       @if ($errors->has('description_inactive'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_inactive') }}</p>

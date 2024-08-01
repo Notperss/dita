@@ -260,26 +260,26 @@
     });
   </script>
   <script>
-    function upload() {
-      $.ajaxSetup({
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-      });
+    // function upload() {
+    //   $.ajaxSetup({
+    //     headers: {
+    //       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //     }
+    //   });
 
-      $.ajax({
-        type: "get",
-        url: "{{ route('form_upload') }}",
-        dataType: "json",
-        success: function(response) {
-          $('.viewmodal').html(response.data).show();
-          $('#modalupload').modal('show');
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-          alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
-        }
-      });
-    }
+    //   $.ajax({
+    //     type: "get",
+    //     url: "{{ route('form_upload') }}",
+    //     dataType: "json",
+    //     success: function(response) {
+    //       $('.viewmodal').html(response.data).show();
+    //       $('#modalupload').modal('show');
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError) {
+    //       alert(xhr.status + "\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    // }
 
     jQuery(document).ready(function($) {
       console.log('Document is ready');

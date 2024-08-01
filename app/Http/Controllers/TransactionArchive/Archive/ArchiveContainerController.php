@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\TransactionArchive\Archive;
 
+use DateTime;
 use Spatie\PdfToText\Pdf;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Models\ArchiveContainerLog;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +43,7 @@ class ArchiveContainerController extends Controller
             if (Gate::allows('super_admin')) {
                 $archiveContainers = ArchiveContainer::with('division')->where('status', 1)->orderBy('created_at', 'desc');
             } else {
-                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->where('status', 1)->with('division')->orderBy('created_at', 'desc');
+                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->where('status', 1)->with('division', 'subClassification')->orderBy('created_at', 'desc');
             }
 
             return DataTables::of($archiveContainers)
@@ -75,8 +77,10 @@ class ArchiveContainerController extends Controller
                     ' . method_field('delete') . csrf_field() . '
                   </form>
                 ';
+                })->editColumn('number_document', function ($item) {
+                    return $item->subClassification->name;
                 })
-                ->rawColumns(['action',])
+                ->rawColumns(['action', 'number_document'])
                 ->toJson();
         }
         // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
@@ -125,8 +129,6 @@ class ArchiveContainerController extends Controller
             'archive_in' => 'required|date',
 
             'number_app' => 'required|string|unique:archive_containers',
-            // 'number_catalog' => 'required|string',
-            // 'number_document' => 'required|string',
             'number_container' => 'required|string',
             'year' => 'required|string',
 
@@ -143,10 +145,7 @@ class ArchiveContainerController extends Controller
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
             'unique' => 'Data :attribute sudah ada.',
         ]);
-        // dd($request->all());
 
-        // dd([
-        //     "inactive" => $request->expiration_inactive, "active" => $request->expiration_active]);
         // Retrieve form data
         $data = $request->all();
 
@@ -165,28 +164,29 @@ class ArchiveContainerController extends Controller
         if ($request->hasFile('file')) {
             $files = $request->file('file');
 
-            if ($files->getClientOriginalExtension() == 'pdf') {
-                // Specify the path to pdftotext executable
+            //PDF TO TEXT
+            // if ($files->getClientOriginalExtension() == 'pdf') {
+            //     // Specify the path to pdftotext executable
 
-                // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
-                // // Use spatie/pdf-to-text to extract text from the PDF
-                // $text = (new Pdf($pdftotextPath))
-                //     ->setPdf($files->getRealPath())
-                //     ->text();
+            //     $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+            //     // Use spatie/pdf-to-text to extract text from the PDF
+            //     $text = (new Pdf($pdftotextPath))
+            //         ->setPdf($files->getRealPath())
+            //         ->text();
 
-                $text = (new Pdf())
-                    ->setPdf($files->getRealPath())
-                    ->text();
+            //     // $text = (new Pdf())
+            //     //     ->setPdf($files->getRealPath())
+            //     //     ->text();
 
-                // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-                $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+            //     // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
+            //     $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
-                // Get the first 100 characters from the filtered text
-                // $first100Chars = substr($filteredText, 0, 100);
+            //     // Get the first 100 characters from the filtered text
+            //     // $first100Chars = substr($filteredText, 0, 100);
 
-                // Store the filtered text in the 'content_file' column
-                $data['content_file'] = $filteredText;
-            }
+            //     // Store the filtered text in the 'content_file' column
+            //     $data['content_file'] = $filteredText;
+            // }
 
             $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
 
@@ -200,8 +200,15 @@ class ArchiveContainerController extends Controller
             $extension = $files->getClientOriginalExtension();
             $fullname = $basename . '.' . $extension;
 
+            // Check if the disk root directory exists
+            $disk_root = config('filesystems.disks.d_drive.root');
+            if (! file_exists($disk_root) || ! is_dir($disk_root)) {
+                alert()->error('Error', 'Disk or path not found.');
+                return redirect()->back()->withInput();
+            }
+
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname);
+            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'd_drive');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -209,8 +216,37 @@ class ArchiveContainerController extends Controller
                 return redirect()->back()->withInput();
             }
         }
+
         $company_id = Auth::user()->company_id;
 
+        if (isset($data['masa_aktif']) && is_numeric($data['masa_aktif'])) {
+            // Add a specific number of years to the current date if dateArchive does not exist
+            $years_to_add = $data['masa_aktif']; // Example: Number of years to add
+            $current_date = new DateTime(); // Current date
+            $current_date->modify("+$years_to_add year"); // Modify the date
+            $future_date_active = $current_date->format('Y-m-d'); // Format the date
+            // Set the default value
+            $data['expiration_active'] = $future_date_active;
+        } else {
+            // Set expiration_active to 'permanent'
+            $data['expiration_active'] = 'PERMANEN';
+        }
+
+        if (isset($data['masa_inaktif']) && is_numeric($data['masa_inaktif'])) {
+            // Add a specific number of years to the active period date
+            $years_to_add = $data['masa_inaktif']; // Example: Number of years to add
+            // $active_date = new DateTime($data['expiration_active']); // Use the active period date
+            $active_date = new DateTime($data['expiration_active']); // Use the active period date
+            $active_date->modify("+$years_to_add year"); // Modify the date
+            $future_date_inactive = $active_date->format('Y-m-d'); // Format the date
+            // dd($future_date_inactive);
+
+            // Set the default value
+            $data['expiration_inactive'] = $future_date_inactive;
+        } else {
+            // Set expiration_active to 'permanent'
+            $data['expiration_inactive'] = 'PERMANEN';
+        }
         // Merge the company_id into the request data
         $requestData = array_merge($data, ['company_id' => $company_id]);
         // Store to database
@@ -307,7 +343,7 @@ class ArchiveContainerController extends Controller
             'mimes' => 'File :attribute harus berformat PDF.',
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
         ]);
-        // dd($request->all());
+        dd($request->all());
 
         // Retrieve form data
         $data = $request->all();
@@ -328,31 +364,35 @@ class ArchiveContainerController extends Controller
         if ($request->hasFile('file')) {
             $files = $request->file('file');
 
-            if ($files->getClientOriginalExtension() == 'pdf') {
 
-                // // Microsoft
-                // // Specify the path to pdftotext executable
-                // $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
+            //PDF TO TEXT
+            // if ($files->getClientOriginalExtension() == 'pdf') {
 
-                // // Use spatie/pdf-to-text to extract text from the PDF
-                // $text = (new Pdf($pdftotextPath))
-                //     ->setPdf($files->getRealPath())
-                //     ->text();
+            //     // Microsoft
+            //     // Specify the path to pdftotext executable
+            //     $pdftotextPath = 'C:\Program Files\Git\mingw64\bin\pdftotext.exe';
 
-                // Linux
-                $text = (new Pdf())
-                    ->setPdf($files->getRealPath())
-                    ->text();
+            //     // Use spatie/pdf-to-text to extract text from the PDF
+            //     $text = (new Pdf($pdftotextPath))
+            //         ->setPdf($files->getRealPath())
+            //         ->text();
 
-                // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
-                $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
+            //     // // Linux
+            //     // $text = (new Pdf())
+            //     //     ->setPdf($files->getRealPath())
+            //     //     ->text();
 
-                // Get the first 100 characters from the filtered text
-                // $first200Chars = substr($filteredText, 0, 180);
+            //     // Filter out non-alphabetic characters, spaces, commas, dots, slashes, equal sign, parentheses, and numbers from the extracted text
+            //     $filteredText = preg_replace("/[^a-zA-Z0-9 ]/", "", $text);
 
-                // Store the filtered text in the 'content_file' column
-                $data['content_file'] = $filteredText;
-            }
+            //     // Get the first 100 characters from the filtered text
+            //     // $first200Chars = substr($filteredText, 0, 180);
+
+            //     // Store the filtered text in the 'content_file' column
+            //     $data['content_file'] = $filteredText;
+            // }
+
+
             $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
 
             $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
@@ -365,8 +405,15 @@ class ArchiveContainerController extends Controller
             $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . $regarding . '_' . Str::random(3);
             $fullname = $basename . '.' . $extension;
 
+            // Check if the disk root directory exists
+            $disk_root = config('filesystems.disks.d_drive.root');
+            if (! file_exists($disk_root) || ! is_dir($disk_root)) {
+                alert()->error('Error', 'Disk or path not found.');
+                return redirect()->back()->withInput();
+            }
+
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('assets/file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname);
+            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'd_drive');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -376,8 +423,37 @@ class ArchiveContainerController extends Controller
 
             // hapus file
             if ($path_file != null || $path_file != '') {
-                Storage::delete($path_file);
+                Storage::disk('d_drive')->delete($path_file);
             }
+        }
+
+        if (isset($data['masa_aktif']) && is_numeric($data['masa_aktif'])) {
+            // Add a specific number of years to the current date if dateArchive does not exist
+            $years_to_add = $data['masa_aktif']; // Example: Number of years to add
+            $current_date = new DateTime(); // Current date
+            $current_date->modify("+$years_to_add year"); // Modify the date
+            $future_date_active = $current_date->format('Y-m-d'); // Format the date
+            // Set the default value
+            $data['expiration_active'] = $future_date_active;
+        } else {
+            // Set expiration_active to 'permanent'
+            $data['expiration_active'] = 'PERMANEN';
+        }
+
+        if (isset($data['masa_inaktif']) && is_numeric($data['masa_inaktif'])) {
+            // Add a specific number of years to the active period date
+            $years_to_add = $data['masa_inaktif']; // Example: Number of years to add
+            // $active_date = new DateTime($data['expiration_active']); // Use the active period date
+            $active_date = new DateTime($data['expiration_active']); // Use the active period date
+            $active_date->modify("+$years_to_add year"); // Modify the date
+            $future_date_inactive = $active_date->format('Y-m-d'); // Format the date
+            // dd($future_date_inactive);
+
+            // Set the default value
+            $data['expiration_inactive'] = $future_date_inactive;
+        } else {
+            // Set expiration_active to 'permanent'
+            $data['expiration_inactive'] = 'PERMANEN';
         }
 
         $archiveContainer->update($data);
@@ -397,13 +473,13 @@ class ArchiveContainerController extends Controller
         $archiveContainer = ArchiveContainer::find($id);
         // dd($archiveContainer);
 
-        // cari old photo
-        $path_file = $archiveContainer['file'];
+        // // cari old photo
+        // $path_file = $archiveContainer['file'];
 
-        // hapus file
-        if ($path_file != null || $path_file != '') {
-            Storage::delete($path_file);
-        }
+        // // hapus file
+        // if ($path_file != null || $path_file != '') {
+        //     Storage::disk('d_drive')->delete($path_file);
+        // }
         // hapus location
         $archiveContainer->delete();
 
@@ -597,4 +673,103 @@ class ArchiveContainerController extends Controller
         return view('components.qr-code.archive-qr.detail-qr-archive', compact('results'));
     }
 
+    public function deletedArchives()
+    {
+        if (! Gate::allows('super_admin')) {
+            abort(403);
+        }
+        $deletedArchives = ArchiveContainer::onlyTrashed()->get();
+        return view('pages.transaction-archive.archive-container.deleted-archives', compact('deletedArchives'));
+    }
+    public function restoreArchives($id)
+    {
+        if (! Gate::allows('super_admin')) {
+            abort(403);
+        }
+        $deletedArchives = ArchiveContainer::withTrashed()->find($id);
+        if ($deletedArchives) {
+            $deletedArchives->restore();
+            alert()->success('Success', 'Data restored successfully');
+            return back();
+        } else {
+            alert()->error('Error', 'Data not found');
+            return back();
+        }
+    }
+    public function forceDelete($id)
+    {
+        if (! Gate::allows('super_admin')) {
+            abort(403);
+        }
+        // $decryptId = decrypt($id);
+        // $deletedArchives = ArchiveContainer::withTrashed()->find($decryptId);
+        $deletedArchives = ArchiveContainer::withTrashed()->find($id);
+
+        if ($deletedArchives) {
+            $deletedArchives->forceDelete();
+            // Log the force delete action
+            activity('archive')
+                ->performedOn($deletedArchives)
+                ->causedBy(auth()->user())
+                ->log('Force deleted a data archive');
+            alert()->success('Success', 'Data permanently deleted successfully');
+            return back();
+        } else {
+            alert()->error('Error', 'Data not found');
+            return back();
+        }
+    }
+
+    public function viewFile($id)
+    {
+        // Find the archive container or fail
+        $archiveContainer = ArchiveContainer::findOrFail($id);
+
+        // Log the view action
+        ArchiveContainerLog::create([
+            'archive_container_id' => $archiveContainer->id,
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'action' => 'viewed',
+        ]);
+
+        // Define the disk to use
+        $disk = Storage::disk('d_drive');
+
+        // Check if the file exists
+        if (! $disk->exists($archiveContainer->file)) {
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        // Get the file path
+        $filePath = $disk->path($archiveContainer->file);
+
+        // Return the file
+        return response()->file($filePath);
+    }
+
+    public function downloadFile($id)
+    {
+        $archiveContainer = ArchiveContainer::findOrFail($id);
+
+        // Increment downloads
+        // $archiveContainer->increment('downloads');
+
+        // Log the download action
+        ArchiveContainerLog::create([
+            'archive_container_id' => $archiveContainer->id,
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'action' => 'download',
+        ]);
+
+        // Check if the file exists in storage
+        $filePath = Storage::disk('d_drive')->path($archiveContainer->file);
+        if (! Storage::disk('d_drive')->exists($archiveContainer->file)) {
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        // Return the file
+        return response()->file($filePath);
+    }
 }

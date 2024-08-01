@@ -71,24 +71,34 @@
     <table class="table table-bordered">
       <tr>
         <th>Masa Aktif</th>
-        <td>{{ isset($archiveContainers->period_active) ? $archiveContainers->period_active : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->subClassification->period_active) ? $archiveContainers->subClassification->period_active : 'N/A' }}
+          {{ $archiveContainers->subClassification->period_active == 'PERMANEN' ? '' : 'Tahun' }}
+        </td>
       </tr>
       <tr>
         <th>Keterangan Masa Aktif</th>
-        <td>{{ isset($archiveContainers->description_active) ? $archiveContainers->description_active : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->subClassification->description_active) ? $archiveContainers->subClassification->description_active : 'N/A' }}
+        </td>
       </tr>
       <tr>
         <th>Masa Inaktif</th>
-        <td>{{ isset($archiveContainers->period_inactive) ? $archiveContainers->period_inactive : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->subClassification->period_inactive) ? $archiveContainers->subClassification->period_inactive : 'N/A' }}
+          {{ $archiveContainers->subClassification->period_inactive == 'PERMANEN' ? '' : 'Tahun' }}
+        </td>
       </tr>
       <tr>
         <th>Keterangan Masa Inaktif</th>
-        <td>{{ isset($archiveContainers->description_inactive) ? $archiveContainers->description_inactive : 'N/A' }}
+        <td>
+          {{ isset($archiveContainers->subClassification->description_inactive) ? $archiveContainers->subClassification->description_inactive : 'N/A' }}
         </td>
       </tr>
       <tr>
         <th>Keterangan Tambahan</th>
-        <td>{{ isset($archiveContainers->description_retention) ? $archiveContainers->description_retention : 'N/A' }}
+        <td>
+          {{ isset($archiveContainers->subClassification->description) ? $archiveContainers->subClassification->description : 'N/A' }}
         </td>
       </tr>
     </table>
@@ -174,7 +184,7 @@
       {{-- Input Data --}}
       <tr>
         <th scope="col">Tanggal Arsip Masuk</th>
-        <td colspan="3" class="text-center" style="width: 50%;">
+        <td colspan="3" class="text-center h6" style="width: 50%;">
           {{ isset($archiveContainers->archive_in) ? Carbon\Carbon::parse($archiveContainers->archive_in)->translatedFormat('l, d F Y') : 'N/A' }}
         </td>
       </tr>
@@ -217,19 +227,33 @@
       <tr>
         <th scope="col">File Arsip</th>
         <td colspan="3" style="word-break: break-word; width: 50%;">
-          @if ($archiveContainers->file)
-            <a type="button" data-fancy data-src="{{ asset('storage/' . $archiveContainers->file) }}"
-              class="btn btn-info btn-sm text-white">
-              Lihat
-            </a>
+          @if ($archiveContainers->file && Storage::disk('d_drive')->exists($archiveContainers->file))
+            <div class="row">
+              <div class="col-auto">
+                <form action="{{ route('view.file', $archiveContainers->id) }}" method="post" target="_blank">
+                  @csrf
+                  <button type="submit" class="btn btn-info btn-sm text-white">
+                    Lihat
+                  </button>
+                </form>
+                <p>
+                  x{{ DB::table('archive_container_logs')->where('action', 'viewed')->where('archive_container_id', $archiveContainers->id)->count() }}
+                  viewed</p>
+              </div>
 
-            <a type="button" href="{{ asset('storage/' . $archiveContainers->file) }}"
-              class="btn btn-warning btn-sm text-white " download>Unduh</a>
-            <br>
-
+              <div class="col-auto">
+                <a href="{{ route('download.file', $archiveContainers->id) }}"
+                  class="btn btn-warning btn-sm text-white" download>
+                  Unduh
+                </a>
+                <p>
+                  x{{ DB::table('archive_container_logs')->where('action', 'download')->where('archive_container_id', $archiveContainers->id)->count() }}
+                  downloaded</p>
+              </div>
+            </div>
             <p class="mt-1">Latest File : {{ pathinfo($archiveContainers->file, PATHINFO_FILENAME) }}</p>
           @else
-            <p>No File Found.</p>
+            <p class="text-danger h6"><strong>No File Found.</strong></p>
           @endif
         </td>
       </tr>
@@ -237,11 +261,11 @@
   </div>
 </div>
 
-<script>
+{{-- <script>
   Fancybox.bind('[data-fancy]', {
     // infinite: false,
   });
-</script>
+</script> --}}
 <style>
   .table-container {
     display: flex;

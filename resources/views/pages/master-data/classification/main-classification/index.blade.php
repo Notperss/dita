@@ -53,7 +53,7 @@
                   <a href="{{ route('main-classification.edit', $mainClassification->id) }}" class="btn icon btn-primary"
                     title="Edit"><i class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $mainClassification->id }}')"
-                    {{-- @if (DB::table('classification_subs')->where('main_classification_id', $mainClassification->id)->exists()) style="display: none;" @endif> --}}>
+                    @if (DB::table('classification_subs')->where('main_classification_id', $mainClassification->id)->exists()) style="display: none;" @endif>
                     <i class="bi bi-x-lg"></i>
                   </a>
 

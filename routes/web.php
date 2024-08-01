@@ -115,6 +115,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::get('/get-data-container', 'getDataContainer')->name('getDataContainer');
         Route::get('/show-qr-container/{id}', 'showBarcode')->name('showBarcodeContainer');
         Route::get('/archive', 'dataArchive')->name('dataArchive');
+        Route::get('/deleted-archives', 'deletedArchives')->name('deletedArchives');
+        Route::get('/restore-archives/{id}', 'restoreArchives')->name('restoreArchives');
+        Route::delete('/force/{id}', 'forceDelete')->name('forceDelete');
     });
 
 
@@ -173,6 +176,8 @@ Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
 
     Route::resource('activity-log', ActivityLogController::class)->only('index');
 
+    Route::post('view-file/{id}', [ArchiveContainerController::class, 'viewFile'])->name('view.file');
+    Route::get('download-file/{id}', [ArchiveContainerController::class, 'downloadFile'])->name('download.file');
 });
 
 

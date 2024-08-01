@@ -37,244 +37,6 @@
                 @method('PUT')
 
                 <div class="row ">
-
-                  {{-- <div class="col-md-6 col-6">
-                    <div class="form-group">
-                      <label for="number_archive">Nomor Arsip<code>*</code></label>
-                      <input type="text" id="number_archive" name="number_archive"
-                        value="{{ old('number_archive', $archiveContainers->number_archive) }}" class="form-control">
-                      @if ($errors->has('number_archive'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('number_archive') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="archive_in">Tanggal Masuk Arsip<code>*</code></label>
-                      <input type="date" id="archive_in" name="archive_in" class="form-control mb-3 flatpickr-no-time"
-                        placeholder="Select date.." value="{{ old('archive_in', $archiveContainers->archive_in) }}">
-                      @if ($errors->has('archive_in'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('archive_in') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="year">Tahun Arsip<code>*</code></label>
-                      <input type="text" class="form-control" name="year" id="year" data-provide="datepicker"
-                        data-date-format="yyyy" data-date-min-view-mode="2" autocomplete="off"
-                        value="{{ old('year', $archiveContainers->year) }}" readonly required>
-                      @if ($errors->has('year'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('year') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="division_id">Nama Divisi <code>*</code></label>
-                      <select type="text" id="division_id" class="form-control select2" style="width: 100%"
-                        name="division_id" required>
-                        <option value="" disabled selected>Choose</option>
-                        @foreach ($divisions as $division)
-                          <option value="{{ $division->id }}"
-                            {{ $division->id == $archiveContainers->division_id ? 'selected' : '' }}>
-                            {{ $division->name }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('division_id'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('division_id') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="number_container">Nomor Kontainer <code>*</code></label>
-                      <select type="text" id="number_container" class="form-control select2" style="width: 100%"
-                        name="number_container" required>
-                        <option value="" disabled selected>Choose</option>
-                        @foreach ($locationContainers as $locationContainer)
-                          <option value="{{ $locationContainer->number_container }}"
-                            {{ $locationContainer->number_container == $archiveContainers->number_container ? 'selected' : '' }}>
-                            {{ $locationContainer->number_container }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('number_container'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('number_container') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="main-location">Lokasi Utama<code>*</code></label>
-                      <input type="text" id="main_location" name="main_location" class="form-control"
-                        value="{{ old('main_location', $archiveContainers->main_location) }}" readonly>
-                      @if ($errors->has('main_location'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('main_location') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="sub-location">Sub Lokasi<code>*</code></label>
-                      <input type="text" id="sub_location" name="sub_location" class="form-control"
-                        value="{{ old('sub_location', $archiveContainers->sub_location) }}" readonly>
-                      @if ($errors->has('sub_location'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('sub_location') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="detail_location">Detail Lokasi<code>*</code></label>
-                      <input type="text" id="detail_location" name="detail_location" class="form-control"
-                        value="{{ old('detail_location', $archiveContainers->detail_location) }}" readonly>
-                      @if ($errors->has('detail_location'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('detail_location') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="description">Keterangan</label>
-                      <textarea type="text" id="description_location" name="description_location" class="form-control" readonly>  {{ old('description_location', $archiveContainers->description_location) }} </textarea>
-                      @if ($errors->has('description_location'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('description_location') }}</p>
-                      @endif
-                    </div>
-                  </div>
-
-                  <div class="col-md-6 col-6">
-                    <div class="form-group">
-                      <label for="main_classification_id">Klasifikasi Arsip <code>*</code></label>
-                      <select type="text" id="main_classification_id" class="form-control select2"
-                        style="width: 100%" name="main_classification_id" required>
-                        <option value="" disabled selected>Choose</option>
-                        @foreach ($mainClassifications as $classification)
-                          <option value="{{ $classification->id }}"
-                            {{ $classification->id == $archiveContainers->main_classification_id ? 'selected' : '' }}>
-                            {{ $classification->name }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('main_classification_id'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('main_classification_id') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="sub_classificatio_id">Sub Klasifikasi Arsip <code>*</code></label>
-                      <select type="text" id="sub_classification_id" class="form-control select2"
-                        style="width: 100%" name="sub_classification_id" required>
-                        <option value="" disabled selected>Choose</option>
-                        @foreach ($subClassifications as $classification)
-                          <option value="{{ $classification->id }}"
-                            {{ $classification->id == $archiveContainers->sub_classification_id ? 'selected' : '' }}>
-                            {{ $classification->name }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('sub_classification_id'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('sub_classification_id') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="subseries">Sub Series Arsip <code>*</code></label>
-                      <select type="text" id="subseries" class="form-control select2" style="width: 100%"
-                        name="subseries" required>
-                        <option value="" disabled selected>Choose</option>
-                        @foreach ($retentions as $retention)
-                          <option value="{{ $retention->sub_series }}"
-                            {{ $retention->sub_series == $archiveContainers->subseries ? 'selected' : '' }}>
-                            {{ $retention->sub_series }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('subseries'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('subseries') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="retention">Masa Retensi<code>*</code></label>
-                      <input type="text" id="retentions" class="form-control" name="retention"
-                        value="{{ old('retention', $archiveContainers->retention) }}" required readonly>
-                      <input type="text" id="retention" class="form-control" name="expiration_date"
-                        value="{{ old('expiration_date', $archiveContainers->expiration_date) }}" hidden>
-                      @if ($errors->has('retention'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('retention') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="document_type">Bentuk Dokumen<code>*</code></label>
-                      <select type="text" id="document_type" class="form-control" style="width: 100%"
-                        name="document_type" required>
-                        <option value="" disabled selected>Choose</option>
-                        <option value="ASLI" {{ $archiveContainers->document_type = 'ASLI' ? 'selected' : '' }}>Asli
-                        </option>
-                        <option value="COPY"{{ $archiveContainers->document_type = 'COPY' ? 'selected' : '' }}>Copy
-                        </option>
-                      </select>
-                      @if ($errors->has('document_type'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('document_type') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="archive_type">Jenis Arsip<code>*</code></label>
-                      <select type="text" id="archive_type" class="form-control" style="width: 100%"
-                        name="archive_type" required>
-                        <option value="" disabled selected>Choose</option>
-                        <option value="PERUSAHAAN"
-                          {{ $archiveContainers->archive_type = 'PERUSAHAAN' ? 'selected' : '' }}>PERUSAHAAN</option>
-                        <option value="PROYEK" {{ $archiveContainers->archive_type = 'PROYEK' ? 'selected' : '' }}>
-                          PROYEK</option>
-                      </select>
-                      @if ($errors->has('archive_type'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('archive_type') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="amount">Jumlah & Satuan<code>*</code></label>
-                      <input type="text" id="amount" name="amount"
-                        value="{{ old('amount', $archiveContainers->amount) }}" class="form-control">
-                      @if ($errors->has('amount'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('amount') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="division_confirmation">Confirm Divisi<code>*</code></label>
-                      <select type="text" id="division_id_confirmation" name="division_id_confirmation"
-                        style="width: 100%" class="form-control select2">
-                        <option value="" selected disabled>Choose</option>
-                        @foreach ($divisions as $division)
-                          <option value="{{ $division->id }}"
-                            {{ $division->id == $archiveContainers->division_id ? 'selected' : '' }}>
-                            {{ $division->name }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('division_id_confirmation'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('division_id_confirmation') }}
-                        </p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="file">File<code>*</code></label>
-                      <input type="file" id="name" name="file" class="basic-filepond">
-                      @if ($archiveContainers->file)
-                        <p>Latest File
-                          : {{ $fileName }}
-                        </p>
-                        <a type="button" data-fancybox data-src="{{ asset('storage/' . $archiveContainers->file) }}"
-                          class="btn btn-info btn-sm text-white mt-0">
-                          Lihat File
-                        </a>
-                      @else
-                        <p>Latest File
-                          : N/A
-                        </p>
-                      @endif
-                      @if ($errors->has('file'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('file') }}</p>
-                      @endif
-                    </div>
-                  </div> --}}
-
                   <div class="col-md-4 col-4">
                     <h4 class="card-title">Pilih Kontainer</h4>
                     <div class="form-group">
@@ -299,13 +61,12 @@
                       <select type="text" id="number_container" class="form-control select2" style="width: 100%"
                         name="number_container" required>
                         <option value="" disabled selected>Choose</option>
-                        @foreach ($locationContainers as $locationContainer)
-                          <option value="{{ str_pad($archiveContainers->number_container, 3, '0', STR_PAD_LEFT) }}"
-                            {{ $archiveContainers->number_container == $archiveContainers->number_container ? 'selected' : '' }}>
-                            {{-- {{ str_pad($archiveContainers->number_container, 3, '0', STR_PAD_LEFT) }} --}}
-                            {{ str_pad($archiveContainers->number_container, 3, '0', STR_PAD_LEFT) }}
+                        {{-- @foreach ($locationContainers as $locationContainer)
+                          <option value="{{ str_pad($locationContainer->number_container, 3, '0', STR_PAD_LEFT) }}"
+                            {{ $locationContainer->number_container == $archiveContainers->number_container ? 'selected' : '' }}>
+                            {{ str_pad($locationContainer->number_container, 3, '0', STR_PAD_LEFT) }}
                           </option>
-                        @endforeach
+                        @endforeach --}}
                       </select>
                       @if ($errors->has('number_container'))
                         <p style="font-style: bold; color: red;">
@@ -372,43 +133,28 @@
                       <select type="text" id="sub_classification_id" class="form-control select2" style="width: 100%"
                         name="sub_classification_id" required>
                         <option value="" disabled selected>Choose</option>
-                        @foreach ($subClassifications as $classification)
-                          <option value="{{ $classification->id }}"
-                            {{ $classification->id == $archiveContainers->sub_classification_id ? 'selected' : '' }}>
-                            {{ $classification->name }}</option>
-                        @endforeach
+                        {{-- @foreach ($subClassifications as $subClassification)
+                          <option value="{{ $subClassification->id }}"
+                            {{ $subClassification->id == $archiveContainers->sub_classification_id ? 'selected' : '' }}>
+                            {{ $subClassification->name }}</option>
+                        @endforeach --}}
                       </select>
                       @if ($errors->has('sub_classification_id'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('sub_classification_id') }}</p>
                       @endif
                     </div>
-                    {{-- <div class="form-group">
-                      <label for="subseries">Sub Series Arsip <code>*</code></label>
-                      <select type="text" id="subseries" class="form-control select2" style="width: 100%"
-                        name="subseries" required>
-                        <option value="" disabled selected>Choose</option>
-                        @foreach ($retentions as $retention)
-                          <option value="{{ $retention->sub_series }}"
-                            {{ $retention->sub_series == $archiveContainers->subseries ? 'selected' : '' }}>
-                            {{ $retention->sub_series }}</option>
-                        @endforeach
-                      </select>
-                      @if ($errors->has('subseries'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('subseries') }}</p>
-                      @endif
-                    </div> --}}
                   </div>
 
                   <div class="col-md-4 col-4">
                     <h4 class="card-title">Masa Aktif</h4>
                     <div class="form-group">
                       <label for="period_active">Masa Aktif</label>
-                      <input type="text" id="period_actives" class="form-control" name="period_active"
-                        value="{{ old('period_active', $archiveContainers->period_active) }}" required readonly>
-                      <input type="text" id="period_active" class="form-control" name="expiration_active"
-                        value="{{ old('expiration_active', $archiveContainers->expiration_active) }}" hidden>
+                      <input type="text" id="period_actives" class="form-control"
+                        value="{{ old('period_active', $archiveContainers->subClassification->period_active) }} {{ $archiveContainers->subClassification->period_active == 'PERMANEN' ? '' : 'Tahun' }}"
+                        readonly>
+                      <input type="text" id="period_active" class="form-control" name="masa_aktif"
+                        value="{{ $archiveContainers->subClassification->period_active }}" hidden>
                       @if ($errors->has('period_active'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('period_active') }}</p>
@@ -416,7 +162,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_active">keterangan Masa Aktif</label>
-                      <textarea type="text" id="description_active" class="form-control" name="description_active" required readonly>{{ $archiveContainers->description_active }}</textarea>
+                      <textarea type="text" id="description_active" class="form-control"readonly>{{ $archiveContainers->subClassification->description_active }}</textarea>
                       @if ($errors->has('description_active'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_active') }}</p>
@@ -424,10 +170,11 @@
                     </div>
                     <div class="form-group">
                       <label for="period_inactive">Masa Inaktif</label>
-                      <input type="text" id="period_inactives" class="form-control" name="period_inactive"
-                        value="{{ old('period_inactive', $archiveContainers->period_inactive) }}" required readonly>
-                      <input type="text" id="period_inactive" class="form-control" name="expiration_inactive"
-                        value="{{ old('expiration_inactive', $archiveContainers->expiration_inactive) }}" hidden>
+                      <input type="text" id="period_inactives" class="form-control"
+                        value="{{ old('period_inactive', $archiveContainers->subClassification->period_inactive) }} {{ $archiveContainers->subClassification->period_inactive == 'PERMANEN' ? '' : 'Tahun' }}"
+                        readonly>
+                      <input type="text" id="period_inactive" class="form-control" name="masa_inaktif"
+                        value="{{ $archiveContainers->subClassification->period_inactive }}" hidden>
                       @if ($errors->has('period_inactive'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('period_inactive') }}</p>
@@ -435,8 +182,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_inactive">keterangan Masa Inaktif</label>
-                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive" required
-                        readonly>{{ $archiveContainers->description_inactive }}</textarea>
+                      <textarea type="text" id="description_inactive" class="form-control" readonly>{{ $archiveContainers->subClassification->description_inactive }}</textarea>
                       @if ($errors->has('description_inactive'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_inactive') }}</p>
@@ -444,8 +190,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_retention">keterangan Tambahan</label>
-                      <textarea type="text" id="description_retention" class="form-control" name="description_retention" required
-                        readonly>{{ $archiveContainers->description_retention }}</textarea>
+                      <textarea type="text" id="description_retention" class="form-control" readonly>{{ $archiveContainers->subClassification->description }}</textarea>
                       @if ($errors->has('description_retention'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_retention') }}</p>
@@ -735,7 +480,7 @@
   </script>
 
   {{-- location --}}
-  <script>
+  {{-- <script>
     $(document).ready(function() {
       $('.select2').select2({
         theme: 'classic', // Apply the 'classic-dark' theme
@@ -779,9 +524,72 @@
       // Handle change event of number_container
       $('#number_container').on('change', function() {
         var selectedOption = $(this).find(':selected');
+        var mainLocationValue = selectedOption.data('value');
+        $('#main_location').val(mainLocationValue);
+        var subLocationValue = selectedOption.data('value2');
+        $('#sub_location').val(subLocationValue);
+        var detailLocationValue = selectedOption.data('value3');
+        $('#detail_location').val(detailLocationValue);
+        var descriptionLocationValue = selectedOption.data('value4');
+        $('#description_location').val(descriptionLocationValue);
+      });
+    });
+  </script> --}}
 
-        console.log(selectedOption);
+  <script>
+    $(document).ready(function() {
+      // Store the selected number_container ID in a JavaScript variable
+      var selectedNumberContainerId = "{{ $archiveContainers->number_container }}";
 
+      $('.select2').select2({
+        theme: 'classic', // Apply the 'classic-dark' theme
+      });
+
+      $('#division_id').change(function() {
+        var divisionId = $(this).val();
+        if (divisionId) {
+          $.ajax({
+            url: "{{ route('getNumberContainer') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              division_id: divisionId
+            },
+            success: function(data) {
+              $('#number_container').empty();
+              $('#number_container').append('<option value="" selected disabled>Choose</option>');
+
+              $.each(data, function(key, value) {
+                // Using padStart to achieve similar functionality as str_pad
+                let paddedNumber = value.number_container ? value.number_container.toString().padStart(
+                  3, '0') : 'N/A';
+
+                // Check if the option should be selected
+                var selected = (paddedNumber == selectedNumberContainerId) ? ' selected' : '';
+
+                // Append the option to the dropdown
+                $('#number_container').append('<option value="' + paddedNumber + '"' + selected +
+                  ' data-value="' + value.nameMainLocation +
+                  '" data-value2="' + value.nameSubLocation +
+                  '" data-value3="' + value.nameDetailLocation +
+                  '" data-value4="' + value.descriptionLocation + '">' +
+                  paddedNumber + '</option>');
+              });
+
+              // Trigger change event to update other fields based on the selected number_container
+              $('#number_container').trigger('change');
+            }
+          });
+        } else {
+          // Reset and show default option
+          $('#number_container').empty();
+          $('#number_container').append('<option value="" selected disabled>Choose</option>');
+        }
+      });
+
+      // Handle change event of number_container
+      $('#number_container').on('change', function() {
+        var selectedOption = $(this).find(':selected');
         var mainLocationValue = selectedOption.data('value');
         $('#main_location').val(mainLocationValue);
         var subLocationValue = selectedOption.data('value2');
@@ -792,7 +600,8 @@
         $('#description_location').val(descriptionLocationValue);
       });
 
-
+      // Trigger the change event on page load to populate number_container if division is already selected
+      $('#division_id').trigger('change');
     });
   </script>
 
@@ -861,7 +670,7 @@
   </script>
 
   {{-- clasifitcation --}}
-  <script>
+  {{-- <script>
     $(document).ready(function() {
       $('#main_classification_id').change(function() {
         var mainclassificationId = $(this).val();
@@ -901,28 +710,14 @@
       $('#sub_classification_id').on('change', function() {
         var selectedOption = $(this).find(':selected');
 
-        function calculateExpiration(retention) {
-          return (retention !== "PERMANEN") ?
-            new Date(currentDate.getFullYear() + retention, currentDate.getMonth(), currentDate.getDate())
-            .toISOString().split('T')[0] :
-            "PERMANEN";
-        }
-
-        var currentDate = new Date();
-
         var retentionActive = selectedOption.data('value-active');
-        $('#period_active').val(calculateExpiration(retentionActive));
+        $('#period_active').val(retentionActive);
+
+        var retentionInactive = selectedOption.data('value-inactive');
+        $('#period_inactive').val(retentionInactive);
 
         var descriptionActive = selectedOption.data('description-active');
         $('#description_active').val(descriptionActive);
-
-        // var retentionInactive = selectedOption.data('value-inactive');
-        // $('#period_inactive').val(calculateExpiration(retentionInactive));
-
-        var retentionInactive = selectedOption.data('value-inactive');
-        var sum41 = retentionInactive + retentionActive;
-        $('#period_inactive').val(calculateExpiration(sum41));
-
 
         var descriptionInactive = selectedOption.data('description-inactive');
         $('#description_inactive').val(descriptionInactive);
@@ -931,10 +726,12 @@
         $('#description_retention').val(description);
 
         var expiredActive = selectedOption.data('value-active');
-        $('#period_actives').val((expiredActive !== "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
+        $('#period_actives').val((expiredActive !==
+          "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
 
         var expiredInactive = selectedOption.data('value-inactive');
-        $('#period_inactives').val((expiredInactive !== "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
+        $('#period_inactives').val((expiredInactive !==
+          "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
       });
     });
 
@@ -972,6 +769,77 @@
     //     }
     //   });
     // });
+  </script> --}}
+
+  <script>
+    $(document).ready(function() {
+      // Store the selected sub-classification ID in a JavaScript variable
+      var selectedSubClassificationId = "{{ $archiveContainers->sub_classification_id }}";
+
+      // Main classification change event
+      $('#main_classification_id').change(function() {
+        var mainclassificationId = $(this).val();
+        if (mainclassificationId) {
+          $.ajax({
+            url: "{{ route('getSubClassifications') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {
+              main_classification_id: mainclassificationId
+            },
+            success: function(data) {
+              $('#sub_classification_id').empty();
+              $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
+              $.each(data, function(key, value) {
+                // Check if the option should be selected
+                var selected = (value.id == selectedSubClassificationId) ? ' selected' : '';
+                $('#sub_classification_id').append('<option value="' + value.id + '"' + selected +
+                  ' data-value-active="' + value.period_active +
+                  '" data-value-inactive="' + value.period_inactive +
+                  '" data-description-active="' + value.description_active +
+                  '" data-description-inactive="' + value.description_inactive +
+                  '" data-description="' + value.description + '">' + value.name +
+                  '</option>');
+              });
+              // Trigger change event to update other fields based on the selected sub-classification
+              $('#sub_classification_id').trigger('change');
+            }
+          });
+        } else {
+          $('#sub_classification_id').empty();
+          $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
+        }
+      });
+
+      // Sub-classification change event
+      $('#sub_classification_id').on('change', function() {
+        var selectedOption = $(this).find(':selected');
+
+        var retentionActive = selectedOption.data('value-active');
+        $('#period_active').val(retentionActive);
+
+        var retentionInactive = selectedOption.data('value-inactive');
+        $('#period_inactive').val(retentionInactive);
+
+        var descriptionActive = selectedOption.data('description-active');
+        $('#description_active').val(descriptionActive);
+
+        var descriptionInactive = selectedOption.data('description-inactive');
+        $('#description_inactive').val(descriptionInactive);
+
+        var description = selectedOption.data('description');
+        $('#description_retention').val(description);
+
+        var expiredActive = selectedOption.data('value-active');
+        $('#period_actives').val((expiredActive !== "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
+
+        var expiredInactive = selectedOption.data('value-inactive');
+        $('#period_inactives').val((expiredInactive !== "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
+      });
+
+      // Trigger the change event on page load to populate sub-classification if main classification is already selected
+      $('#main_classification_id').trigger('change');
+    });
   </script>
 @endpush
 @push('after-style')

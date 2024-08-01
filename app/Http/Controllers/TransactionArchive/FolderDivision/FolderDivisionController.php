@@ -233,27 +233,33 @@ class FolderDivisionController extends Controller
         $folder = FolderDivision::find($request->id);
 
         $companyName = $auth->company->name ?? 'admin';
-        $divisionName = $auth->division->name ?? 'admin';
+        $divisionCode = $auth->division->code ?? 'admin';
 
         // dd([$divisionName, $companyName]);
 
         $ancestors = $folder->ancestors()->get();
 
-        $path = 'assets/file-folder/' . $companyName . '/' . $divisionName;
+        $path = 'file-folder/' . $companyName . '/' . $divisionCode;
 
-        foreach ($ancestors->slice(-2) as $ancestor) {
-            $path .= '/' . $ancestor->name;
+        foreach ($ancestors as $ancestor) {
+            $path .= '/' . $ancestor->id;
         }
-        $path .= '/' . $folder->name;
+        $path .= '/' . $folder->id;
+
+        $disk_root = config('filesystems.disks.d_drive.root');
+        if (! file_exists($disk_root) || ! is_dir($disk_root)) {
+            alert()->error('Error', 'Disk or path not found.');
+            return redirect()->back()->withInput();
+        }
 
         $files = [];
         if ($request->hasFile('file')) {
             foreach ($request->file('file') as $image) {
                 $file = $image->getClientOriginalName();
-                $basename = pathinfo($file, PATHINFO_FILENAME) . ' - ' . Str::random(5);
+                $basename = pathinfo($file, PATHINFO_FILENAME) . '-' . Str::random(3);
                 $ext = $image->getClientOriginalExtension();
                 $fullname = $basename . '.' . $ext;
-                $storedFile = $image->storeAs($path, $fullname);
+                $storedFile = $image->storeAs($path, $fullname, 'd_drive');
                 $files[] = $storedFile;
             }
         }
@@ -292,8 +298,8 @@ class FolderDivisionController extends Controller
             $newPath = dirname($file) . '/' . $checkedName;
 
             // Rename the file in the storage
-            if (Storage::exists($file)) {
-                Storage::move($file, $newPath);
+            if (Storage::disk('d_drive')->exists($file)) {
+                Storage::disk('d_drive')->move($file, $newPath);
             }
 
             // Update the folderFile record with the new name

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\MasterData\Classification;
 
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\Classification\SubClassification;
+use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\MasterData\Classification\MainClassification;
 
 class SubClassificationController extends Controller
@@ -146,9 +148,100 @@ class SubClassificationController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-
         // get all request from frontsite
         $data = $request->all();
+
+        $archiveContainers = ArchiveContainer::where('sub_classification_id', $subClassification->id)->get();
+
+        $current_date = (new DateTime())->format('Y-m-d');
+
+        // Set the new expiration_active value
+        foreach ($archiveContainers as $archive_active) {
+            if (isset($data['period_active']) && is_numeric($data['period_active'])) {
+                // Ensure $subClassification->period_active is numeric
+                $old_years_to_add_active = (int) $subClassification->period_active; // Convert to integer
+
+                if ($archive_active->expiration_active == "PERMANEN") {
+                    $archive_active->expiration_active = $current_date;
+                    $archive_active->save();
+                    $old_current_date_active = new DateTime($current_date);
+                } else {
+                    $old_current_date_active = new DateTime($archive_active->expiration_active);
+                }
+
+                // Ensure $old_years_to_add_active is numeric before modifying
+                if (is_numeric($old_years_to_add_active)) {
+                    // Subtract old years to get the initial date
+                    $old_current_date_active->modify("-$old_years_to_add_active year"); // Modify the date
+                    $future_date_active = $old_current_date_active->format('Y-m-d'); // Format the date
+
+                    // Calculate the new future date by adding the active period
+                    $new_years_to_add_active = (int) $data['period_active']; // Convert to integer
+                    if (is_numeric($new_years_to_add_active)) {
+                        $current_date_active = new DateTime($future_date_active); // Current date
+                        $current_date_active->modify("+$new_years_to_add_active year"); // Modify the date
+                        $new_future_date_active = $current_date_active->format('Y-m-d'); // Format the date
+
+                        $archive_active->expiration_active = $new_future_date_active;
+                    } else {
+                        // Handle invalid new_years_to_add_active
+                        $archive_active->expiration_active = 'PERMANEN';
+                    }
+                } else {
+                    // Handle invalid old_years_to_add_active
+                    $archive_active->expiration_active = 'PERMANEN';
+                }
+            } else {
+                // Set expiration_active to 'PERMANEN'
+                $archive_active->expiration_active = 'PERMANEN';
+            }
+            // Save the updated archive record
+            $archive_active->save();
+        }
+
+        // Set the new expiration_inactive value
+        foreach ($archiveContainers as $archive_inactive) {
+            if (isset($data['period_inactive']) && is_numeric($data['period_inactive'])) {
+                // Ensure $subClassification->period_inactive and $subClassification->period_active are numeric
+                $old_years_to_add = (int) $subClassification->period_inactive + (int) $subClassification->period_active; // Convert to integer
+
+                if ($archive_inactive->expiration_inactive == "PERMANEN") {
+                    $archive_inactive->expiration_inactive = $current_date;
+                    $archive_inactive->save();
+                    $old_current_date_inactive = new DateTime($current_date);
+                } else {
+                    $old_current_date_inactive = new DateTime($archive_inactive->expiration_inactive);
+                }
+
+                // Ensure $old_years_to_add is numeric before modifying
+                if (is_numeric($old_years_to_add)) {
+                    // Subtract old years to get the initial date
+                    $old_current_date_inactive->modify("-$old_years_to_add year");
+                    $future_date_inactive = $old_current_date_inactive->format('Y-m-d');
+
+                    // Calculate the new future date by adding the active and inactive periods
+                    $years_to_add = (int) $data['period_inactive'] + (int) $data['period_active']; // Convert to integer
+                    if (is_numeric($years_to_add)) {
+                        $current_date_inactive = new DateTime($future_date_inactive);
+                        $current_date_inactive->modify("+$years_to_add year");
+                        $new_future_date_inactive = $current_date_inactive->format('Y-m-d');
+
+                        $archive_inactive->expiration_inactive = $new_future_date_inactive;
+                    } else {
+                        // Handle invalid years_to_add
+                        $archive_inactive->expiration_inactive = 'PERMANEN';
+                    }
+                } else {
+                    // Handle invalid old_years_to_add
+                    $archive_inactive->expiration_inactive = 'PERMANEN';
+                }
+            } else {
+                // Set expiration_inactive to 'PERMANEN' if period_inactive is not provided or not numeric
+                $archive_inactive->expiration_inactive = 'PERMANEN';
+            }
+            // Save the updated archive record
+            $archive_inactive->save();
+        }
 
         $subClassification->update($data);
 

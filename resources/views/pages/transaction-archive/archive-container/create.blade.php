@@ -164,9 +164,8 @@
                     <h4 class="card-title">Masa Retensi</h4>
                     <div class="form-group">
                       <label for="period_active">Masa Aktif</label>
-                      <input type="text" id="period_actives" class="form-control" name="period_active" required
-                        readonly>
-                      <input type="text" id="period_active" class="form-control" name="expiration_active" hidden>
+                      <input type="text" id="period_actives" class="form-control"readonly>
+                      <input type="text" id="period_active" class="form-control" name="masa_aktif" hidden>
                       @if ($errors->has('period_active'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('period_active') }}</p>
@@ -174,7 +173,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_active">keterangan Masa Aktif</label>
-                      <textarea type="text" id="description_active" class="form-control" name="description_active" required readonly></textarea>
+                      <textarea type="text" id="description_active" class="form-control"readonly></textarea>
                       @if ($errors->has('description_active'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_active') }}</p>
@@ -182,10 +181,8 @@
                     </div>
                     <div class="form-group">
                       <label for="period_inactive">Masa Inaktif</label>
-                      <input type="text" id="period_inactives" class="form-control" name="period_inactive" required
-                        readonly>
-                      <input type="text" id="period_inactive" class="form-control" name="expiration_inactive"
-                        hidden>
+                      <input type="text" id="period_inactives" class="form-control"readonly>
+                      <input type="text" id="period_inactive" class="form-control" name="masa_inaktif" hidden>
                       @if ($errors->has('period_inactive'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('period_inactive') }}</p>
@@ -193,8 +190,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_inactive">Keterangan Masa Inaktif</label>
-                      <textarea type="text" id="description_inactive" class="form-control" name="description_inactive" required
-                        readonly></textarea>
+                      <textarea type="text" id="description_inactive" class="form-control"readonly></textarea>
                       @if ($errors->has('description_inactive'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_inactive') }}</p>
@@ -202,8 +198,7 @@
                     </div>
                     <div class="form-group">
                       <label for="description_retention">Keterangan Tambahan</label>
-                      <textarea type="text" id="description_retention" class="form-control" name="description_retention" required
-                        readonly></textarea>
+                      <textarea type="text" id="description_retention" class="form-control"readonly></textarea>
                       @if ($errors->has('description_retention'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('description_retention') }}</p>
@@ -764,31 +759,17 @@
       $('#sub_classification_id').on('change', function() {
         var selectedOption = $(this).find(':selected');
 
-        function calculateExpiration(retention) {
-          return (retention !== "PERMANEN") ?
-            new Date(currentDate.getFullYear() + retention, currentDate.getMonth(), currentDate.getDate())
-            .toISOString().split('T')[0] :
-            "PERMANEN";
-        }
-
-        var currentDate = new Date();
-
         var retentionActive = selectedOption.data('value-active');
-        $('#period_active').val(calculateExpiration(retentionActive));
+        $('#period_active').val(retentionActive);
+
+        var retentionInactive = selectedOption.data('value-inactive');
+        $('#period_inactive').val(retentionInactive);
 
         var descriptionActive = selectedOption.data('description-active');
         $('#description_active').val(descriptionActive);
 
-        // var retentionInactive = selectedOption.data('value-inactive');
-        // $('#period_inactive').val(calculateExpiration(retentionInactive));
-
-        var retentionInactive = selectedOption.data('value-inactive');
-        var sum41 = retentionInactive + retentionActive;
-        $('#period_inactive').val(calculateExpiration(sum41));
-
         var descriptionInactive = selectedOption.data('description-inactive');
-        $('#description_inactive').val(
-          descriptionInactive);
+        $('#description_inactive').val(descriptionInactive);
 
         var description = selectedOption.data('description');
         $('#description_retention').val(description);

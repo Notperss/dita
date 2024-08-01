@@ -27,6 +27,9 @@
         <h5 class="card-title">
           <a href="{{ route('archive-container.create') }}" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data</a>
+          @can('super_admin')
+            <a href="{{ route('deletedArchives') }}" class="btn btn-danger">Deleted Archives</a>
+          @endcan
           {{-- <a onclick="upload()" class="btn btn-primary"> <i class="bi bi-plus-lg"></i>
             Add data File</a> --}}
         </h5>

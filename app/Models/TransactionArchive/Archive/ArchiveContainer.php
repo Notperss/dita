@@ -38,13 +38,13 @@ class ArchiveContainer extends Model
                 'main_classification_id',
                 'sub_classification_id',
                 // 'subseries',
-                'period_active',
-                'period_inactive',
+                // 'period_active',
+                // 'period_inactive',
                 'expiration_active', //hidden
                 'expiration_inactive', ///hidden
-                'description_active',
-                'description_inactive',
-                'description_retention',
+                // 'description_active',
+                // 'description_inactive',
+                // 'description_retention',
 
                 'number_app',
                 'number_catalog',
@@ -74,7 +74,7 @@ class ArchiveContainer extends Model
      */
     public function getDescriptionForEvent(string $eventName) : string
     {
-        return "Archive has been {$eventName}";
+        return "{$this->number_app} has been {$eventName}";
     }
     protected $fillable = [
         'division_id',
@@ -113,6 +113,8 @@ class ArchiveContainer extends Model
         'content_file',
         'status',
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function company()
     {

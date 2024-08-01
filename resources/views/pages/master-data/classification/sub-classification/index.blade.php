@@ -39,7 +39,7 @@
               <th class="text-center">Sub Klasifikasi</th>
               <th class="text-center">Kode Sub</th>
               <th class="text-center">Keterangan</th>
-              <th class="text-center">Action</th>
+              <th class="text-center" style="width: 10%">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -55,7 +55,7 @@
                   <a href="{{ route('sub-classification.edit', $subClassification->id) }}" class="btn icon btn-primary"
                     title="Edit"><i class="bi bi-pencil"></i></a>
                   <a class="btn icon btn-danger" title="Delete" onclick="showSweetAlert('{{ $subClassification->id }}')"
-                    {{-- @if (DB::table('departments')->where('subClassification_id', $subClassification->id)->exists()) style="display: none;" @endif --}}>
+                    @if (DB::table('archive_containers')->where('sub_classification_id', $subClassification->id)->exists()) style="display: none;" @endif>
                     <i class="bi bi-x-lg"></i>
                   </a>
 

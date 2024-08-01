@@ -75,10 +75,16 @@ class CompanyController extends Controller
 
         $data = $request->all();
 
+        $disk_root = config('filesystems.disks.d_drive.root');
+        if (! file_exists($disk_root) || ! is_dir($disk_root)) {
+            alert()->error('Error', 'Disk or path not found.');
+            return redirect()->back()->withInput();
+        }
+
         // upload process here
         if ($request->hasFile('logo')) {
             $extension = $data['logo']->getClientOriginalExtension();
-            $data['logo'] = $request->file('logo')->storeAs('assets/logo-company', $data['name'] . '-' . time() . '.' . $extension);
+            $data['logo'] = $request->file('logo')->storeAs('logo-company', $data['name'] . '-' . time() . '.' . $extension, 'd_drive');
         }
 
         // If the validation passes, create the Divisi record
@@ -122,8 +128,6 @@ class CompanyController extends Controller
             'address' => ['required', 'max:255'],
             'description' => ['required', 'max:255'],
 
-
-
             // Add other validation rules as needed
         ], [
             'name.required' => 'Nama Perusahaan harus diisi.',
@@ -149,13 +153,19 @@ class CompanyController extends Controller
         // If the validation passes, create the Divisi record
         $data = $request->all();
 
+        $disk_root = config('filesystems.disks.d_drive.root');
+        if (! file_exists($disk_root) || ! is_dir($disk_root)) {
+            alert()->error('Error', 'Disk or path not found.');
+            return redirect()->back()->withInput();
+        }
+
         // upload icon
         if ($request->hasFile('logo')) {
             $extension = $data['logo']->getClientOriginalExtension();
-            $data['logo'] = $request->file('logo')->storeAs('assets/logo-company', $data['name'] . '-' . time() . '.' . $extension);
+            $data['logo'] = $request->file('logo')->storeAs('logo-company', $data['name'] . '-' . time() . '.' . $extension, 'd_drive');
             // hapus file
             if ($path_icon != null || $path_icon != '') {
-                Storage::delete($path_icon);
+                Storage::disk('d_drive')->delete($path_icon);
             }
         } else {
             $data['logo'] = $path_icon;
@@ -185,12 +195,11 @@ class CompanyController extends Controller
         $path_icon = $company['logo'];
         // hapus icon
         if ($path_icon != null || $path_icon != '') {
-            Storage::delete($path_icon);
+            Storage::disk('d_drive')->delete($path_icon);
         }
 
-
         // Delete
-        $company->forceDelete();
+        $company->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();
