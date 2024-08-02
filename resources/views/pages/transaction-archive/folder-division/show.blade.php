@@ -41,18 +41,41 @@
           <div class="card">
             @canany(['admin', 'super_admin'])
               <div class="container d-flex justify-content-between">
-                <a href="#" onclick="deleteFolder({{ $descendant->id }})">
-                  <i class="bi bi-x"></i>
-                </a>
 
-                <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $descendant->id }}" class="ms-auto"
-                  title="Edit"> <i class="bi bi-three-dots"></i></a>
-                @include('pages.transaction-archive.folder-division.edit-descendants')
-                <form id="deleteForm_{{ $descendant->id }}" action="{{ route('folder.destroy', $descendant->id) }}"
-                  method="POST" style="display:inline;">
-                  @csrf
-                  @method('DELETE')
-                </form>
+                @if ($descendant->is_lock == false)
+                  <a href="#" onclick="deleteFolder({{ $descendant->id }})">
+                    <i class="bi bi-x"></i>
+                  </a>
+
+                  <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $descendant->id }}" class="ms-auto"
+                    title="Edit"> <i class="bi bi-three-dots"></i></a>
+                  @include('pages.transaction-archive.folder-division.edit-descendants')
+                  <form id="deleteForm_{{ $descendant->id }}" action="{{ route('folder.destroy', $descendant->id) }}"
+                    method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                  </form>
+
+                  {{-- @if ($descendant->is_lock == false) --}}
+                  <a href="{{ route('lockFolder', $descendant->id) }}" class="position-absolute"
+                    style="bottom: 10px; right: 10px;" title="Kunci Folder"
+                    onclick="return confirm('Apakah anda yakin mengunci folder?')">
+                    <i class="bi bi-unlock"></i>
+                  </a>
+                @else
+                  @can('super_admin')
+                    <a href="{{ route('lockFolder', $descendant->id) }}" class="position-absolute"
+                      style="bottom: 10px; right: 10px;" title="Buka Folder"
+                      onclick="return confirm('Apakah anda yakin membuka folder?')">
+                      <i class="bi bi-lock"></i>
+                    </a>
+                  @else
+                    <a href="#" class="position-absolute" style="bottom: 10px; right: 10px;" title="Buka Folder"
+                      onclick="alert('Hubungi Administrator untuk membuka kunci!')">
+                      <i class="bi bi-lock"></i>
+                    </a>
+                  @endcan
+                @endif
               </div>
             @endcanany
             <a href="{{ route('folder.show', $descendant->id ?? $descendants->id) }}">
@@ -110,6 +133,7 @@
                   <th class="text-center">Tanggal</th>
                   <th class="text-center">Keterangan</th>
                   <th class="text-center">File</th>
+                  <th class="text-center">Lock</th>
                   <th class="text-center">Action</th>
                 </tr>
               </thead>
@@ -125,38 +149,46 @@
                     <td class="text-center">{{ $file->description ?? 'N/A' }}</td>
                     <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
                         class="btn btn-warning btn-sm text-white " download>Unduh</a>
-                      <p class="mt-1"><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }}</small></p>
+                      <p><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }} </br>
+                          x87 downloaded
+                        </small></p>
                     </td>
                     <td class="text-center">
-                      @php
-                        $fileCreationDate = \Carbon\Carbon::parse($file->created_at);
-                        $now = \Carbon\Carbon::now();
-                        $isOlderThanThreeDays = $fileCreationDate->diffInDays($now) > 3;
-
-                        // $isOlderThanThreeDays = $fileCreationDate->diffInSeconds($now) > 5;
-
-                      @endphp
-                      @canany(['admin', 'super_admin'])
-                        <button onclick="deleteFile({{ $file->id }})" class="btn btn-sm btn-danger">
-                          </i>Delete</button>
-
-                        <form id="deleteFile_{{ $file->id }}" action="{{ route('folder.delete_file', $file->id) }}"
-                          method="POST" style="display:inline;">
-                          @csrf
-                          @method('DELETE')
-                        </form>
-                      @else
-                        @if (!$isOlderThanThreeDays)
-                          <button onclick="deleteFile({{ $file->id }})" class="btn btn-sm btn-danger">
-                            Delete
+                      @if ($file->is_lock)
+                        @can('super_admin')
+                          <a onclick="return confirm('Apakah kamu yakin akan membuka kunci arsip?')"
+                            href="{{ route('lockFolderFile', $file->id) }}" class="btn btn-success btn-sm"
+                            title="Buka File">
+                            <i class="bi bi-lock"></i>
+                          </a>
+                        @else
+                          <button onclick="alert('Hubungi Administrator untuk membuka kunci!')"
+                            class="btn btn-success btn-sm" title="Arsip Terkunci">
+                            <i class="bi bi-lock"></i>
                           </button>
+                        @endcan
+                      @else
+                        <a onclick="return confirm('Apakah kamu yakin akan membuka kunci arsip?')"
+                          href="{{ route('lockFolderFile', $file->id) }}" class="btn btn-danger btn-sm"
+                          title="Kunci File">
+                          <i class="bi bi-unlock"></i>
+                        </a>
+                      @endif
+                    </td>
+                    <td class="text-center">
+                      @canany(['admin', 'super_admin', 'admin_divisi'])
+                        @if ($file->is_lock)
+                          <p class="text-danger h6">Terkunci</p>
+                        @else
+                          <button onclick="deleteFile({{ $file->id }})" class="btn btn-sm btn-danger">
+                            </i>Delete</button>
 
-                          <form id="deleteFile_{{ $file->id }}" action="{{ route('folder.delete_file', $file->id) }}"
-                            method="POST" style="display:inline;">
+                          <form id="deleteFile_{{ $file->id }}"
+                            action="{{ route('folder.delete_file', $file->id) }}" method="POST"
+                            style="display:inline;">
                             @csrf
                             @method('DELETE')
                           </form>
-                          {{-- <p>Time remaining:<br> <small><span id="countdown"></span></small></p> --}}
                         @endif
                       @endcanany
                     </td>

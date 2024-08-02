@@ -18,23 +18,32 @@
       </tr>
       <tr>
         <th>Nomor Kontainer</th>
-        <td>{{ isset($archiveContainers->number_container) ? $archiveContainers->number_container : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->locationContainer->number_container) ? str_pad($archiveContainers->locationContainer->number_container, 3, '0', STR_PAD_LEFT) : 'N/A' }}
+        </td>
       </tr>
       <tr>
         <th>Lokasi Utama</th>
-        <td>{{ isset($archiveContainers->main_location) ? $archiveContainers->main_location : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->locationContainer->mainLocation->name) ? $archiveContainers->locationContainer->mainLocation->name : 'N/A' }}
+        </td>
       </tr>
       <tr>
         <th>Sub Lokasi</th>
-        <td>{{ isset($archiveContainers->sub_location) ? $archiveContainers->sub_location : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->locationContainer->subLocation->name) ? $archiveContainers->locationContainer->subLocation->name : 'N/A' }}
+        </td>
       </tr>
       <tr>
         <th>Detail Lokasi</th>
-        <td>{{ isset($archiveContainers->detail_location) ? $archiveContainers->detail_location : 'N/A' }}</td>
+        <td>
+          {{ isset($archiveContainers->locationContainer->detailLocation->name) ? $archiveContainers->locationContainer->detailLocation->name : 'N/A' }}
+        </td>
       </tr>
       <tr>
         <th>Keterangan</th>
-        <td>{{ isset($archiveContainers->description_location) ? $archiveContainers->description_location : 'N/A' }}
+        <td>
+          {{ isset($archiveContainers->locationContainer->description) ? $archiveContainers->locationContainer->description : 'N/A' }}
         </td>
       </tr>
 

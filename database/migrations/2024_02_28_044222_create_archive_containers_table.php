@@ -24,13 +24,13 @@ return new class extends Migration {
             $table->unsignedBigInteger('main_classification_id');
             $table->unsignedBigInteger('sub_classification_id');
             // $table->string('subseries');
-            $table->string('period_active')->nullable();
-            $table->string('period_inactive')->nullable();
+            // $table->string('period_active')->nullable();
+            // $table->string('period_inactive')->nullable();
             $table->string('expiration_active')->nullable();
             $table->string('expiration_inactive')->nullable();
-            $table->longText('description_active')->nullable();
-            $table->longText('description_inactive')->nullable();
-            $table->longText('description_retention')->nullable();
+            // $table->longText('description_active')->nullable();
+            // $table->longText('description_inactive')->nullable();
+            // $table->longText('description_retention')->nullable();
 
             $table->string('number_app')->nullable();
             $table->string('number_catalog')->nullable();
@@ -46,7 +46,7 @@ return new class extends Migration {
             $table->longText('file')->nullable();
             $table->longText('content_file')->nullable();
 
-            $table->tinyInteger('status')->default('1')->comment('1 = Available, 2 = lend,');
+            $table->tinyInteger('status')->default('1')->comment('1 = Available (unlock data), 2 = lend, 9 = lock data, 10 = destroy');
 
             $table->softDeletes();
             $table->timestamps();

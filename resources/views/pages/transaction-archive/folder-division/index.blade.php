@@ -106,19 +106,41 @@
           <div class="card">
             @canany(['admin', 'super_admin'])
               <div class="container d-flex justify-content-between">
-                <a href="#" onclick="showSweetAlert({{ $folder->id }})">
-                  <i class="bi bi-x"></i>
-                </a>
+                @if ($folder->is_lock == false)
+                  <a href="#" onclick="showSweetAlert({{ $folder->id }})" title="Delete folder">
+                    <i class="bi bi-x"></i>
+                  </a>
 
-                <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $folder->id }}" class="ms-auto"
-                  title="Edit"> <i class="bi bi-three-dots"></i></a>
-                @include('pages.transaction-archive.folder-division.edit')
+                  <a data-bs-toggle="modal" data-bs-target="#modal-form-edit-menu-{{ $folder->id }}" class="ms-auto"
+                    title="Edit folder"> <i class="bi bi-three-dots"></i></a>
+                  @include('pages.transaction-archive.folder-division.edit')
 
-                <form id="deleteForm_{{ $folder->id }}" action="{{ route('folder.destroy', $folder->id) }}" method="POST"
-                  style="display:inline;">
-                  @csrf
-                  @method('DELETE')
-                </form>
+                  <form id="deleteForm_{{ $folder->id }}" action="{{ route('folder.destroy', $folder->id) }}"
+                    method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                  </form>
+
+                  <a href="{{ route('lockFolder', $folder->id) }}" class="position-absolute"
+                    style="bottom: 10px; right: 10px;" title="Kunci Folder"
+                    onclick="return confirm('Apakah anda yakin mengunci folder?')">
+                    <i class="bi bi-unlock"></i>
+                  </a>
+                @else
+                  @can('super_admin')
+                    <a href="{{ route('lockFolder', $folder->id) }}" class="position-absolute"
+                      style="bottom: 10px; right: 10px;" title="Buka Folder"
+                      onclick="return confirm('Apakah anda yakin membuka folder?')">
+                      <i class="bi bi-lock"></i>
+                    </a>
+                  @else
+                    <a href="#" class="position-absolute" style="bottom: 10px; right: 10px;" title="Buka Folder"
+                      onclick="alert('Hubungi Administrator untuk membuka kunci!')">
+                      <i class="bi bi-lock"></i>
+                    </a>
+                  @endcan
+                @endif
+
               </div>
             @endcanany
             <a href="{{ route('folder.show', $folder->id ?? $folders->id) }}">
@@ -162,7 +184,7 @@
                 <th class="text-center">Tanggal</th>
                 <th class="text-center">Keterangan</th>
                 <th class="text-center">Folder</th>
-                <th class="text-center">File</th>
+                {{-- <th class="text-center">File</th> --}}
                 {{-- <th class="text-center">Action</th> --}}
               </tr>
             </thead>
@@ -186,10 +208,10 @@
                       <a href="{{ route('folder.show', $file->folder->id) }}">{{ $file->folder->name }}</a>
                     </strong>
                   </td>
-                  <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
+                  {{-- <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
                       class="btn btn-warning btn-sm text-white " download>Unduh</a>
                     <p class="mt-1"><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }}</small></p>
-                  </td>
+                  </td> --}}
                   {{-- <td class="text-center">Action</td> --}}
                   {{-- <td class="text-center">
                     @foreach ($file->ancestors as $ances)
@@ -221,7 +243,8 @@
               <div class="row">
                 <div class="form-group">
                   <label for="basicInput">Nama Folder <code style="color:red;">*</code></label>
-                  <input type="text" class="form-control" id="basicInput" name="name" placeholder="name" required>
+                  <input type="text" class="form-control" id="basicInput" name="name" placeholder="name"
+                    required>
                 </div>
                 <div class="form-group">
                   <label for="basicInput">Keterangan</label>

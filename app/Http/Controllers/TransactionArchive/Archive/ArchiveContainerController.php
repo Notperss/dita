@@ -41,14 +41,15 @@ class ArchiveContainerController extends Controller
             $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
 
             if (Gate::allows('super_admin')) {
-                $archiveContainers = ArchiveContainer::with('division')->where('status', 1)->orderBy('created_at', 'desc');
+                $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
             } else {
-                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->where('status', 1)->with('division', 'subClassification')->orderBy('created_at', 'desc');
+                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division', 'subClassification')->orderBy('created_at', 'desc');
             }
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
+                    $hiddenStatus = $item->status == 9 || $item->status == 10 || $item->is_lock ? 'hidden' : '';
                     return '
              <a href="#mymodal" data-remote="' . route('showBarcodeContainer', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
@@ -66,21 +67,51 @@ class ArchiveContainerController extends Controller
                          <i class="bi bi-eye"></i> Detail
                     </a>
                         <a class="dropdown-item"
-                          href="' . route('archive-container.edit', $item->id) . '"><i class="bi bi-pencil"></i> Edit</a>
-                        <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')"><i class="bi bi-x-lg"></i> Delete</a>
+                          href="' . route('archive-container.edit', $item->id) . '" ' . $hiddenStatus . '><i class="bi bi-pencil"></i> Edit</a>
+                          
+                        <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')" ' . $hiddenStatus . '><i class="bi bi-x-lg"></i> Delete</a>
+
+                         <a class="dropdown-item"
+                          href="' . route('moveArchive', $item->id) . '" ' . $hiddenStatus . '><i class="bi bi-box-seam"></i> Pindah Container</a>
                       </div>
                     </div>
                   </div>
                   <form id="deleteForm_' . $item->id . '"
-                    action="' . route('archive-container.destroy', $item->id) . '"
+                    action="' . route('archive-container.destroy', encrypt($item->id)) . '"
                     method="POST">
                     ' . method_field('delete') . csrf_field() . '
                   </form>
                 ';
-                })->editColumn('number_document', function ($item) {
-                    return $item->subClassification->name;
+                })->editColumn('lock', function ($item) {
+                    if ($item->status == 1) {
+                        if ($item->is_lock) {
+
+                            if (auth()->user()->can('super_admin')) {
+                                return '<a onclick="return confirm(\'Apakah kamu yakin akan membuka kunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-success btn-sm" title="buka kunci">
+                                    <i class="bi bi-lock"></i>
+                                    </a>';
+                            } else {
+                                return '<a onclick="alert(\'Hubungi Administrator untuk membuka kunci!\')" class="btn btn-success btn-sm" title="Arsip Terkunci">
+                                    <i class="bi bi-lock"></i>
+                                    </a>';
+                            }
+                        } else {
+                            return '<a onclick="return confirm(\'Apakah kamu yakin akan mengunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-danger btn-sm" title="Arsip Terbuka">
+                                <i class="bi bi-unlock"></i>
+                                </a>';
+                        }
+
+                    } elseif ($item->status == 10) {
+                        return '<a class="btn btn-danger btn-sm" title="Arsip Musnah">
+                                <i class="bi bi-file-earmark-excel h6"></i></i>
+                                </a>';
+                    } else {
+                        return '<a class="btn btn-secondary btn-sm" title="Arsip Dalam Transaksi">
+                                <i class="bi bi-arrow-repeat"></i>
+                                </a>';
+                    }
                 })
-                ->rawColumns(['action', 'number_document'])
+                ->rawColumns(['action', 'lock'])
                 ->toJson();
         }
         // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
@@ -343,7 +374,7 @@ class ArchiveContainerController extends Controller
             'mimes' => 'File :attribute harus berformat PDF.',
             'confirmed' => 'Konfirmasi :attribute tidak cocok.',
         ]);
-        dd($request->all());
+        // dd($request->all());
 
         // Retrieve form data
         $data = $request->all();
@@ -469,8 +500,8 @@ class ArchiveContainerController extends Controller
     public function destroy($id)
     {
         // deskripsi id
-        // $decrypt_id = decrypt($id);
-        $archiveContainer = ArchiveContainer::find($id);
+        $decrypt_id = decrypt($id);
+        $archiveContainer = ArchiveContainer::find($decrypt_id);
         // dd($archiveContainer);
 
         // // cari old photo
@@ -771,5 +802,70 @@ class ArchiveContainerController extends Controller
 
         // Return the file
         return response()->file($filePath);
+    }
+
+    public function lock($id)
+    {
+        $archiveContainer = ArchiveContainer::find($id);
+        if ($archiveContainer) {
+            if ($archiveContainer->is_lock) {
+                $archiveContainer->is_lock = false;
+                alert()->success('Success', 'Arsip Terbuka!');
+            } else {
+                $archiveContainer->is_lock = true;
+                alert()->success('Success', 'Arsip Terkunci!');
+            }
+        } else {
+            alert()->error('Error', 'Gagal Melakukan Eksekusi!');
+            return redirect()->back();
+        }
+
+        // dd($archiveContainer->is_lock);
+
+        $archiveContainer->save();
+        return redirect()->back();
+    }
+
+    public function moveArchive($id)
+    {
+        $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+
+        $archiveContainers = ArchiveContainer::find($id);
+        $divisions = Division::where('company_id', $company_id)->orderBy('id', 'asc')->get();
+        $locationContainers = ContainerLocation::where('division_id', $archiveContainers->division_id)->orderBy('id', 'asc')->get();
+        $mainClassifications = MainClassification::where('division_id', $archiveContainers->division_id)->orderBy('name', 'asc')->get();
+        $subClassifications = SubClassification::where('main_classification_id', $archiveContainers->main_classification_id)->get();
+
+        $filepath = storage_path($archiveContainers->file);
+        $fileName = basename($filepath);
+        return view('pages.transaction-archive.archive-container.move-document', compact(
+            'archiveContainers',
+            'locationContainers',
+            'divisions',
+            'mainClassifications',
+            'subClassifications',
+            'fileName',
+        ));
+    }
+
+    public function movingArchive($id, Request $request)
+    {
+        $archiveContainer = ArchiveContainer::find($id);
+
+        $container = $request->all();
+
+        if ($container) {
+            // $archiveContainer->number_container = $container;
+            $archiveContainer->update($container);
+            alert()->success('Success', 'Arsip Dipindahkan!');
+        } else {
+            alert()->error('Error', 'Gagal Melakukan Eksekusi!');
+            return redirect()->back();
+        }
+
+        // dd($request->number_container);
+
+        // $archiveContainer->save();
+        return redirect()->back();
     }
 }

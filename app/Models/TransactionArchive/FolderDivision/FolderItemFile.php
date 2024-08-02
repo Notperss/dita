@@ -55,6 +55,7 @@ class FolderItemFile extends Model
         'date',
         'description',
         'file',
+        'is_lock',
     ];
 
     public function company()

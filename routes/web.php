@@ -118,6 +118,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::get('/deleted-archives', 'deletedArchives')->name('deletedArchives');
         Route::get('/restore-archives/{id}', 'restoreArchives')->name('restoreArchives');
         Route::delete('/force/{id}', 'forceDelete')->name('forceDelete');
+        Route::get('/lock/{id}', 'lock')->name('lock');
+        Route::get('/move-archive/{id}', 'moveArchive')->name('moveArchive');
+        Route::put('/moving/{id}', 'movingArchive')->name('movingArchive');
     });
 
 
@@ -152,6 +155,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::post('/folder/form', 'form_upload')->name('folder.form_upload');
         Route::post('/folder/upload', 'upload')->name('folder.upload');
         Route::delete('/folder/{id}/delete_file', 'delete_file')->name('folder.delete_file');
+        Route::get('/lock-folder/{id}', 'lockFolder')->name('lockFolder');
+        Route::get('/lock-folder-file/{id}', 'lockFolderFile')->name('lockFolderFile');
     });
 
 

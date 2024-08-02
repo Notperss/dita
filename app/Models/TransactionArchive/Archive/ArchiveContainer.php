@@ -2,6 +2,7 @@
 
 namespace App\Models\TransactionArchive\Archive;
 
+use App\Models\MasterData\Location\ContainerLocation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
@@ -61,6 +62,7 @@ class ArchiveContainer extends Model
                 'file',
                 // 'content_file',
                 'status',
+                'is_lock',
             ]) // Specify the attributes you want to log
             ->logOnlyDirty() // Log only changed attributes
             ->useLogName('archive'); // Specify the log name
@@ -79,6 +81,7 @@ class ArchiveContainer extends Model
     protected $fillable = [
         'division_id',
         'company_id',
+        'location_container_id',
         'number_container',
         'main_location',
         'sub_location',
@@ -112,6 +115,7 @@ class ArchiveContainer extends Model
         'file',
         'content_file',
         'status',
+        'is_lock',
     ];
 
     protected $dates = ['deleted_at'];
@@ -135,6 +139,11 @@ class ArchiveContainer extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(SubClassification::class, 'sub_classification_id');
+    }
+    public function locationContainer()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->belongsTo(ContainerLocation::class, 'location_container_id');
     }
 
     public function lendingArchive()

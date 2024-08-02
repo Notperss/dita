@@ -44,6 +44,7 @@
               <th class="text-center">Perihal</th>
               <th class="text-center">Divisi</th>
               <th class="text-center">Detail Lokasi</th>
+              <th class="text-center">Lock</th>
               {{-- <th class="text-center">keterangan</th> --}}
               <th class="text-center" style="width: 15%">Action</th>
             </tr>
@@ -123,6 +124,10 @@
           {
             data: 'detail_location',
             name: 'detail_location',
+          },
+          {
+            data: 'lock',
+            name: 'lock',
           },
           {
             data: 'action',

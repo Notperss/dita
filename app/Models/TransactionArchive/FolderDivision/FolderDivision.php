@@ -51,6 +51,7 @@ class FolderDivision extends Model
         'division_id',
         'name',
         'description',
+        'is_lock',
     ];
 
     public function company()

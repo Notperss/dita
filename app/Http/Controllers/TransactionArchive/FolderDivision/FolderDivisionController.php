@@ -91,6 +91,7 @@ class FolderDivisionController extends Controller
             'division_id' => $auth->division_id,
             'name' => $request->name,
             'description' => $request->description,
+            'is_lock' => 0,
         ]);
 
         if ($request->parent && $request->parent !== 'none') {
@@ -321,6 +322,44 @@ class FolderDivisionController extends Controller
         return back();
     }
 
+    public function lockFolder($id)
+    {
+        $folderDivision = FolderDivision::find($id);
+        if ($folderDivision) { // Check if the record exists
+            if ($folderDivision->is_lock) { // Check if is_lock is true
+                $folderDivision->is_lock = false;
+                alert()->success('Success', 'Folder Terbuka!');
+            } else { // Implicit check for is_lock being false
+                $folderDivision->is_lock = true;
+                alert()->success('Success', 'Folder Terkunci!');
+            }
+        } else {
+            alert()->error('Error', 'Gagal Melakukan Eksekusi!');
+            return redirect()->back();
+        }
+        // dd($folderDivision->is_lock);
+        $folderDivision->save();
 
+        return redirect()->back();
+    }
+    public function lockFolderFile($id)
+    {
+        $folderFile = FolderItemFile::find($id);
+        if ($folderFile) { // Check if the record exists
+            if ($folderFile->is_lock) { // Check if is_lock is true
+                $folderFile->is_lock = false;
+                alert()->success('Success', 'File Terbuka!');
+            } else { // Implicit check for is_lock being false
+                $folderFile->is_lock = true;
+                alert()->success('Success', 'File Terkunci!');
+            }
+        } else {
+            alert()->error('Error', 'Gagal Melakukan Eksekusi!');
+            return redirect()->back();
+        }
+        // dd($folderFile->is_lock);
+        $folderFile->save();
 
+        return redirect()->back();
+    }
 }

@@ -58,8 +58,9 @@
                     </div>
                     <div class="form-group">
                       <label for="number_container">Nomor Kontainer <code>*</code></label>
-                      <select type="text" id="number_container" class="form-control select2" style="width: 100%"
-                        name="number_container" required>
+                      <input type="hidden" name="location_container_id" id="location_container_id">
+                      <select type="text" id="number_container" class="form-control" style="width: 100%"
+                        name="number_container" disabled required>
                         <option value="" disabled selected>Choose</option>
                         {{-- @foreach ($locationContainers as $locationContainer)
                           <option value="{{ str_pad($locationContainer->number_container, 3, '0', STR_PAD_LEFT) }}"
@@ -570,6 +571,7 @@
                 // Append the option to the dropdown
                 $('#number_container').append('<option value="' + paddedNumber + '"' + selected +
                   ' data-value="' + value.nameMainLocation +
+                  '" data-id="' + value.id +
                   '" data-value2="' + value.nameSubLocation +
                   '" data-value3="' + value.nameDetailLocation +
                   '" data-value4="' + value.descriptionLocation + '">' +
@@ -590,6 +592,8 @@
       // Handle change event of number_container
       $('#number_container').on('change', function() {
         var selectedOption = $(this).find(':selected');
+        var idContainerValue = selectedOption.data('id');
+        $('#location_container_id').val(idContainerValue);
         var mainLocationValue = selectedOption.data('value');
         $('#main_location').val(mainLocationValue);
         var subLocationValue = selectedOption.data('value2');
