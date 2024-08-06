@@ -115,7 +115,7 @@
               </li>
               <li class="nav-item" role="presentation">
                 <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab"
-                  aria-controls="profile" aria-selected="false">Pengajuan Arsip</a>
+                  aria-controls="profile" aria-selected="false">List Peminjaman Arsip</a>
               </li>
             </ul>
           </div>

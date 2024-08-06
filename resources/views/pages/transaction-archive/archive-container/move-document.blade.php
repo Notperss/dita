@@ -196,15 +196,7 @@
                 <div class="row my-3">
                   <h4 class="card-title text-center">Input Data Arsip</h4>
                   <div class="col-md-4 col-4">
-                    <div class="form-group">
-                      <label for="number_app">Nomor Aplikasi<small>Otomatis</small></label>
-                      <input type="text" id="number_app"
-                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control" readonly>
-                      @if ($errors->has('number_app'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('number_app') }}</p>
-                      @endif
-                    </div>
+
                     <div class="form-group">
                       <label for="number_catalog">Nomor Katalog</label>
                       <input type="text" id="number_catalog"
@@ -235,9 +227,26 @@
                           {{ $errors->first('number_archive') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="regarding">Perihal</label>
+                      <textarea type="text" id="regarding" class="form-control" rows="5" readonly>{{ $archiveContainers->regarding }}</textarea>
+                      @if ($errors->has('regarding'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('regarding') }}</p>
+                      @endif
+                    </div>
                   </div>
 
                   <div class="col-md-4 col-4">
+                    <div class="form-group">
+                      <label for="number_app">Nomor Aplikasi<small>Otomatis</small></label>
+                      <input type="text" id="number_app"
+                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control" readonly>
+                      @if ($errors->has('number_app'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_app') }}</p>
+                      @endif
+                    </div>
                     <div class="form-group">
                       <label for="archive_in">Tanggal Masuk Arsip</label>
                       <input type="date" id="archive_in" class="form-control mb-3 " placeholder="Select date.."
@@ -256,21 +265,19 @@
                           {{ $errors->first('year') }}</p>
                       @endif
                     </div>
+
                     <div class="form-group">
-                      <label for="regarding">Perihal</label>
-                      <textarea type="text" id="regarding" class="form-control" readonly>{{ $archiveContainers->regarding }}</textarea>
-                      @if ($errors->has('regarding'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('regarding') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="tag">keterangan Tag</label>
-                      <textarea type="text" id="tag" class="form-control" readonly>{{ $archiveContainers->tag }}</textarea>
+                      <label for="tag">Tag</label>
+                      <textarea maxlength="200" type="text" id="tag" class="form-control" rows="5" readonly>{{ $archiveContainers->tag }}</textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('tag') }}</p>
                       @endif
+                      <p id="the-count">
+                        <small style="color: red">*Maksimal 200 Character</small>
+                        <small id="current">0</small>
+                        <small id="maximum">/ 200</small>
+                      </p>
                     </div>
                   </div>
 
@@ -368,70 +375,44 @@
     </div>
   </section>
   <!-- // Basic multiple Column Form section end -->
+@endsection
+@push('after-script')
   <script>
     $(document).ready(function() {
-      // Assuming you have a table with the id 'table1'
-      let table = $('#table11');
-      // Add table headers
-      table.append(
-        '<thead><tr><th>Nomor Kontainer</th><th>Nomor Arsip</th><th>Masa Retensi</th><th>Jenis Arsip</th><th>Action</th></tr></thead>'
-      );
+      var tagInput = $('#tag');
+      var current = $('#current');
+      var maximum = $('#maximum');
+      var theCount = $('#the-count');
 
-      $('#number_container').change(function() {
-        var numberId = $(this).val();
-        if (numberId) {
-          $.getJSON("{{ route('getDataContainer') }}", {
-              number_container: numberId
-            })
-            .done(function(data) {
-              // Create table body
-              let tbody = $('<tbody></tbody>');
+      // Function to update character count and styling
+      function updateCharacterCount() {
+        var characterCount = tagInput.val().length;
+        current.text(characterCount);
 
-              $.each(data, function(key, value) {
-
-                let paddedNumber = value.number_container ? value.number_container.toString().padStart(3,
-                  '0') : 'N/A';
-
-                // Create a new row for each item in the data
-                let row = $('<tr></tr>');
-                row.append('<td>' + paddedNumber + '</td>');
-                row.append('<td>' + value.number_archive + '</td>');
-                row.append('<td>' + (value.expiration_date ? value.expiration_date : 'Permanen') +
-                  '</td>');
-                row.append('<td>' + value.archive_type + '</td>');
-                // Add action buttons
-                let editButton = '<button class="btn btn-sm btn-primary" onclick="editRow(' + value.id +
-                  ')">Edit</button>';
-                let deleteButton = '<button class="btn btn-sm btn-danger" onclick="deleteRow(' + value.id +
-                  ')">Delete</button>';
-                let showButton = '<button class="btn btn-sm btn-success" onclick="showRow(' + value.id +
-                  ')">Show</button>';
-
-                row.append('<td>' + editButton + ' ' + deleteButton + ' ' + showButton + '</td>');
-
-                // Append the row to the table body
-                tbody.append(row);
-              });
-
-              // Empty and append the new table body to the table
-              table.find('tbody').remove();
-              table.append(tbody);
-            })
-            .fail(function() {
-              // Handle errors, e.g., show an alert
-              alert('Failed to fetch data');
-            });
-        } else {
-          // Reset and show default option
-          table.find('tbody').remove();
-          table.append('<tbody><tr><td colspan="5">No data available</td></tr></tbody>');
+        if (characterCount < 150) {
+          current.css('color', '#666');
+        } else if (characterCount >= 150 && characterCount < 180) {
+          current.css('color', '#ffA500');
+        } else if (characterCount >= 180 && characterCount < 200) {
+          current.css('color', '#FF0000');
         }
-      });
+
+        if (characterCount >= 200) {
+          maximum.css('color', '#8f0001');
+          current.css('color', '#8f0001');
+          theCount.css('font-weight', 'bold');
+        } else {
+          maximum.css('color', '#666');
+          theCount.css('font-weight', 'normal');
+        }
+      }
+      // Initialize the character count on page load
+      updateCharacterCount();
+      // Update the character count on keyup event
+      tagInput.on('keyup', updateCharacterCount);
     });
   </script>
 
-@endsection
-@push('after-script')
   <script>
     $(document).ready(function() {
       // Function to update the number_app field
@@ -473,63 +454,6 @@
       dateFormat: "Y-m-d",
     });
   </script>
-
-  {{-- location --}}
-  {{-- <script>
-    $(document).ready(function() {
-      $('.select2').select2({
-        theme: 'classic', // Apply the 'classic-dark' theme
-      });
-
-      $('#division_id').change(function() {
-        var divisionId = $(this).val();
-        if (divisionId) {
-          $.ajax({
-            url: "{{ route('getNumberContainer') }}",
-            type: 'GET',
-            dataType: 'json',
-            data: {
-              division_id: divisionId
-            },
-            success: function(data) {
-              $('#number_container').empty();
-              $('#number_container').append('<option value="" selected disabled>Choose</option>');
-
-              $.each(data, function(key, value) {
-                // Using padStart to achieve similar functionality as str_pad
-                let paddedNumber = value.number_container ? value.number_container.toString().padStart(
-                  3, '0') : 'N/A';
-
-                // Append the option to the dropdown
-                $('#number_container').append('<option value="' + paddedNumber + '" data-value="' +
-                  value.nameMainLocation + '" data-value2="' + value.nameSubLocation +
-                  '" data-value3="' + value.nameDetailLocation + '" data-value4="' + value
-                  .descriptionLocation + '">' +
-                  paddedNumber + '</option>');
-              });
-            }
-          });
-        } else {
-          // Reset and show default option
-          $('#number_container').empty();
-          $('#number_container').append('<option value="" selected disabled>Choose</option>');
-        }
-      });
-
-      // Handle change event of number_container
-      $('#number_container').on('change', function() {
-        var selectedOption = $(this).find(':selected');
-        var mainLocationValue = selectedOption.data('value');
-        $('#main_location').val(mainLocationValue);
-        var subLocationValue = selectedOption.data('value2');
-        $('#sub_location').val(subLocationValue);
-        var detailLocationValue = selectedOption.data('value3');
-        $('#detail_location').val(detailLocationValue);
-        var descriptionLocationValue = selectedOption.data('value4');
-        $('#description_location').val(descriptionLocationValue);
-      });
-    });
-  </script> --}}
 
   <script>
     $(document).ready(function() {
@@ -666,179 +590,6 @@
       });
     });
   </script>
-
-  {{-- clasifitcation --}}
-  {{-- <script>
-    $(document).ready(function() {
-      $('#main_classification_id').change(function() {
-        var mainclassificationId = $(this).val();
-        if (mainclassificationId) {
-          $.ajax({
-            url: "{{ route('getSubClassifications') }}",
-            type: 'GET',
-            dataType: 'json',
-            data: {
-              main_classification_id: mainclassificationId
-            },
-            success: function(data) {
-              $('#sub_classification_id').empty();
-              $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
-              $.each(data, function(key, value) {
-                $('#sub_classification_id').append('<option value="' + value.id +
-                  '" data-value-active="' +
-                  value
-                  .period_active + '" data-value-inactive="' + value.period_inactive +
-                  '" data-description-active="' + value.description_active +
-                  '" data-description-inactive="' + value.description_inactive +
-                  '" data-description="' + value.description + '">' + value
-                  .name +
-                  '</option>');
-              });
-              // Manually reset the selected option in the department_id dropdown
-              $('#sub_classification_id').val('').trigger('change');
-            }
-          });
-        } else {
-          $('#sub_classification_id').empty();
-          $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
-        }
-      });
-
-      // Handle change event of number_container
-      $('#sub_classification_id').on('change', function() {
-        var selectedOption = $(this).find(':selected');
-
-        var retentionActive = selectedOption.data('value-active');
-        $('#period_active').val(retentionActive);
-
-        var retentionInactive = selectedOption.data('value-inactive');
-        $('#period_inactive').val(retentionInactive);
-
-        var descriptionActive = selectedOption.data('description-active');
-        $('#description_active').val(descriptionActive);
-
-        var descriptionInactive = selectedOption.data('description-inactive');
-        $('#description_inactive').val(descriptionInactive);
-
-        var description = selectedOption.data('description');
-        $('#description_retention').val(description);
-
-        var expiredActive = selectedOption.data('value-active');
-        $('#period_actives').val((expiredActive !==
-          "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
-
-        var expiredInactive = selectedOption.data('value-inactive');
-        $('#period_inactives').val((expiredInactive !==
-          "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
-      });
-    });
-
-    // $(document).ready(function() {
-    //   $('#sub_classification_id').change(function() {
-    //     var subclassificationId = $(this).val();
-    //     if (subclassificationId) {
-    //       $.ajax({
-    //         url: "{{ route('getSeriesClassifications') }}",
-    //         type: 'GET',
-    //         dataType: 'json',
-    //         data: {
-    //           sub_classification_id: subclassificationId
-    //         },
-    //         success: function(data) {
-    //           $('#subseries').empty();
-    //           $('#subseries').append('<option value="" selected disabled>Choose</option>');
-    //           $.each(data, function(key, value) {
-    //             $('#subseries').append('<option value="' + value.sub_series + '" data-value-active="' +
-    //               value
-    //               .period_active + '" data-value-inactive="' + value.period_inactive +
-    //               '" data-description-active="' + value.description_active +
-    //               '" data-description-inactive="' + value.description_inactive +
-    //               '" data-description="' + value.description + '">' + value
-    //               .sub_series +
-    //               '</option>');
-    //           });
-    //           // Manually reset the selected option in the department dropdown
-    //           $('#subseries').val('').trigger('change');
-    //         }
-    //       });
-    //     } else {
-    //       $('#subseries').empty();
-    //       $('#subseries').append('<option value="" selected disabled>Choose</option>');
-    //     }
-    //   });
-    // });
-  </script> --}}
-
-  {{-- <script>
-    $(document).ready(function() {
-      // Store the selected sub-classification ID in a JavaScript variable
-      var selectedSubClassificationId = "{{ $archiveContainers->sub_classification_id }}";
-
-      // Main classification change event
-      $('#main_classification_id').change(function() {
-        var mainclassificationId = $(this).val();
-        if (mainclassificationId) {
-          $.ajax({
-            url: "{{ route('getSubClassifications') }}",
-            type: 'GET',
-            dataType: 'json',
-            data: {
-              main_classification_id: mainclassificationId
-            },
-            success: function(data) {
-              $('#sub_classification_id').empty();
-              $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
-              $.each(data, function(key, value) {
-                // Check if the option should be selected
-                var selected = (value.id == selectedSubClassificationId) ? ' selected' : '';
-                $('#sub_classification_id').append('<option value="' + value.id + '"' + selected +
-                  ' data-value-active="' + value.period_active +
-                  '" data-value-inactive="' + value.period_inactive +
-                  '" data-description-active="' + value.description_active +
-                  '" data-description-inactive="' + value.description_inactive +
-                  '" data-description="' + value.description + '">' + value.name +
-                  '</option>');
-              });
-              // Trigger change event to update other fields based on the selected sub-classification
-              $('#sub_classification_id').trigger('change');
-            }
-          });
-        } else {
-          $('#sub_classification_id').empty();
-          $('#sub_classification_id').append('<option value="" selected disabled>Choose</option>');
-        }
-      });
-
-      // Sub-classification change event
-      $('#sub_classification_id').on('change', function() {
-        var selectedOption = $(this).find(':selected');
-
-        var retentionActive = selectedOption.data('value-active');
-        $('#period_active').val(retentionActive);
-
-        var retentionInactive = selectedOption.data('value-inactive');
-        $('#period_inactive').val(retentionInactive);
-
-        var descriptionActive = selectedOption.data('description-active');
-        $('#description_active').val(descriptionActive);
-
-        var descriptionInactive = selectedOption.data('description-inactive');
-        $('#description_inactive').val(descriptionInactive);
-
-        var description = selectedOption.data('description');
-        $('#description_retention').val(description);
-
-        var expiredActive = selectedOption.data('value-active');
-        $('#period_actives').val((expiredActive !== "PERMANEN") ? expiredActive + ' tahun' : "PERMANEN");
-
-        var expiredInactive = selectedOption.data('value-inactive');
-        $('#period_inactives').val((expiredInactive !== "PERMANEN") ? expiredInactive + ' tahun' : "PERMANEN");
-      });
-
-      // Trigger the change event on page load to populate sub-classification if main classification is already selected
-      $('#main_classification_id').trigger('change');
-    });
-  </script> --}}
 @endpush
 @push('after-style')
   <style>

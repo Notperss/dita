@@ -36,17 +36,17 @@ return [
             'throw' => false,
         ],
 
-        'd_drive' => [
+        'nas' => [
             'driver' => 'local',
             'root' => env('D_DRIVE_PATH', 'D:/laravel-storage'),
         ],
 
-        'nas' => [
-            'driver' => 'local',
-            'root' => env('NAS_ROOT'),
-            'visibility' => 'public',
-            'throw' => false,
-        ],
+        // 'nas' => [
+        //     'driver' => 'local',
+        //     'root' => env('NAS_ROOT'),
+        //     'visibility' => 'public',
+        //     'throw' => false,
+        // ],
 
         'public' => [
             'driver' => 'local',
@@ -140,7 +140,7 @@ return [
 
 // ```php
 // 'disks' => [
-//     'd_drive' => [
+//     'nas' => [
 //         'driver' => 'local',
 //         'root' => '/mnt/d/laravel-storage',
 //     ],
@@ -167,7 +167,7 @@ return [
 //     {
 //         if ($request->hasFile('file')) {
 //             $file = $request->file('file');
-//             $path = $file->store('uploads', 'd_drive');
+//             $path = $file->store('uploads', 'nas');
 //             return response()->json(['path' => $path], 200);
 //         }
 
@@ -178,8 +178,8 @@ return [
 //     {
 //         $path = 'uploads/' . $filename;
 
-//         if (Storage::disk('d_drive')->exists($path)) {
-//             return response()->download(Storage::disk('d_drive')->path($path));
+//         if (Storage::disk('nas')->exists($path)) {
+//             return response()->download(Storage::disk('nas')->path($path));
 //         }
 
 //         return response()->json(['message' => 'File not found'], 404);
@@ -189,8 +189,8 @@ return [
 //     {
 //         $path = 'uploads/' . $filename;
 
-//         if (Storage::disk('d_drive')->exists($path)) {
-//             Storage::disk('d_drive')->delete($path);
+//         if (Storage::disk('nas')->exists($path)) {
+//             Storage::disk('nas')->delete($path);
 //             return response()->json(['message' => 'File deleted'], 200);
 //         }
 

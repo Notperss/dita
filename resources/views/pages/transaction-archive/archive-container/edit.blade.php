@@ -41,8 +41,8 @@
                     <h4 class="card-title">Pilih Kontainer</h4>
                     <div class="form-group">
                       <label for="division_id">Nama Divisi <code>*</code></label>
-                      <select type="text" id="division_id" class="form-control select2" style="width: 100%"
-                        name="division_id" required>
+                      <input type="hidden" value="{{ $archiveContainers->division_id }}" name="division_id">
+                      <select type="text" id="division_id" class="form-control" style="width: 100%" disabled required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($divisions as $division)
                           <option value="{{ $division->id }}" data-code={{ $division->code }}
@@ -59,8 +59,9 @@
                     <div class="form-group">
                       <label for="number_container">Nomor Kontainer <code>*</code></label>
                       <input type="hidden" name="location_container_id" id="location_container_id">
-                      <select type="text" id="number_container" class="form-control" style="width: 100%"
-                        name="number_container" disabled required>
+                      <input type="hidden" name="number_container" value="{{ $archiveContainers->number_container }}">
+                      <select type="text" id="number_container" class="form-control" style="width: 100%" disabled
+                        required>
                         <option value="" disabled selected>Choose</option>
                         {{-- @foreach ($locationContainers as $locationContainer)
                           <option value="{{ str_pad($locationContainer->number_container, 3, '0', STR_PAD_LEFT) }}"
@@ -131,8 +132,8 @@
                     </div>
                     <div class="form-group">
                       <label for="sub_classificatio_id">Sub Klasifikasi Arsip <code>*</code></label>
-                      <select type="text" id="sub_classification_id" class="form-control select2" style="width: 100%"
-                        name="sub_classification_id" required>
+                      <select type="text" id="sub_classification_id" class="form-control select2"
+                        style="width: 100%" name="sub_classification_id" required>
                         <option value="" disabled selected>Choose</option>
                         {{-- @foreach ($subClassifications as $subClassification)
                           <option value="{{ $subClassification->id }}"
@@ -204,15 +205,6 @@
                   <h4 class="card-title text-center">Input Data Arsip</h4>
                   <div class="col-md-4 col-4">
                     <div class="form-group">
-                      <label for="number_app">Nomor Aplikasi<code>*</code><small>Otomatis</small></label>
-                      <input type="text" id="number_app" name="number_app"
-                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control" readonly>
-                      @if ($errors->has('number_app'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('number_app') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
                       <label for="number_catalog">Nomor Katalog</label>
                       <input type="text" id="number_catalog" name="number_catalog"
                         value="{{ old('number_catalog', $archiveContainers->number_catalog) }}" class="form-control">
@@ -239,9 +231,26 @@
                           {{ $errors->first('number_archive') }}</p>
                       @endif
                     </div>
+                    <div class="form-group">
+                      <label for="regarding">Perihal</label>
+                      <textarea type="text" id="regarding" class="form-control" name="regarding" rows="5">{{ $archiveContainers->regarding }}</textarea>
+                      @if ($errors->has('regarding'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('regarding') }}</p>
+                      @endif
+                    </div>
                   </div>
 
                   <div class="col-md-4 col-4">
+                    <div class="form-group">
+                      <label for="number_app">Nomor Aplikasi<code>*</code><small>Otomatis</small></label>
+                      <input type="text" id="number_app" name="number_app"
+                        value="{{ old('number_app', $archiveContainers->number_app) }}" class="form-control" readonly>
+                      @if ($errors->has('number_app'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('number_app') }}</p>
+                      @endif
+                    </div>
                     <div class="form-group">
                       <label for="archive_in">Tanggal Masuk Arsip<code>*</code></label>
                       <input type="date" id="archive_in" name="archive_in"
@@ -262,21 +271,19 @@
                           {{ $errors->first('year') }}</p>
                       @endif
                     </div>
+
                     <div class="form-group">
-                      <label for="regarding">Perihal</label>
-                      <textarea type="text" id="regarding" class="form-control" name="regarding">{{ $archiveContainers->regarding }}</textarea>
-                      @if ($errors->has('regarding'))
-                        <p style="font-style: bold; color: red;">
-                          {{ $errors->first('regarding') }}</p>
-                      @endif
-                    </div>
-                    <div class="form-group">
-                      <label for="tag">keterangan Tag</label>
-                      <textarea type="text" id="tag" class="form-control" name="tag">{{ $archiveContainers->tag }}</textarea>
+                      <label for="tag">Tag</label>
+                      <textarea maxlength="200" type="text" id="tag" class="form-control" name="tag" rows="5">{{ $archiveContainers->tag }}</textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('tag') }}</p>
                       @endif
+                      <p id="the-count">
+                        <small style="color: red">*Maksimal 200 Character</small>
+                        <small id="current">0</small>
+                        <small id="maximum">/ 200</small>
+                      </p>
                     </div>
                   </div>
 
@@ -465,6 +472,40 @@
 
       // Call the function initially to set the initial value
       updateNumberApp();
+    });
+
+    $(document).ready(function() {
+      var tagInput = $('#tag');
+      var current = $('#current');
+      var maximum = $('#maximum');
+      var theCount = $('#the-count');
+
+      // Function to update character count and styling
+      function updateCharacterCount() {
+        var characterCount = tagInput.val().length;
+        current.text(characterCount);
+
+        if (characterCount < 150) {
+          current.css('color', '#666');
+        } else if (characterCount >= 150 && characterCount < 180) {
+          current.css('color', '#ffA500');
+        } else if (characterCount >= 180 && characterCount < 200) {
+          current.css('color', '#FF0000');
+        }
+
+        if (characterCount >= 200) {
+          maximum.css('color', '#8f0001');
+          current.css('color', '#8f0001');
+          theCount.css('font-weight', 'bold');
+        } else {
+          maximum.css('color', '#666');
+          theCount.css('font-weight', 'normal');
+        }
+      }
+      // Initialize the character count on page load
+      updateCharacterCount();
+      // Update the character count on keyup event
+      tagInput.on('keyup', updateCharacterCount);
     });
   </script>
 

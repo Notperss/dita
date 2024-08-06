@@ -236,27 +236,27 @@
       <tr>
         <th scope="col">File Arsip</th>
         <td colspan="3" style="word-break: break-word; width: 50%;">
-          @if ($archiveContainers->file && Storage::disk('d_drive')->exists($archiveContainers->file))
+          @if ($archiveContainers->file && Storage::disk('nas')->exists($archiveContainers->file))
             <div class="row">
               <div class="col-auto">
-                <form action="{{ route('view.file', $archiveContainers->id) }}" method="post" target="_blank">
+                <form action="{{ route('view.file.archive', $archiveContainers->id) }}" method="post" target="_blank">
                   @csrf
                   <button type="submit" class="btn btn-info btn-sm text-white">
                     Lihat
                   </button>
                 </form>
                 <p>
-                  x{{ DB::table('archive_container_logs')->where('action', 'viewed')->where('archive_container_id', $archiveContainers->id)->count() }}
+                  x{{ DB::table('archive_container_logs')->where('action', 'viewed-archive')->where('archive_container_id', $archiveContainers->id)->count() }}
                   viewed</p>
               </div>
 
               <div class="col-auto">
-                <a href="{{ route('download.file', $archiveContainers->id) }}"
+                <a href="{{ route('download.file.archive', $archiveContainers->id) }}"
                   class="btn btn-warning btn-sm text-white" download>
                   Unduh
                 </a>
                 <p>
-                  x{{ DB::table('archive_container_logs')->where('action', 'download')->where('archive_container_id', $archiveContainers->id)->count() }}
+                  x{{ DB::table('archive_container_logs')->where('action', 'download-archive')->where('archive_container_id', $archiveContainers->id)->count() }}
                   downloaded</p>
               </div>
             </div>
@@ -270,11 +270,104 @@
   </div>
 </div>
 
+<hr>
+
+<div class="table-container">
+  <div class="table-wrapper">
+    <h5>Log Arsip</h5>
+    <div class="table-responsive">
+      <table class="table table-lg" id="table1">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>IP</th>
+            <th>Action</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($archiveLog as $log)
+            <tr>
+              <td class="text-bold-500">{{ $log->user->name }}</td>
+              <td class="text-bold-500">{{ $log->ip_address }}</td>
+              <td>
+                @if ($log->action == 'viewed-archive')
+                  <span>Dilihat</span>
+                @elseif($log->action == 'download-archive')
+                  <span>Didownload</span>
+                @elseif($log->action == 'move-archive')
+                  <span>dipindahkan</span>
+                @else
+                  <span>N/A</span>
+                @endif
+              </td>
+              <td class="text-bold-500">{{ $log->created_at->format('d-M-Y H:i:s') }}</td>
+            </tr>
+            {{-- @empty
+            <tr>
+              <td class="text-bold-500 text-center" colspan="4">No data available in table</td>
+            </tr> --}}
+          @endforeach
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-wrapper">
+    <h5>Log Peminjaman</h5>
+    <div class="table-responsive">
+      <table class="table table-lg" id="table2">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Divisi</th>
+            <th>Nomor Peminjaman</th>
+            <th>Tgl Pinjam</th>
+            {{-- <th>SKILL</th> --}}
+          </tr>
+        </thead>
+        <tbody>
+
+          @foreach ($lendingArchive as $lend)
+            <tr>
+              <td class="text-bold-500">{{ $lend->user->name ?? 'N/A' }}</td>
+              <td class="text-bold-500">{{ $lend->user->division->name ?? 'N/A' }}</td>
+              {{-- <td>
+                @if ($lend->action == 'viewed-archive')
+                  <span>Dilihat</span>
+                @elseif($lend->action == 'download-archive')
+                  <span>Didownload</span>
+                @elseif($lend->action == 'move-archive')
+                  <span>dipindahkan</span>
+                @else
+                  <span>N/A</span>
+                @endif
+              </td> --}}
+              <td class="text-bold-500">{{ $lend->lending->lending_number ?? 'N/A' }}</td>
+              <td class="text-bold-500">{{ $lend->lending->start_date ?? 'N/A' }}</td>
+            </tr>
+            {{-- @empty
+            <tr>
+              <td class="text-bold-500 text-center" colspan="4">No data available in table</td>
+            </tr> --}}
+          @endforeach
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
 {{-- <script>
   Fancybox.bind('[data-fancy]', {
     // infinite: false,
   });
 </script> --}}
+<script>
+  new DataTable('#table1');
+  new DataTable('#table2');
+</script>
 <style>
   .table-container {
     display: flex;

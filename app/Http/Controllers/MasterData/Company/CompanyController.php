@@ -75,7 +75,7 @@ class CompanyController extends Controller
 
         $data = $request->all();
 
-        $disk_root = config('filesystems.disks.d_drive.root');
+        $disk_root = config('filesystems.disks.nas.root');
         if (! file_exists($disk_root) || ! is_dir($disk_root)) {
             alert()->error('Error', 'Disk or path not found.');
             return redirect()->back()->withInput();
@@ -84,7 +84,7 @@ class CompanyController extends Controller
         // upload process here
         if ($request->hasFile('logo')) {
             $extension = $data['logo']->getClientOriginalExtension();
-            $data['logo'] = $request->file('logo')->storeAs('logo-company', $data['name'] . '-' . time() . '.' . $extension, 'd_drive');
+            $data['logo'] = $request->file('logo')->storeAs('logo-company', $data['name'] . '-' . time() . '.' . $extension, 'nas');
         }
 
         // If the validation passes, create the Divisi record
@@ -153,7 +153,7 @@ class CompanyController extends Controller
         // If the validation passes, create the Divisi record
         $data = $request->all();
 
-        $disk_root = config('filesystems.disks.d_drive.root');
+        $disk_root = config('filesystems.disks.nas.root');
         if (! file_exists($disk_root) || ! is_dir($disk_root)) {
             alert()->error('Error', 'Disk or path not found.');
             return redirect()->back()->withInput();
@@ -162,10 +162,10 @@ class CompanyController extends Controller
         // upload icon
         if ($request->hasFile('logo')) {
             $extension = $data['logo']->getClientOriginalExtension();
-            $data['logo'] = $request->file('logo')->storeAs('logo-company', $data['name'] . '-' . time() . '.' . $extension, 'd_drive');
+            $data['logo'] = $request->file('logo')->storeAs('logo-company', $data['name'] . '-' . time() . '.' . $extension, 'nas');
             // hapus file
             if ($path_icon != null || $path_icon != '') {
-                Storage::disk('d_drive')->delete($path_icon);
+                Storage::disk('nas')->delete($path_icon);
             }
         } else {
             $data['logo'] = $path_icon;
@@ -195,7 +195,7 @@ class CompanyController extends Controller
         $path_icon = $company['logo'];
         // hapus icon
         if ($path_icon != null || $path_icon != '') {
-            Storage::disk('d_drive')->delete($path_icon);
+            Storage::disk('nas')->delete($path_icon);
         }
 
         // Delete

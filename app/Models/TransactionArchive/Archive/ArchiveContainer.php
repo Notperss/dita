@@ -2,6 +2,7 @@
 
 namespace App\Models\TransactionArchive\Archive;
 
+use App\Models\ArchiveContainerLog;
 use App\Models\MasterData\Location\ContainerLocation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
@@ -150,6 +151,11 @@ class ArchiveContainer extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->hasMany(LendingArchive::class, 'archive_container_id', 'id');
+    }
+    public function archiveLogs()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->hasMany(ArchiveContainerLog::class, 'archive_container_id', 'id');
     }
 
 }

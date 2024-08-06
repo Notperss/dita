@@ -147,11 +147,18 @@
                     <td class="text-center">{{ $file->number ?? 'N/A' }}</td>
                     <td class="text-center">{{ $file->date ?? 'N/A' }}</td>
                     <td class="text-center">{{ $file->description ?? 'N/A' }}</td>
-                    <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
-                        class="btn btn-warning btn-sm text-white " download>Unduh</a>
-                      <p><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }} </br>
-                          x87 downloaded
-                        </small></p>
+                    <td class="text-center">
+
+                      <div class="col-auto">
+                        <a href="{{ route('download.file.folder', $file->id) }}"
+                          class="btn btn-warning btn-sm text-white" download>
+                          Unduh
+                        </a>
+                        <p><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }}</small></p>
+                        <p>
+                          x{{ DB::table('archive_container_logs')->where('action', 'download-file-folder')->where('folder_file_id', $file->id)->count() }}
+                          downloaded</p>
+                      </div>
                     </td>
                     <td class="text-center">
                       @if ($file->is_lock)

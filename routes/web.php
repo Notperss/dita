@@ -123,6 +123,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::put('/moving/{id}', 'movingArchive')->name('movingArchive');
     });
 
+    route::controller(ActivityLogController::class)->group(function () {
+        Route::post('view-file/{id}', 'viewFileArchive')->name('view.file.archive');
+        Route::get('download-file/{id}', 'downloadFileArchive')->name('download.file.archive');
+        Route::get('download-file-folder/{id}', 'downloadFileFolder')->name('download.file.folder');
+    });
+
 
     //Lending Archive
     Route::resource('lending-archive', LendingArchiveController::class);
@@ -181,8 +187,8 @@ Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
 
     Route::resource('activity-log', ActivityLogController::class)->only('index');
 
-    Route::post('view-file/{id}', [ArchiveContainerController::class, 'viewFile'])->name('view.file');
-    Route::get('download-file/{id}', [ArchiveContainerController::class, 'downloadFile'])->name('download.file');
+    // Route::post('view-file/{id}', [ArchiveContainerController::class, 'viewFile'])->name('view.file');
+    // Route::get('download-file/{id}', [ArchiveContainerController::class, 'downloadFile'])->name('download.file');
 });
 
 

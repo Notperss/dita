@@ -24,6 +24,7 @@ use App\Models\MasterData\Retention\RetentionArchives;
 use App\Models\MasterData\Classification\SubClassification;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\MasterData\Classification\MainClassification;
+use App\Models\TransactionArchive\LendingArchive\LendingArchive;
 
 class ArchiveContainerController extends Controller
 {
@@ -72,7 +73,7 @@ class ArchiveContainerController extends Controller
                         <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')" ' . $hiddenStatus . '><i class="bi bi-x-lg"></i> Delete</a>
 
                          <a class="dropdown-item"
-                          href="' . route('moveArchive', $item->id) . '" ' . $hiddenStatus . '><i class="bi bi-box-seam"></i> Pindah Container</a>
+                          href="' . route('moveArchive', $item->id) . '"><i class="bi bi-box-seam"></i> Pindah Container</a>
                       </div>
                     </div>
                   </div>
@@ -223,23 +224,23 @@ class ArchiveContainerController extends Controller
 
             $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
             $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
-            $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
+            // $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
 
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first100Chars . ' )' . '-' . Str::random(5);
-            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . $regarding . '_' . Str::random(3);
+            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . Str::random(3);
             $extension = $files->getClientOriginalExtension();
             $fullname = $basename . '.' . $extension;
 
             // Check if the disk root directory exists
-            $disk_root = config('filesystems.disks.d_drive.root');
+            $disk_root = config('filesystems.disks.nas.root');
             if (! file_exists($disk_root) || ! is_dir($disk_root)) {
                 alert()->error('Error', 'Disk or path not found.');
                 return redirect()->back()->withInput();
             }
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'd_drive');
+            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'nas');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -295,16 +296,17 @@ class ArchiveContainerController extends Controller
     {
 
         $archiveContainers = ArchiveContainer::find($id);
-
+        $archiveLog = ArchiveContainerLog::where('archive_container_id', $archiveContainers->id)->latest()->get();
+        $lendingArchive = LendingArchive::where('archive_container_id', $archiveContainers->id)->latest()->get();
         $filepath = storage_path($archiveContainers->file);
         $fileName = basename($filepath);
         return view('pages.transaction-archive.archive-container.show',
             compact(
                 'archiveContainers',
                 'fileName',
+                'archiveLog',
+                'lendingArchive',
             ));
-
-
     }
 
 
@@ -360,12 +362,12 @@ class ArchiveContainerController extends Controller
             ],
             // 'number_catalog' => 'required|string',
             // 'number_document' => 'required|string',
-            'number_container' => 'required|string',
+            'number_container' => 'string',
             'year' => 'required|string',
 
             // 'file' => 'required|file|mimes:pdf|max:290',
             'file' => 'file|mimes:pdf',
-            'division_id' => 'required|confirmed',
+            'division_id' => 'confirmed',
         ], [
             'required' => 'Kolom :attribute harus diisi.',
             'string' => 'Kolom :attribute harus berupa teks.',
@@ -428,23 +430,23 @@ class ArchiveContainerController extends Controller
 
             $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
             $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
-            $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
+            // $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
 
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
             $extension = $files->getClientOriginalExtension();
-            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . $regarding . '_' . Str::random(3);
+            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . Str::random(3);
             $fullname = $basename . '.' . $extension;
 
             // Check if the disk root directory exists
-            $disk_root = config('filesystems.disks.d_drive.root');
+            $disk_root = config('filesystems.disks.nas.root');
             if (! file_exists($disk_root) || ! is_dir($disk_root)) {
                 alert()->error('Error', 'Disk or path not found.');
                 return redirect()->back()->withInput();
             }
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'd_drive');
+            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'nas');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -454,7 +456,7 @@ class ArchiveContainerController extends Controller
 
             // hapus file
             if ($path_file != null || $path_file != '') {
-                Storage::disk('d_drive')->delete($path_file);
+                Storage::disk('nas')->delete($path_file);
             }
         }
 
@@ -509,7 +511,7 @@ class ArchiveContainerController extends Controller
 
         // // hapus file
         // if ($path_file != null || $path_file != '') {
-        //     Storage::disk('d_drive')->delete($path_file);
+        //     Storage::disk('nas')->delete($path_file);
         // }
         // hapus location
         $archiveContainer->delete();
@@ -751,58 +753,58 @@ class ArchiveContainerController extends Controller
         }
     }
 
-    public function viewFile($id)
-    {
-        // Find the archive container or fail
-        $archiveContainer = ArchiveContainer::findOrFail($id);
+    // public function viewFile($id)
+    // {
+    //     // Find the archive container or fail
+    //     $archiveContainer = ArchiveContainer::findOrFail($id);
 
-        // Log the view action
-        ArchiveContainerLog::create([
-            'archive_container_id' => $archiveContainer->id,
-            'user_id' => auth()->id(),
-            'ip_address' => request()->ip(),
-            'action' => 'viewed',
-        ]);
+    //     // Log the view action
+    //     ArchiveContainerLog::create([
+    //         'archive_container_id' => $archiveContainer->id,
+    //         'user_id' => auth()->id(),
+    //         'ip_address' => request()->ip(),
+    //         'action' => 'viewed',
+    //     ]);
 
-        // Define the disk to use
-        $disk = Storage::disk('d_drive');
+    //     // Define the disk to use
+    //     $disk = Storage::disk('nas');
 
-        // Check if the file exists
-        if (! $disk->exists($archiveContainer->file)) {
-            return response()->json(['error' => 'File not found.'], 404);
-        }
+    //     // Check if the file exists
+    //     if (! $disk->exists($archiveContainer->file)) {
+    //         return response()->json(['error' => 'File not found.'], 404);
+    //     }
 
-        // Get the file path
-        $filePath = $disk->path($archiveContainer->file);
+    //     // Get the file path
+    //     $filePath = $disk->path($archiveContainer->file);
 
-        // Return the file
-        return response()->file($filePath);
-    }
+    //     // Return the file
+    //     return response()->file($filePath);
+    // }
 
-    public function downloadFile($id)
-    {
-        $archiveContainer = ArchiveContainer::findOrFail($id);
+    // public function downloadFile($id)
+    // {
+    //     $archiveContainer = ArchiveContainer::findOrFail($id);
 
-        // Increment downloads
-        // $archiveContainer->increment('downloads');
+    //     // Increment downloads
+    //     // $archiveContainer->increment('downloads');
 
-        // Log the download action
-        ArchiveContainerLog::create([
-            'archive_container_id' => $archiveContainer->id,
-            'user_id' => auth()->id(),
-            'ip_address' => request()->ip(),
-            'action' => 'download',
-        ]);
+    //     // Log the download action
+    //     ArchiveContainerLog::create([
+    //         'archive_container_id' => $archiveContainer->id,
+    //         'user_id' => auth()->id(),
+    //         'ip_address' => request()->ip(),
+    //         'action' => 'download',
+    //     ]);
 
-        // Check if the file exists in storage
-        $filePath = Storage::disk('d_drive')->path($archiveContainer->file);
-        if (! Storage::disk('d_drive')->exists($archiveContainer->file)) {
-            return response()->json(['error' => 'File not found.'], 404);
-        }
+    //     // Check if the file exists in storage
+    //     $filePath = Storage::disk('nas')->path($archiveContainer->file);
+    //     if (! Storage::disk('nas')->exists($archiveContainer->file)) {
+    //         return response()->json(['error' => 'File not found.'], 404);
+    //     }
 
-        // Return the file
-        return response()->file($filePath);
-    }
+    //     // Return the file
+    //     return response()->file($filePath);
+    // }
 
     public function lock($id)
     {
@@ -853,6 +855,13 @@ class ArchiveContainerController extends Controller
         $archiveContainer = ArchiveContainer::find($id);
 
         $container = $request->all();
+
+        ArchiveContainerLog::create([
+            'archive_container_id' => $archiveContainer->id,
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'action' => 'move-archive',
+        ]);
 
         if ($container) {
             // $archiveContainer->number_container = $container;

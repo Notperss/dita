@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\ArchiveContainerLog;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\TransactionArchive\Archive\ArchiveContainer;
+use App\Models\TransactionArchive\FolderDivision\FolderItemFile;
 
 class ActivityLogController extends Controller
 {
@@ -117,4 +121,113 @@ class ActivityLogController extends Controller
     {
         //
     }
+
+
+    public function viewFileArchive($id)
+    {
+        // Find the archive container or fail
+        $archiveContainer = ArchiveContainer::findOrFail($id);
+
+        // Log the view action
+        ArchiveContainerLog::create([
+            'archive_container_id' => $archiveContainer->id,
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'action' => 'viewed-archive',
+        ]);
+
+        // Define the disk to use
+        $disk = Storage::disk('nas');
+
+        // Check if the file exists
+        if (! $disk->exists($archiveContainer->file)) {
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        // Get the file path
+        $filePath = $disk->path($archiveContainer->file);
+
+        // Return the file
+        return response()->file($filePath);
+    }
+
+    public function downloadFileArchive($id)
+    {
+        $archiveContainer = ArchiveContainer::findOrFail($id);
+
+        // Increment downloads
+        // $archiveContainer->increment('downloads');
+
+        // Log the download action
+        ArchiveContainerLog::create([
+            'archive_container_id' => $archiveContainer->id,
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'action' => 'download-archive',
+        ]);
+
+        // Check if the file exists in storage
+        $filePath = Storage::disk('nas')->path($archiveContainer->file);
+        if (! Storage::disk('nas')->exists($archiveContainer->file)) {
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        // Return the file
+        return response()->file($filePath);
+    }
+    public function downloadFileFolder($id)
+    {
+        $folderFile = FolderItemFile::findOrFail($id);
+        // dd($folderFile->file);
+
+        // Increment downloads
+        // $archiveContainer->increment('downloads');
+
+        // Log the download action
+        ArchiveContainerLog::create([
+            // 'archive_container_id' => $folderFile->id,
+            'folder_file_id' => $folderFile->id,
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'action' => 'download-file-folder',
+        ]);
+
+        // Check if the file exists in storage
+        $filePath = Storage::disk('nas')->path($folderFile->file);
+        if (! Storage::disk('nas')->exists($folderFile->file)) {
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        // Return the file
+        return response()->file($filePath);
+    }
+
+    // public function moveFileArchive($id)
+    // {
+    //     // Find the archive container or fail
+    //     $archiveContainer = ArchiveContainer::findOrFail($id);
+
+    //     // Log the view action
+    //     ArchiveContainerLog::create([
+    //         'archive_container_id' => $archiveContainer->id,
+    //         'user_id' => auth()->id(),
+    //         'ip_address' => request()->ip(),
+    //         'action' => 'move-archive',
+    //     ]);
+
+    //     // Define the disk to use
+    //     $disk = Storage::disk('nas');
+
+    //     // Check if the file exists
+    //     if (! $disk->exists($archiveContainer->file)) {
+    //         return response()->json(['error' => 'File not found.'], 404);
+    //     }
+
+    //     // Get the file path
+    //     $filePath = $disk->path($archiveContainer->file);
+
+    //     // Return the file
+    //     return response()->file($filePath);
+    // }
+
 }

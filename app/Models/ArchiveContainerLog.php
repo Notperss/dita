@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\TransactionArchive\FolderDivision\FolderItemFile;
 use App\Models\User;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
@@ -33,16 +34,26 @@ class ArchiveContainerLog extends Model
      */
     public function getDescriptionForEvent(string $eventName) : string
     {
-        return "{$this->archiveContainer->number_app} been {$this->action}";
+        if ($this->archiveContainer) {
+            return "{$this->archiveContainer->number_app} been {$this->action}";
+        } else {
+            $fileName = basename($this->folderFile->file);
+            return "{$fileName} has been {$this->action}";
+        }
+
     }
 
     protected $fillable = [
-        'archive_container_id', 'user_id', 'ip_address', 'action',
+        'archive_container_id', 'folder_file_id', 'user_id', 'ip_address', 'action',
     ];
 
     public function archiveContainer()
     {
         return $this->belongsTo(ArchiveContainer::class);
+    }
+    public function folderFile()
+    {
+        return $this->belongsTo(FolderItemFile::class);
     }
 
     public function user()

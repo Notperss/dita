@@ -153,10 +153,11 @@ class SubClassificationController extends Controller
 
         $archiveContainers = ArchiveContainer::where('sub_classification_id', $subClassification->id)->get();
 
-        $current_date = (new DateTime())->format('Y-m-d');
 
         // Set the new expiration_active value
         foreach ($archiveContainers as $archive_active) {
+            $current_date = ($archive_active->created_at)->format('Y-m-d');
+
             if (isset($data['period_active']) && is_numeric($data['period_active'])) {
                 // Ensure $subClassification->period_active is numeric
                 $old_years_to_add_active = (int) $subClassification->period_active; // Convert to integer

@@ -247,7 +247,7 @@ class FolderDivisionController extends Controller
         }
         $path .= '/' . $folder->id;
 
-        $disk_root = config('filesystems.disks.d_drive.root');
+        $disk_root = config('filesystems.disks.nas.root');
         if (! file_exists($disk_root) || ! is_dir($disk_root)) {
             alert()->error('Error', 'Disk or path not found.');
             return redirect()->back()->withInput();
@@ -260,7 +260,7 @@ class FolderDivisionController extends Controller
                 $basename = pathinfo($file, PATHINFO_FILENAME) . '-' . Str::random(3);
                 $ext = $image->getClientOriginalExtension();
                 $fullname = $basename . '.' . $ext;
-                $storedFile = $image->storeAs($path, $fullname, 'd_drive');
+                $storedFile = $image->storeAs($path, $fullname, 'nas');
                 $files[] = $storedFile;
             }
         }
@@ -299,8 +299,8 @@ class FolderDivisionController extends Controller
             $newPath = dirname($file) . '/' . $checkedName;
 
             // Rename the file in the storage
-            if (Storage::disk('d_drive')->exists($file)) {
-                Storage::disk('d_drive')->move($file, $newPath);
+            if (Storage::disk('nas')->exists($file)) {
+                Storage::disk('nas')->move($file, $newPath);
             }
 
             // Update the folderFile record with the new name
