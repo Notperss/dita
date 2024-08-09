@@ -6,8 +6,14 @@
     </td>
   </tr>
   <tr>
+    <th>Peminjam</th>
+    <td>{{ isset($lendingArchives->lending->user->name) ? $lendingArchives->lending->user->name : 'N/A' }}
+    </td>
+  </tr>
+  <tr>
     <th>Divisi</th>
-    <td>{{ isset($lendingArchives->lending->divisi) ? $lendingArchives->lending->divisi : 'N/A' }}</td>
+    <td>{{ isset($lendingArchives->lending->division->name) ? $lendingArchives->lending->division->name : 'N/A' }}
+    </td>
   </tr>
   <tr>
     <th>Tanggal Pinjam</th>
@@ -28,10 +34,10 @@
   <tr>
     <th>Status</th>
     <td>
-      @if ($lendingArchives->lending->status === 1)
+      @if ($lendingArchives->lending->has_finished)
         <span class="badge bg-light-success">Selesai</span>
-      @elseif ($lendingArchives->lending->status === 0)
-        <span class="badge bg-light-danger">Proses</span>
+        {{-- @elseif ($lendingArchives->lending->status === 0)
+        <span class="badge bg-light-danger">Proses</span> --}}
       @else
         <span class="badge bg-light-warning">Proses</span>
       @endif

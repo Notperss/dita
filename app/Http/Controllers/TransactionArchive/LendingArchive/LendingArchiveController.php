@@ -4,12 +4,14 @@ namespace App\Http\Controllers\TransactionArchive\LendingArchive;
 
 use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use App\Models\MasterData\WorkUnits\Division;
@@ -29,9 +31,9 @@ class LendingArchiveController extends Controller
         if (request()->ajax()) {
 
             if (Gate::allows('super_admin')) {
-                $archiveContainers = ArchiveContainer::with('division')->where('status', 1);
+                $archiveContainers = ArchiveContainer::with('division')->where('archive_status', 'baik')->where('is_lend', false);
             } else {
-                $archiveContainers = ArchiveContainer::with('division')->where('company_id', $companies)->where('status', 1);
+                $archiveContainers = ArchiveContainer::with('division')->where('company_id', $companies)->where('is_lend', false)->where('archive_status', 'baik');
             }
 
             // Apply year filter if present
@@ -82,17 +84,19 @@ class LendingArchiveController extends Controller
                 ->toJson();
         }
 
-        if (Gate::allows('super_admin')) {
-            $lendings = Lending::where('status', null)->orderBy('created_at', 'desc')->get();
-            $lendingArchives = LendingArchive::where('approval', 1)->where('status', 2)->get();
 
+        $queryLending = Lending::orderBy('created_at', 'desc');
+        $queryLendArchive = LendingArchive::where('is_approve', true)->orderBy('created_at', 'desc');
+
+        if (Gate::allows('super_admin')) {
+            $lendings = $queryLending->get();
+            $lendingArchives = $queryLendArchive->get();
         } elseif (Gate::allows('admin')) {
-            // $lendings = Lending::where('status', null)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
-            $lendings = Lending::where('company_id', $companies)->orderBy('created_at', 'desc')->get();
-            $lendingArchives = LendingArchive::where('approval', 1)->where('status', 2)->where('company_id', $companies)->orderBy('created_at', 'desc')->get();
+            $lendings = $queryLending->where('company_id', $companies)->get();
+            $lendingArchives = $queryLendArchive->where('company_id', $companies)->get();
         } else {
-            $lendings = Lending::where('status', null)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
-            $lendingArchives = LendingArchive::where('approval', 1)->where('status', 2)->where('status', 2)->where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $lendings = $queryLending->where('user_id', $id)->get();
+            $lendingArchives = $queryLendArchive->where('user_id', $id)->get();
         }
 
         $newLendingNumber = Lending::generateLendingNumber();
@@ -176,11 +180,11 @@ class LendingArchiveController extends Controller
                     'lending_id' => $lending_id,
                     'archive_container_id' => $value['archive_container_id'],
                     'document_type' => $value['document_type'],
-                    'status' => '1',
+                    // 'status' => '1',
                 ]);
 
                 $archiveContainer = ArchiveContainer::find($value['archive_container_id']);
-                $archiveContainer->update(['status' => 2]);
+                $archiveContainer->update(['status' => 2, 'is_lend' => true]);
             }
         }
         alert()->success('Sukses', 'Data berhasil ditambahkan');
@@ -218,29 +222,7 @@ class LendingArchiveController extends Controller
      */
     public function update(Request $request, Lending $lending)
     {
-
-        $validator = Validator::make($request->all(), [
-            'lending_number' => [
-                'required',
-                Rule::unique('lendings')->ignore($lending->id),
-            ],
-            'division' => ['required'],
-            'inputs' => 'required|array',
-            'inputs.*.document_type' => 'required',
-            'inputs.*.archive_container_id' => 'required',
-
-            // Add other validation rules as needed
-        ], [
-            'lending_number.required' => 'Nomor Peminjaman harus diisi.',
-            'division.required' => 'Divisi harus diisi.',
-            'inputs' => 'Arsip tidak boleh kosong.',
-            'inputs.*.archive_container_id.required' => 'Arsip tidak boleh kosong',
-            'inputs.*.document_type.required' => 'Pilih setidaknya satu Tipe Dokumen',
-            'lending_number.unique' => 'Nomor Peminjaman sudah digunakan.', // Pesan khusus untuk aturan validasi unique
-
-            // Add custom error messages for other rules
-        ]);
-
+        return abort(403);
     }
 
     /**
@@ -254,7 +236,7 @@ class LendingArchiveController extends Controller
         foreach ($lendingArchives as $lendingArchive) {
             $idContainer = $lendingArchive->archive_container_id;
             $archiveStatus = ArchiveContainer::find($idContainer);
-            $archiveStatus->update(['status' => 1]);
+            $archiveStatus->update(['status' => 1, 'is_lend' => false]);
         }
 
         $lending->forceDelete();
@@ -292,40 +274,42 @@ class LendingArchiveController extends Controller
 
     public function approval(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'approval' => 'required|array|min:1', // Ensure 'approval' is present, is an array, and has at least one element
-        //     'approval.*' => 'required', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
-        //     // 'approval.*' => 'required|exists:lendings,id', // Ensure each 'approval' item corresponds to an existing 'lendings' ID
-        // ], [
-        //     'approval.required' => 'Persetujuan tidak boleh kosong',
-        //     'approval.min' => 'Pilih setidaknya satu persetujuan',
-        //     'approval.*.required' => 'Pilih setidaknya satu persetujuan',
-        //     // 'approval.*.exists' => 'Pilihan persetujuan tidak valid',
-        // ]);
-
-        // // Check if validation fails
-        // if ($validator->fails()) {
-        //     return redirect()->back()->withErrors($validator)->withInput();
-        // }
         // Get the IDs from the request
         $id = $request->input('id');
 
         // Convert the ID to an array if it's not already an array
         $approvedIds = is_array($id) ? $id : [$id];
 
-        // Get the current date plus 14 days
-        // $period = Carbon::now()->addDays(7)->toDateString();
-        // $periodDigital = Carbon::now()->addDays(3)->toDateString();
-
         // Get the approval values from the request
         $approvals = $request->input('approval');
+        $damagedStatuses = $request->input('damage_status');
+        $files = $request->file('files');
+
 
         // Update the LendingArchive records for each approval value
         foreach ($approvedIds as $approvedId) {
+
             $approval = isset($approvals[$approvedId]);
+            $damagedStatus = isset($damagedStatuses[$approvedId]) ? $damagedStatuses[$approvedId] : null;
 
             // Fetch the LendingArchive record
             $lendingArchive = LendingArchive::find($approvedId);
+
+            $path_file = $lendingArchive['file'];
+            // Handle file upload if a file is provided
+            if (isset($files[$approvedId])) {
+                $file = $files[$approvedId];
+                // Save the file to storage/app/public/uploads directory
+                $filePath = $file->storeAs('file-kerusakan-arsip', time() . '-' . Str::random(2) . '-' . $file->getClientOriginalName(), 'nas');
+
+                // You can store the file path or name in the database if needed
+                $lendingArchive->file_path = $filePath; // Assuming you have a column for storing file paths
+
+                // hapus file
+                if ($path_file != null || $path_file != '') {
+                    Storage::disk('nas')->delete($path_file);
+                }
+            }
 
             if ($lendingArchive) {
                 // Determine the period based on the document type
@@ -335,48 +319,18 @@ class LendingArchiveController extends Controller
 
                 LendingArchive::where('id', $approvedId)->update([
                     'period' => $approval ? $period : null,
-                    'status' => $approval ? 2 : 1,
-                    'approval' => $approval,
+                    'is_approve' => $approval,
+                    'damage_status' => $damagedStatus !== null ? $damagedStatus : $lendingArchive->damaged_status,
+                    'file' => $lendingArchive->file_path,
                 ]);
+
+                // dd($approvedId->archiveContainer->id);
+                $archiveContainer = $lendingArchive->archiveContainer;
+                $archiveContainer->update(['archive_status' => $damagedStatus !== null ? $damagedStatus : $lendingArchive->damaged_status]);
+
             }
         }
 
-
-        // // Get the IDs of the lending archive records where the checkbox is not checked
-        // $notApprovedIds = array_diff(
-        //     LendingArchive::pluck('id')->all(),
-        //     $approvedIds
-        // );
-
-        // // Update the lending archive records where the checkbox is not checked
-        // LendingArchive::whereIn('id', $notApprovedIds)->update([
-        //     'status' => 2,  // Assuming status always needs to be updated
-        //     'approval' => 0,  // Set to 0 if the checkbox is not checked
-        // ]);
-
-        // // Grant access to view the archive if approved and within the permit period
-        // $approvedArchives = LendingArchive::whereIn('id', $approvedIds)->where('approval', 1)->get();
-
-        // foreach ($approvedArchives as $archive) {
-        //     $user_id = $archive->user_id;
-        //     $user = User::find($user_id);
-
-        //     if (! $user) {
-        //         continue; // Skip to the next iteration if user not found
-        //     }
-
-        //     // Assuming the period is specified in days
-        //     $expiryDate = Carbon::parse($archive->period)->addDays(1); // Add one day to ensure expiry at end of day
-        //     $now = Carbon::now();
-
-        //     if ($now->lte($expiryDate)) {
-        //         // Grant access if current time is less than or equal to the expiry date
-        //         $user->givePermissionTo('view_archive');
-        //     } else {
-        //         // Revoke access if the expiry date has passed
-        //         $user->revokePermissionTo('view_archive');
-        //     }
-        // }
         alert()->success('Success', 'Data updated successfully.');
         return redirect()->route('lending-archive.index');
     }
@@ -388,7 +342,8 @@ class LendingArchiveController extends Controller
         if ($lending) {
             // Update the lending record
             $lending->update([
-                'status' => 1,  // Set to 1 if the checkbox is not checked
+                // 'status' => 1,  // Set to 1 if the checkbox is not checked
+                'has_finished' => true,  // Set to 1 if the checkbox is not checked
                 'end_date' => now()->toDateString(),  // Set to 1 if the checkbox is not checked
             ]);
         }
@@ -401,7 +356,7 @@ class LendingArchiveController extends Controller
 
             // Loop through each lending archive
             foreach ($lendingArchives as $lendingArchive) {
-                $lendingArchive->update(['status' => 3]);
+                $lendingArchive->update(['has_finished' => true]);
 
                 // Check if the archive container relationship exists
                 if ($archiveContainer = $lendingArchive->archiveContainer) {
@@ -415,7 +370,7 @@ class LendingArchiveController extends Controller
                 $archiveContainer = ArchiveContainer::find($archiveId);
 
                 if ($archiveContainer) {
-                    $archiveContainer->update(['status' => 1]);
+                    $archiveContainer->update(['status' => 1, 'is_lend' => false]);
                 }
             }
         }
@@ -425,32 +380,28 @@ class LendingArchiveController extends Controller
 
     public function historyDetail($id)
     {
-        // $ids = auth()->user();
-        // if (Gate::allows('super_admin')) {
-        //     $lendingArchives = LendingArchive::find($id);
-        // } elseif (Gate::allows('admin')) {
-        //     $lendingArchives = LendingArchive::where('company_id', $ids->company_id)->find($id);
-        // } else {
-        //     $lendingArchives = LendingArchive::where('user_id', $ids->id)->find($id);
-        // }
-        $ids = auth()->user();
+        $user = auth()->user();
         if (Gate::allows('super_admin')) {
             $lendingArchives = LendingArchive::find($id);
+        } elseif (Gate::allows('admin')) {
+            $lendingArchives = LendingArchive::where('company_id', $user->company_id)->find($id);
         } else {
-            $lendingArchives = LendingArchive::where('user_id', $ids->id)->find($id);
+            $lendingArchives = LendingArchive::where('user_id', $user->id)->find($id);
         }
         return view('pages.transaction-archive.lending-archive.historyDetail', compact('lendingArchives'));
     }
 
     public function history()
     {
-        $id = auth()->user();
+        $user = auth()->user();
+        $queryLendArchive = LendingArchive::where('has_finished', true)->orderBy('created_at', 'desc');
+
         if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::where('status', 3)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->get();
         } elseif (Gate::allows('admin')) {
-            $lendingArchives = LendingArchive::where('status', 3)->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->where('company_id', $user->company_id)->get();
         } else {
-            $lendingArchives = LendingArchive::where('status', 3)->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->where('user_id', $user->id)->get();
         }
 
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
@@ -458,25 +409,43 @@ class LendingArchiveController extends Controller
 
     public function fisik()
     {
-        $id = auth()->user();
+        $user = auth()->user();
+        $queryLendArchive = LendingArchive::where('has_finished', true)->where('document_type', 'FISIK')->orderBy('created_at', 'desc');
+
         if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'FISIK')->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->get();
         } elseif (Gate::allows('admin')) {
-            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'FISIK')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->where('company_id', $user->company_id)->get();
         } else {
-            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'FISIK')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->where('user_id', $user->id)->get();
         }
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }
     public function digital()
     {
-        $id = auth()->user();
+        $user = auth()->user();
+        $queryLendArchive = LendingArchive::where('has_finished', true)->where('document_type', 'DIGITAL')->orderBy('created_at', 'desc');
+
         if (Gate::allows('super_admin')) {
-            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'DIGITAL')->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->get();
         } elseif (Gate::allows('admin')) {
-            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'DIGITAL')->where('company_id', $id->company_id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->where('company_id', $user->company_id)->get();
         } else {
-            $lendingArchives = LendingArchive::where('status', 3)->where('document_type', 'DIGITAL')->where('user_id', $id->id)->orderBy('created_at', 'desc')->get();
+            $lendingArchives = $queryLendArchive->where('user_id', $user->id)->get();
+        }
+        return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
+    }
+    public function rejected()
+    {
+        $user = auth()->user();
+        $queryLendArchive = LendingArchive::where('has_finished', true)->where('is_approve', false)->orderBy('created_at', 'desc');
+
+        if (Gate::allows('super_admin')) {
+            $lendingArchives = $queryLendArchive->get();
+        } elseif (Gate::allows('admin')) {
+            $lendingArchives = $queryLendArchive->where('company_id', $user->company_id)->get();
+        } else {
+            $lendingArchives = $queryLendArchive->where('user_id', $user->id)->get();
         }
         return view('pages.transaction-archive.lending-archive.history', compact('lendingArchives', ));
     }

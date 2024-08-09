@@ -28,12 +28,29 @@
   <tr>
     <th>Status</th>
     <td>
-      @if ($lendings->status === 1)
+      @php
+        $hasAccepted = false;
+        $allRejected = true;
+
+        foreach ($lendings->lendingArchive as $approval) {
+            if ($approval->is_approve === 1) {
+                $hasAccepted = true;
+                $allRejected = false;
+                break; // No need to continue checking, as we found an accepted approval
+            } elseif ($approval->is_approve !== 0) {
+                $allRejected = false;
+            }
+        }
+      @endphp
+
+      @if ($lendings->has_finished)
         <span class="badge bg-light-success">Selesai</span>
-      @elseif ($lendings->approval === 0)
-        <span class="badge bg-light-danger">Proses</span>
+      @elseif ($hasAccepted)
+        <span class="badge bg-light-info">Diterima</span>
+      @elseif ($allRejected)
+        <span class="badge bg-light-danger">Ditolak</span>
       @else
-        <span class="badge bg-light-warning">Proses</span>
+        <span class="badge bg-light-warning">Pengajuan</span>
       @endif
     </td>
   </tr>

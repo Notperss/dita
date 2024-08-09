@@ -280,7 +280,7 @@
                             <td>{{ $lending->archiveContainer->number_document ?? 'N/A' }}</td>
                             <td>{{ $lending->archiveContainer->division->code ?? 'N/A' }}</td>
                             <td>
-                              @if ($lending->archiveContainer->status == 2)
+                              @if ($lending->archiveContainer->is_lend)
                                 <span class="badge bg-light-warning">Dipinjam</span>
                               @else
                                 <span class="badge bg-light-info">Dikembalikan</span>

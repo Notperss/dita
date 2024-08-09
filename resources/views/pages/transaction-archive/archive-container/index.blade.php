@@ -126,8 +126,8 @@
             name: 'detail_location',
           },
           {
-            data: 'lock',
-            name: 'lock',
+            data: 'is_lock',
+            name: 'is_lock',
           },
           {
             data: 'action',

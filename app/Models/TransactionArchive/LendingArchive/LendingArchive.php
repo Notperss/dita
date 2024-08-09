@@ -20,9 +20,12 @@ class LendingArchive extends Model
         'division_id',
         'archive_container_id',
         'status',
-        'approval',
+        'is_approve',
+        'damaged_status',
+        'file',
         'period',
         'document_type',
+        'has_finished',
     ];
 
     public function lending()

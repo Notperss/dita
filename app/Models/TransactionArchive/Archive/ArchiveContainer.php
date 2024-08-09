@@ -64,6 +64,7 @@ class ArchiveContainer extends Model
                 // 'content_file',
                 'status',
                 'is_lock',
+                'is_lend',
             ]) // Specify the attributes you want to log
             ->logOnlyDirty() // Log only changed attributes
             ->useLogName('archive'); // Specify the log name
@@ -117,6 +118,8 @@ class ArchiveContainer extends Model
         'content_file',
         'status',
         'is_lock',
+        'is_lend',
+        'archive_status',
     ];
 
     protected $dates = ['deleted_at'];

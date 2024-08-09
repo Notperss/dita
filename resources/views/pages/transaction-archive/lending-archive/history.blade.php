@@ -57,9 +57,9 @@
                           @endif
                         </td>
                         <td>
-                          @if ($lending->approval === 1)
+                          @if ($lending->is_approve === 1)
                             <span class="badge bg-light-success">Di Setujui</span>
-                          @elseif ($lending->approval === 0)
+                          @elseif ($lending->is_approve === 0)
                             <span class="badge bg-light-danger">Ditolak</span>
                           @else
                             <span class="badge bg-light-warning">-</span>

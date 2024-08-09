@@ -43,7 +43,7 @@
                           ->filter(function ($archive) {
                               return $archive->expiration_inactive < now()->toDateString() &&
                                   $archive->expiration_inactive != null &&
-                                  $archive->status == 1;
+                                  $archive->archive_status == 'baik';
                           })
                           ->count();
                     @endphp

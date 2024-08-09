@@ -31,11 +31,11 @@
                   <h6 class="text-muted font-semibold">Riwayat Semua Arsip</h6>
                   <h6 class="font-extrabold mb-0">
                     @can('super_admin')
-                      {{ DB::table('lending_archives')->where('status', 3)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->count() }}
                     @elsecan('admin')
-                      {{ DB::table('lending_archives')->where('status', 3)->where('company_id', auth()->user()->company_id)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('company_id', auth()->user()->company_id)->count() }}
                     @else
-                      {{ DB::table('lending_archives')->where('status', 3)->where('user_id', auth()->user()->id)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('user_id', auth()->user()->id)->count() }}
                     @endcan
                   </h6>
                 </a>
@@ -58,11 +58,11 @@
                 <h6 class="font-extrabold mb-0">
                   <a href="{{ route('fisik') }}">
                     @can('super_admin')
-                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'FISIK')->count() }}
                     @elsecan('admin')
-                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->where('company_id', auth()->user()->company_id)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'FISIK')->where('company_id', auth()->user()->company_id)->count() }}
                     @else
-                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'FISIK')->where('user_id', auth()->user()->id)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'FISIK')->where('user_id', auth()->user()->id)->count() }}
                     @endcan
                 </h6>
                 </a>
@@ -85,11 +85,38 @@
                   <h6 class="text-muted font-semibold">Riwayat Digital</h6>
                   <h6 class="font-extrabold mb-0">
                     @can('super_admin')
-                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'DIGITAL')->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'DIGITAL')->count() }}
                     @elsecan('admin')
-                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'DIGITAL')->where('company_id', auth()->user()->company_id)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'DIGITAL')->where('company_id', auth()->user()->company_id)->count() }}
                     @else
-                      {{ DB::table('lending_archives')->where('status', 3)->where('document_type', 'DIGITAL')->where('user_id', auth()->user()->id)->count() }}
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'DIGITAL')->where('user_id', auth()->user()->id)->count() }}
+                    @endcan
+                  </h6>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 col-md-6">
+        <div class="card">
+          <div class="card-body px-4 py-4-5">
+            <div class="row">
+              <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                <div class="stats-icon red mb-2">
+                  <i class="ri-mail-close-line"></i>
+                </div>
+              </div>
+              <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                <a href="{{ route('rejected') }}">
+                  <h6 class="text-muted font-semibold">Riwayat Ditolak</h6>
+                  <h6 class="font-extrabold mb-0">
+                    @can('super_admin')
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('is_approve', false)->count() }}
+                    @elsecan('admin')
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('is_approve', false)->where('company_id', auth()->user()->company_id)->count() }}
+                    @else
+                      {{ DB::table('lending_archives')->where('has_finished', true)->where('is_approve', false)->where('user_id', auth()->user()->id)->count() }}
                     @endcan
                   </h6>
                 </a>
@@ -318,6 +345,8 @@
                             </thead>
                             <tbody>
                               @foreach ($lendings as $lending)
+                                {{-- @foreach ($lending->lendingArchive as $approval)
+                                @endforeach --}}
                                 <tr>
                                   <td class="text-bold-500">{{ $loop->iteration }}</td>
                                   <td class="text-bold-500">{{ $lending->lending_number ?? 'N/A' }}</td>
@@ -328,17 +357,38 @@
                                   </td>
                                   <td class="text-bold-500">{{ $lending->description }}</td>
                                   <td class="text-bold-500">
-                                    @if ($lending->status == 1)
+                                    @php
+                                      $hasAccepted = false;
+                                      $allRejected = true;
+
+                                      foreach ($lending->lendingArchive as $approval) {
+                                          if ($approval->is_approve === 1) {
+                                              $hasAccepted = true;
+                                              $allRejected = false;
+                                              break; // No need to continue checking, as we found an accepted approval
+                                          } elseif ($approval->is_approve !== 0) {
+                                              $allRejected = false;
+                                          }
+                                      }
+                                    @endphp
+
+                                    @if ($lending->has_finished)
                                       <span class="badge bg-light-success">Selesai</span>
+                                    @elseif ($hasAccepted)
+                                      <span class="badge bg-light-info">Diterima</span>
+                                    @elseif ($allRejected)
+                                      <span class="badge bg-light-danger">Ditolak</span>
                                     @else
-                                      <span class="badge bg-light-warning">Proses</span>
+                                      <span class="badge bg-light-warning">Pengajuan</span>
                                     @endif
                                   </td>
                                   <td>
                                     <div class="btn-group mb-1">
-                                      @if ($lending->status == null)
+
+                                      @if ($approval->is_approve !== null && $lending->has_finished == false)
                                         @can('approval')
-                                          <a class="btn btn-sm btn-info" onclick="update({{ $lending->id }})">Close</a>
+                                          <a class="btn btn-sm btn-success"
+                                            onclick="update({{ $lending->id }})"><small>Selesai</small></a>
                                           <form id="update_{{ $lending->id }}"
                                             action="{{ route('closing', $lending->id) }}" method="POST">
                                             @method('put')
@@ -365,7 +415,7 @@
                                                 class="bi bi-x-lg"></i> Delete</a>
                                           @else
                                             @foreach ($lending->lendingArchive as $item)
-                                              @if ($item->approval === null)
+                                              @if ($item->is_approve === null)
                                                 <a class="dropdown-item" onclick="showSweetAlert({{ $lending->id }})"><i
                                                     class="bi bi-x-lg"></i> Delete</a>
                                               @break
@@ -400,25 +450,27 @@
                     </div>
                     <div class="card-body">
                       <div class="table-responsive">
-                        <table class="table table-striped mb-0" id="table1">
+                        <table class="table table-striped mb-0" id="tab2">
                           <thead>
                             <tr>
                               <th>#</th>
+                              <th>No Peminjaman</th>
                               <th>No Dokumen</th>
                               <th>Perihal</th>
                               <th>Peminjam</th>
                               <th>Divisi</th>
                               <th>Tgl Pinjam</th>
-                              <th>Tgl Dikembalikan</th>
+                              <th>Batas Pengembalian</th>
                               {{-- <th>Status</th> --}}
-                              <th>Tipe</th>
-                              <th>Action</th>
+                              <th style="width: 11%; text-align: center">Tipe</th>
+                              {{-- <th style="width: 11%">Action</th> --}}
                             </tr>
                           </thead>
                           <tbody>
                             @foreach ($lendingArchives as $archives)
                               <tr>
                                 <td class="text-bold-500">{{ $loop->iteration }}</td>
+                                <td class="text-bold-500">{{ $archives->lending->lending_number ?? 'N/A' }}
                                 <td class="text-bold-500">{{ $archives->archiveContainer->number_document ?? 'N/A' }}
                                 <td class="text-bold-500">{{ $archives->archiveContainer->regarding ?? 'N/A' }}
                                 </td>
@@ -449,9 +501,26 @@
                                   @else
                                     <span>N/A</span>
                                   @endif
+
+                                  @if ($archives->period && strtotime($archives->period) >= strtotime('now'))
+                                    @if ($archives->archiveContainer->file && $archives->document_type == 'DIGITAL')
+                                      <a type="button" class="badge bg-light-success mt-1" data-fancy
+                                        data-custom-class="pdf"
+                                        data-src="{{ asset('storage/' . $archives->archiveContainer->file) }}"
+                                        class="dropdown-item">
+
+                                        Lihat File
+
+                                      </a>
+                                    @endif
+                                    {{-- @else
+                                    <span style="color: red"> Batas Waktu Peminjaman Habis</span>
+                                    <button class="btn btn-sm btn-primary">Sudah Dikembalikan</button> --}}
+                                  @endif
                                 </td>
-                                <td>
-                                  {{-- <div class="btn-group mb-1">
+
+                                {{-- <td> --}}
+                                {{-- <div class="btn-group mb-1">
                                     @if ($archives->lending->status == null)
                                       @can('approval')
                                         <a class="btn btn-sm btn-info"
@@ -500,23 +569,27 @@
                                   @csrf
                                 </form> --}}
 
-                                  @if ($archives->period && strtotime($archives->period) >= strtotime('now'))
+                                {{-- @if ($archives->period && strtotime($archives->period) >= strtotime('now'))
                                     @if ($archives->archiveContainer->file && $archives->document_type == 'DIGITAL')
                                       <a type="button" class="btn btn-sm btn-success mx-1" data-fancy
                                         data-custom-class="pdf"
                                         data-src="{{ asset('storage/' . $archives->archiveContainer->file) }}"
                                         class="dropdown-item">
-                                        Lihat File
+                                        <small>
+                                          Lihat File
+                                        </small>
                                       </a>
                                     @else
                                       <span><small>"N/A"</small></span>
                                     @endif
-                                    {{-- @else
+                                    @else
                                     <span style="color: red"> Batas Waktu Peminjaman Habis</span>
-                                    <button class="btn btn-sm btn-primary">Sudah Dikembalikan</button> --}}
-                                  @endif
+                                    <button class="btn btn-sm btn-primary">Sudah Dikembalikan</button>
+                                  @endif --}}
 
-                                </td>
+                                {{-- </td> --}}
+
+
                               </tr>
                             @endforeach
                           </tbody>
@@ -629,6 +702,10 @@
 
 @endsection
 @push('after-script')
+<script>
+  // new DataTable('#table1');
+  new DataTable('#tab2');
+</script>
 <script>
   function showSweetAlert(lendingId) {
     Swal.fire({
@@ -871,139 +948,8 @@
       $('tr[data-row-id="' + rowId + '"]').remove();
     });
 
-
-    // Collect only the IDs from the lending-temp-table before form submission
-    // $('#myForm').submit(function(event) {
-    //   var lendingItems = [];
-    //   $('.lending-temp-table tbody tr').each(function() {
-    //     var rowId = $(this).data('row-id');
-    //     var typeDocument = $(this).find('select[name="inputs[' + rowId + ']"]')
-    //       .val(); // Get the selected copy type
-    //     lendingItems.push({
-    //       id: rowId,
-    //       document_type: typeDocument,
-    //     });
-    //   });
-    //   $('#archive_container_id').val(JSON.stringify(lendingItems));
-    // });
   });
 </script>
-
-{{-- <script>
-    $(document).ready(function() {
-      // Array to store selected IDs
-      let selectedIds = [];
-
-      // Event listener for change event on select element
-      $(document).on('change', 'select[name^="inputs["]:not([name$="[document_type]"])', function() {
-        // Get the selected ID
-        let selectedId = $(this).val();
-
-        // Check if the selected ID already exists in the array
-        if (selectedIds.includes(selectedId)) {
-          alert("This ID is already selected. Please choose a different one.");
-          $(this).val(""); // Clear the selected value
-          return; // Exit function
-        }
-
-        // Add the selected ID to the array
-        selectedIds.push(selectedId);
-
-        // Disable the option with the selected ID in all other select elements
-        $('select[name^="inputs["]:not([name$="[document_type]"])').not(this).find('option').prop('disabled',
-          function() {
-            return $(this).val() === selectedId;
-          });
-      });
-
-      $('#add-archive').click(function() {
-        // Check if the select value is filled
-        let selectValueFilled = true;
-        $('select[name^="inputs["]:not([name$="[document_type]"])').each(function() {
-          if ($(this).val() === "") {
-            selectValueFilled = false;
-            return false; // Exit the loop early if any select value is not filled
-          }
-        });
-
-        // If select value is not filled, alert the user and return
-        if (!selectValueFilled) {
-          alert("Please fill all select values before adding more rows.");
-          return;
-        }
-
-        // Increment index for unique IDs
-        let a = selectedIds.length + 1;
-
-        // Append a new row
-        $('#table-archive').append(`
-          <tr>
-            <td class="text-center text-primary">${a}</td>
-            <td>
-               <select name="inputs[${a}][archive_container_id]" class="form-control select2 choices" style="width: 100%">
-            <option value="" disabled selected>Choose</option>
-            @foreach ($archiveContainers as $app)
-              <option value="{{ $app->id }}" data-value="{{ $app->regarding }}" data-value2="{{ $app->division->name }}" data-app="{{ $app->id }}">{{ $app->number_document }}</option>
-            @endforeach
-          </select>
-            </td>
-            <td><input type="text" class="form-control version" id="version_${a}" readonly></td>
-            <td><input type="text" class="form-control product" id="product_${a}" readonly></td>
-            <td><select type="text" class="form-control" name="inputs[${a}][document_type]" readonly>
-              <option value="" selected disabled>Choose</option>
-              <option value="FISIK">Fisik</option>
-              <option value="DIGITAL">Digital</option>
-              </select></td>
-            <td>
-              <button type="button" class="btn btn-danger remove-row">Remove</button></td>
-          </tr>
-        `);
-
-        // Initialize Select2 for the newly added select element
-        $('.select2').select2({
-          dropdownParent: $("#mymodal"),
-          theme: 'classic', // Apply the 'classic-dark' theme
-        });
-
-        // Disable options that have been selected in other rows
-        $('select[name^="inputs["]:not([name$="[document_type]"]').each(function() {
-          let selectedId = $(this).val();
-          $(this).find('option').prop('disabled', function() {
-            return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
-          });
-        });
-      });
-
-      $(document).on('change', 'select[name^="inputs["]:not([name$="[document_type]"])', function() {
-        var selectedOption = $(this).find(':selected');
-        var versionValue = selectedOption.data('value') || '';
-        var productValue = selectedOption.data('value2') || '';
-
-        $(this).closest('tr').find('.version').val(versionValue);
-        $(this).closest('tr').find('.product').val(productValue);
-      });
-
-      $(document).on('click', '.remove-row', function() {
-        // Get the removed ID
-        let removedId = $(this).closest('tr').find('select').val();
-
-        // Remove the ID from the array
-        selectedIds = selectedIds.filter(id => id !== removedId);
-
-        // Remove the entire row when the "Remove" button is clicked
-        $(this).closest('tr').remove();
-
-        // Enable the option with the removed ID in all other select elements
-        $('select[name^="inputs["]:not([name$="[document_type]"])').find('option').prop('disabled', false);
-        $('select[name^="inputs["]:not([name$="[document_type]"])').each(function() {
-          let selectedId = $(this).val();
-          $(this).find('option').prop('disabled', function() {
-            return selectedIds.includes($(this).val()) && $(this).val() !== selectedId;
-          });
-        });
-      });
-    });
-  </script> --}}
 
 {{-- modal --}}
 <script>

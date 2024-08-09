@@ -139,6 +139,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::get('/history', 'history')->name('history');
         Route::get('/digital', 'digital')->name('digital');
         Route::get('/fisik', 'fisik')->name('fisik');
+        Route::get('/ditolak', 'rejected')->name('rejected');
         Route::put('/approval', 'approval')->name('approval');
         Route::put('/closing/{id}', 'closing')->name('closing');
     });

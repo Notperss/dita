@@ -31,7 +31,7 @@
               <th class="text-center">No.Dokumen</th>
               <th class="text-center">Perihal</th>
               <th class="text-center">Detail Lokasi</th>
-              {{-- <th class="text-center">Status</th> --}}
+              <th class="text-center">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -42,7 +42,17 @@
                 <td class="text-center">{{ $archiveContainer->number_document ?? 'N/A' }}</td>
                 <td class="text-center">{{ $archiveContainer->regarding ?? 'N/A' }}</td>
                 <td class="text-center">{{ $archiveContainer->detail_location ?? 'N/A' }}</td>
-                {{-- <td class="text-center">{{ $archiveContainer->status ?? 'N/A' }}</td> --}}
+                <td class="text-center">
+                  @if ($archiveContainer->archive_status == 'rusak')
+                    <span class="badge bg-light-warning">Rusak</span>
+                  @elseif ($archiveContainer->archive_status == 'hilang')
+                    <span class="badge bg-light-secondary">Hilang</span>
+                  @elseif ($archiveContainer->archive_status == 'destroy')
+                    <span class="badge bg-light-danger">Musnah</span>
+                  @else
+                    <span class="badge bg-light-info">Baik</span>
+                  @endif
+                </td>
               </tr>
             @endforeach
           </tbody>

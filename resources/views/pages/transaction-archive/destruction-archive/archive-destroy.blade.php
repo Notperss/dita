@@ -44,7 +44,7 @@
                 <td class="text-center">
                   {{ Carbon\Carbon::parse($archive->expiration_inactive)->translatedFormat('l, d F Y') ?? 'N/A' }}</td>
                 <td class="text-center">
-                  @if ($archive->status == 10)
+                  @if ($archive->archive_status == 'musnah')
                     <span style="color: red">Dimusnahkan</span>
                   @else
                     <span style="color: green">Disimpan</span>

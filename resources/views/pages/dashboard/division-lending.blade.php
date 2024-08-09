@@ -27,22 +27,32 @@
           <thead>
             <tr>
               <th class="text-center">#</th>
+              <th class="text-center">No.Peminjaman</th>
               <th class="text-center">No.Kontainer</th>
               <th class="text-center">No.Dokumen</th>
               <th class="text-center">Perihal</th>
-              {{-- <th class="text-center">Detail Lokasi</th>
-              <th class="text-center">Status</th> --}}
+              {{-- <th class="text-center">Detail Lokasi</th> --}}
+              <th class="text-center">Status</th>
             </tr>
           </thead>
           <tbody>
             @foreach ($lendingArchives as $lend)
               <tr>
                 <td class="text-center">{{ $loop->iteration }}</td>
+                <td class="text-center">{{ $lend->lending->lending_number ?? 'N/A' }}</td>
                 <td class="text-center">{{ $lend->archiveContainer->number_container ?? 'N/A' }}</td>
                 <td class="text-center">{{ $lend->archiveContainer->number_document ?? 'N/A' }}</td>
                 <td class="text-center">{{ $lend->archiveContainer->regarding ?? 'N/A' }}</td>
                 {{-- <td class="text-center">{{ $archiveContainer->detail_location ?? 'N/A' }}</td> --}}
-                {{-- <td class="text-center">{{ $archiveContainer->status ?? 'N/A' }}</td> --}}
+                <td class="text-center">
+                  @if ($lend->is_approve === 1)
+                    <span class="badge bg-light-success">Disetujui</span>
+                  @elseif ($lend->is_approve === 0)
+                    <span class="badge bg-light-danger">Ditolak</span>
+                  @else
+                    <span class="badge bg-light-warning">Pengajuan</span>
+                  @endif
+                </td>
               </tr>
             @endforeach
           </tbody>

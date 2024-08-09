@@ -39,7 +39,7 @@ class ArchiveContainerController extends Controller
 
         if (request()->ajax()) {
 
-            $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+            $company_id = auth()->user()->company_id;
 
             if (Gate::allows('super_admin')) {
                 $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
@@ -50,7 +50,7 @@ class ArchiveContainerController extends Controller
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
-                    $hiddenStatus = $item->status == 9 || $item->status == 10 || $item->is_lock ? 'hidden' : '';
+                    $hiddenStatus = $item->is_lend || $item->is_lock ? 'hidden' : '';
                     return '
              <a href="#mymodal" data-remote="' . route('showBarcodeContainer', $item->id) . '" data-toggle="modal"
                         data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
@@ -83,36 +83,73 @@ class ArchiveContainerController extends Controller
                     ' . method_field('delete') . csrf_field() . '
                   </form>
                 ';
-                })->editColumn('lock', function ($item) {
-                    if ($item->status == 1) {
-                        if ($item->is_lock) {
+                })->editColumn('is_lock', function ($item) {
+                    // if ($item->archive_status =='baik') {
+                    //     if ($item->is_lock) {
+    
+                    //         if (auth()->user()->can('super_admin')) {
+                    //             return '<a onclick="return confirm(\'Apakah kamu yakin akan membuka kunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-success btn-sm" title="buka kunci">
+                    //                 <i class="bi bi-lock"></i>
+                    //                 </a>';
+                    //         } elseif ($item->is_lend) {
+                    //             return '<a class="btn btn-secondary btn-sm" title="Arsip Dalam Transaksi">
+                    //             <i class="bi bi-arrow-repeat"></i>
+                    //             </a>';
+                    //         } else {
+                    //             return '<a onclick="alert(\'Hubungi Administrator untuk membuka kunci!\')" class="btn btn-success btn-sm" title="Arsip Terkunci">
+                    //                 <i class="bi bi-lock"></i>
+                    //                 </a>';
+                    //         }
+                    //     } else {
+                    //         return '<a onclick="return confirm(\'Apakah kamu yakin akan mengunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-danger btn-sm" title="Arsip Terbuka">
+                    //             <i class="bi bi-unlock"></i>
+                    //             </a>';
+                    //     }
+    
+                    // } elseif ($item->archive_status == 'rusak') {
+                    //     if ($item->is_lend) {
+                    //         return '<a class="btn btn-secondary btn-sm" title="Arsip Dalam Transaksi">
+                    //             <i class="bi bi-arrow-repeat"></i>
+                    //             </a>';
+                    //     } else {
+                    //         return '<a class="btn btn-warning btn-sm" title="Arsip Rusak">
+                    //             <i class="bi bi-file-earmark-excel h6"></i></i>
+                    //             </a>';
+                    //     }
+                    // } else {
+                    //     return '<a class="btn btn-danger btn-sm" title="Arsip Musnah / Hilang">
+                    //             <i class="bi bi-file-earmark-excel h6"></i></i>
+                    //             </a>';
+                    // }
+    
 
-                            if (auth()->user()->can('super_admin')) {
-                                return '<a onclick="return confirm(\'Apakah kamu yakin akan membuka kunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-success btn-sm" title="buka kunci">
+                    if ($item->is_lock) {
+
+                        if (auth()->user()->can('super_admin')) {
+                            return '<a onclick="return confirm(\'Apakah kamu yakin akan membuka kunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-success btn-sm" title="buka kunci">
                                     <i class="bi bi-lock"></i>
                                     </a>';
-                            } else {
-                                return '<a onclick="alert(\'Hubungi Administrator untuk membuka kunci!\')" class="btn btn-success btn-sm" title="Arsip Terkunci">
-                                    <i class="bi bi-lock"></i>
-                                    </a>';
-                            }
-                        } else {
-                            return '<a onclick="return confirm(\'Apakah kamu yakin akan mengunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-danger btn-sm" title="Arsip Terbuka">
-                                <i class="bi bi-unlock"></i>
-                                </a>';
-                        }
-
-                    } elseif ($item->status == 10) {
-                        return '<a class="btn btn-danger btn-sm" title="Arsip Musnah">
-                                <i class="bi bi-file-earmark-excel h6"></i></i>
-                                </a>';
-                    } else {
-                        return '<a class="btn btn-secondary btn-sm" title="Arsip Dalam Transaksi">
+                        } elseif ($item->is_lend) {
+                            return '<a class="btn btn-secondary btn-sm" title="Arsip Sedang Dipinjam">
                                 <i class="bi bi-arrow-repeat"></i>
                                 </a>';
+                        } else {
+                            return '<a onclick="alert(\'Hubungi Administrator untuk membuka kunci!\')" class="btn btn-success btn-sm" title="Arsip Terkunci">
+                                    <i class="bi bi-lock"></i>
+                                    </a>';
+                        }
+                    } elseif ($item->is_lend) {
+                        return '<a class="btn btn-secondary btn-sm" title="Arsip Sedang Dipinjam">
+                                <i class="bi bi-arrow-repeat"></i>
+                                </a>';
+                    } else {
+                        return '<a onclick="return confirm(\'Apakah kamu yakin akan mengunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-danger btn-sm" title="Arsip Terbuka">
+                                <i class="bi bi-unlock"></i>
+                                </a>';
                     }
+
                 })
-                ->rawColumns(['action', 'lock'])
+                ->rawColumns(['action', 'is_lock'])
                 ->toJson();
         }
         // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();

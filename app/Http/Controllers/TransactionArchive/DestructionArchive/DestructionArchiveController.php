@@ -31,7 +31,7 @@ class DestructionArchiveController extends Controller
             $archives = $archivesQuery->where('company_id', $company_id)->get();
             $divisions = $divisionsQuery->where('company_id', $company_id)->get();
         } else {
-            $archives = $archivesQuery->where('status', 1)->where('company_id', $company_id)->where('division_id', $division_id)->get();
+            $archives = $archivesQuery->where('archive_status', 'baik')->where('company_id', $company_id)->where('division_id', $division_id)->get();
             $divisions = $divisionsQuery->where('company_id', $company_id)->where('id', $division_id)->get();
         }
         if (request()->ajax()) {
@@ -54,7 +54,7 @@ class DestructionArchiveController extends Controller
                     </div>
                 </li>';
                     } else {
-                        if ($item->status == 10) {
+                        if ($item->archive_status == 'musnah') {
                             $html .= '<span style="color: red">Dimusnahkan</span>';
                         }
                     }
@@ -184,7 +184,7 @@ class DestructionArchiveController extends Controller
 
         // Update the status for unchecked items
         if (! empty($uncheckedIds)) {
-            ArchiveContainer::whereIn('id', $uncheckedIds)->update(['status' => 10]);
+            ArchiveContainer::whereIn('id', $uncheckedIds)->update(['archive_status' => 'musnah']);
         }
 
         alert()->success('Success', 'Data updated successfully.');
@@ -212,7 +212,7 @@ class DestructionArchiveController extends Controller
 
         // Update the status for unchecked items
         if (! empty($checkedIds)) {
-            ArchiveContainer::whereIn('id', $checkedIds)->update(['status' => 10]);
+            ArchiveContainer::whereIn('id', $checkedIds)->update(['archive_status' => 'musnah']);
         }
 
         alert()->success('Success', 'Data updated successfully.');
@@ -232,7 +232,7 @@ class DestructionArchiveController extends Controller
         $archiveContainers = ArchiveContainer::where('division_id', $divisions->id)
             ->whereDate('expiration_inactive', '<', now()->toDateString())
             ->orderBy('created_at', 'desc')
-            ->where('status', 1)
+            ->where('archive_status', 'baik')
             ->get();
         return view('pages.transaction-archive.destruction-archive.division-destruct', compact('divisions', 'archiveContainers'));
     }
@@ -248,7 +248,7 @@ class DestructionArchiveController extends Controller
 
         // $divisions = Division::with('archive_container')->findOrFail($decrypt_id);
         $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')
-            ->where('status', 10)
+            ->where('archive_status', 'musnah')
             ->get();
         return view('pages.transaction-archive.destruction-archive.archive-destroy', compact('archiveContainers'));
     }
@@ -268,7 +268,7 @@ class DestructionArchiveController extends Controller
         }
 
         // Update the status of the archive container
-        $archive->update(['status' => 1]);
+        $archive->update(['archive_status' => 'baik']);
 
         // Display a success message
         alert()->success('Success', 'Data successfully updated');
