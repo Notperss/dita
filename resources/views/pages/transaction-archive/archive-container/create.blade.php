@@ -240,7 +240,7 @@
                     </div>
                     <div class="form-group">
                       <label for="regarding">Perihal</label>
-                      <textarea type="text" id="regarding" class="form-control" name="regarding" rows="5"></textarea>
+                      <textarea type="text" id="regarding" class="form-control" name="regarding" rows="7"></textarea>
                       @if ($errors->has('regarding'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('regarding') }}</p>
@@ -281,7 +281,7 @@
 
                     <div class="form-group">
                       <label for="tag">Tag</label>
-                      <textarea maxlength="200" type="text" id="tag" class="form-control" name="tag" rows="5"></textarea>
+                      <textarea maxlength="200" type="text" id="tag" class="form-control" name="tag" rows="7"></textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('tag') }}</p>

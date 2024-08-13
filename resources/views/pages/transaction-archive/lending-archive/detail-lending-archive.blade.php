@@ -24,8 +24,21 @@
     @elsecan('approval')
       @if (!$id->has_finished && $lendings->is_approve === null)
         <button type="submit" class="btn btn-primary bg-primary my-2">Submit</button>
-      @elseif ($lendings->lending->has_finished == false && $hasAccepted)
+      @elseif ($lendings->lending->has_finished == false && $hasAccepted && !$lendings->has_finished)
         <button type="submit" class="btn btn-primary bg-primary my-2">Submit</button>
+
+        <div class="mb-1" id="uploadFile" style="display: none">
+          <label for="formFileSm" class="form-label">Upload :</label>
+          <input class="form-control form-control-sm" name="file" id="formFileSm" type="file">
+        </div>
+        {{-- @if ($lendings->file)
+            <p>Latest File : {{ pathinfo($lendings->file, PATHINFO_FILENAME) }}</p>
+            <a type="button" data-fancybox data-src="{{ asset('storage/' . $lendings->file) }}"
+              class="btn btn-info btn-sm text-white mb-1">
+              Lihat File
+            </a>
+          @endif
+        </div> --}}
       @endif
     @endcan
     <table class="table table-bordered">
@@ -42,8 +55,13 @@
               <th style="width: 13%; text-align: center">Action</th>
             @elseif ($lendings->lending->has_finished == false && $lendings->is_approve === null)
               <th style="width: 13%; text-align: center">Action</th>
+            @else
+              <th style="width: 13%; text-align: center">Keadaan Arsip</th>
             @endif
           @endcan
+          @if ($lendings->has_finished || $lendings->is_approve)
+            <th>Kondisi Arsip</th>
+          @endif
         </tr>
       </thead>
       <tbody>
@@ -51,9 +69,9 @@
           <input type="hidden" name="id[]" id="id" value="{{ $lendings->id }}">
           <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $lendings->archiveContainer->number_document }}</td>
-            <td>{{ $lendings->archiveContainer->regarding }}</td>
-            <td>{{ $lendings->archiveContainer->division->name }}</td>
+            <td>{{ $lendings->archiveContainer->number_document ?? 'N/A' }}</td>
+            <td>{{ $lendings->archiveContainer->regarding ?? 'N/A' }}</td>
+            <td>{{ $lendings->archiveContainer->division->name ?? 'N/A' }}</td>
             <td>
               @if ($lendings->document_type === 'DIGITAL')
                 <span class="badge bg-light-info">Digital</span>
@@ -72,6 +90,11 @@
                 <span class="badge bg-light-warning">Pengajuan</span>
               @endif
             </td>
+            @if ($lendings->has_finished)
+              <td>
+                <span class="badge bg-light-primary">{{ $lendings->damage_status }}</span>
+              </td>
+            @endif
 
             @can('super_admin')
               @if ($lendings->lending->has_finished == false)
@@ -162,7 +185,7 @@
                   </div>
 
                 </td>
-              @elseif ($lendings->lending->has_finished == false && $lendings->is_approve)
+              @elseif ($lendings->lending->has_finished == false && $lendings->is_approve && !$lendings->has_finished)
                 <td>
                   @can('approval')
                     <div class="form-check" hidden>
@@ -175,46 +198,68 @@
                         </label>
                       </div>
                     </div>
-                  @endcan
-                  <div class="form-check" style="font-size:125%">
-                    <input class="form-check-input" type="radio" name="damage_status[{{ $lendings->id }}]"
-                      id="defect{{ $loop->index }}" value="rusak" @if ($lendings->damage_status == 'rusak') checked @endif>
-                    <label class="form-check-label" for="defect{{ $loop->index }}">
-                      Arsip Rusak
-                    </label>
-                  </div>
-                  <div class="form-check" style="font-size:125%">
-                    <input class="form-check-input" type="radio" name="damage_status[{{ $lendings->id }}]"
-                      id="lost{{ $loop->index }}" value="hilang" @if ($lendings->damage_status == 'hilang') checked @endif>
-                    <label class="form-check-label" for="lost{{ $loop->index }}">
-                      Arsip Hilang
-                    </label>
-                  </div>
-                  <div class="form-check" style="font-size:125%">
-                    <input class="form-check-input" type="radio" name="damage_status[{{ $lendings->id }}]"
-                      id="lost{{ $loop->index }}" value="baik" @if ($lendings->damage_status == 'baik') checked @endif>
-                    <label class="form-check-label" for="lost{{ $loop->index }}">
-                      Tidak Ada
-                    </label>
-                  </div>
-                  <div class="mb-1">
-                    <label for="formFileSm{{ $lendings->id }}" class="form-label">Upload</label>
-                    <input class="form-control form-control-sm" name="files[{{ $lendings->id }}]"
-                      id="formFileSm{{ $lendings->id }}" type="file"
-                      onchange="updateFileName('{{ $lendings->id }}')">
-                    <br>
-                    @if ($lendings->file)
-                      <p>Latest File : {{ pathinfo($lendings->file, PATHINFO_FILENAME) }}</p>
-                      <a type="button" data-fancybox data-src="{{ asset('storage/' . $lendings->file) }}"
-                        class="btn btn-info btn-sm text-white mb-1">
-                        Lihat File
-                      </a>
+                    <div class="form-check" style="font-size:125%">
+                      <input class="form-check-input" type="radio" name="damage_status[{{ $lendings->id }}]"
+                        id="defect{{ $loop->index }}" value="rusak" @if ($lendings->damage_status == 'rusak') checked @endif>
+                      <label class="form-check-label" for="defect{{ $loop->index }}">
+                        Arsip Rusak
+                      </label>
+                    </div>
+                    <div class="form-check" style="font-size:125%">
+                      <input class="form-check-input" type="radio" name="damage_status[{{ $lendings->id }}]"
+                        id="lost{{ $loop->index }}" value="hilang" @if ($lendings->damage_status == 'hilang') checked @endif>
+                      <label class="form-check-label" for="lost{{ $loop->index }}">
+                        Arsip Hilang
+                      </label>
+                    </div>
+                    <div class="form-check" style="font-size:125%">
+                      <input class="form-check-input" type="radio" name="damage_status[{{ $lendings->id }}]"
+                        id="baik{{ $loop->index }}" value="baik" @if ($lendings->damage_status == 'baik') checked @endif>
+                      <label class="form-check-label" for="baik{{ $loop->index }}">
+                        Baik
+                      </label>
+                    </div>
+                    <input type="hidden" name="has_finished" value="1">
+
+                    {{-- <div class="mb-1">
+                      <label for="formFileSm{{ $lendings->id }}" class="form-label">Upload</label>
+                      <input class="form-control form-control-sm" name="files[{{ $lendings->id }}]"
+                        id="formFileSm{{ $lendings->id }}" type="file"
+                        onchange="updateFileName('{{ $lendings->id }}')">
                       <br>
-                      <span id="fileName{{ $lendings->id }}" class="form-text mt-2" style="font-size: 110%"></span>
-                    @else
-                      <span id="fileName{{ $lendings->id }}" class="form-text mt-2" style="font-size: 110%"></span>
-                    @endif
-                  </div>
+                      @if ($lendings->file)
+                        <p>Latest File : {{ pathinfo($lendings->file, PATHINFO_FILENAME) }}</p>
+                        <a type="button" data-fancybox data-src="{{ asset('storage/' . $lendings->file) }}"
+                          class="btn btn-info btn-sm text-white mb-1">
+                          Lihat File
+                        </a>
+                        <br>
+                        <span id="fileName{{ $lendings->id }}" class="form-text mt-2" style="font-size: 110%"></span>
+                      @else
+                        <span id="fileName{{ $lendings->id }}" class="form-text mt-2" style="font-size: 110%"></span>
+                      @endif
+                    </div> --}}
+
+                    <script>
+                      $(document).ready(function() {
+                        // Function to toggle the file upload visibility
+                        function toggleFileUpload() {
+                          // Check if the "Baik" radio button is selected
+                          if ($("#baik{{ $loop->index }}").is(':checked')) {
+                            $("#uploadFile").hide(); // Hide file input if "Baik" is selected
+                          } else {
+                            $("#uploadFile").show(); // Show file input otherwise
+                          }
+                        }
+
+                        // Bind change event to the radio buttons
+                        $("input[name='damage_status[{{ $lendings->id }}]']").change(toggleFileUpload);
+
+                        // Call the function on page load to set the initial state
+                        toggleFileUpload();
+                      });
+                    </script>
+                  @endcan
                 </td>
               @endif
             @endcan
@@ -230,20 +275,20 @@
   </form>
 </div>
 <script>
-  function updateFileName(id) {
-    var input = document.getElementById('formFileSm' + id);
-    if (input.files.length > 0) {
-      var fileName = input.files[0].name;
-      document.getElementById('fileName' + id).textContent = 'File Update : ' + fileName;
-    } else {
-      document.getElementById('fileName' + id).textContent = 'No file chosen';
-    }
-  }
+  // function updateFileName(id) {
+  //   var input = document.getElementById('formFileSm' + id);
+  //   if (input.files.length > 0) {
+  //     var fileName = input.files[0].name;
+  //     document.getElementById('fileName' + id).textContent = 'File Update : ' + fileName;
+  //   } else {
+  //     document.getElementById('fileName' + id).textContent = 'No file chosen';
+  //   }
+  // }
 
-  // Optional: Ensure the script runs after the DOM has fully loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Code to ensure functionality is applied
-  });
+  // // Optional: Ensure the script runs after the DOM has fully loaded
+  // document.addEventListener('DOMContentLoaded', function() {
+  //   // Code to ensure functionality is applied
+  // });
 
   Fancybox.bind('[data-fancybox]', {
     infinite: false

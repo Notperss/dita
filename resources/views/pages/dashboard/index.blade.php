@@ -11,17 +11,18 @@
     <section class="row">
       <div class="col-12 col-lg-12">
 
+        {{-- ARCHIVES --}}
         <div class="row">
           <div class="col-6 col-lg-2 col-md-6">
             <div class="card">
               <div class="card-body px-4 py-4-5">
                 <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                     <div class="stats-icon purple mb-2">
                       <i class="ri-archive-stack-line"></i>
                     </div>
                   </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                     <h6 class="text-muted font-semibold">Total Semua Arsip</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
@@ -39,13 +40,13 @@
             <div class="card">
               <div class="card-body px-4 py-4-5">
                 <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                     <div class="stats-icon blue mb-2">
-                      <i class="ri-archive-fill"></i>
+                      <i class="ri-file-text-fill"></i>
                     </div>
                   </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                    <h6 class="text-muted font-semibold">Total Arsip Tahun Ini</h6>
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+                    <h6 class="text-muted font-semibold">Arsip Tahun Ini</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
                         {{ DB::table('archive_containers')->whereYear('created_at', now()->year)->count() }}
@@ -62,13 +63,13 @@
             <div class="card">
               <div class="card-body px-4 py-4-5">
                 <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                     <div class="stats-icon green mb-2">
-                      <i class="ri-archive-line"></i>
+                      <i class="ri-file-text-line"></i>
                     </div>
                   </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                    <h6 class="text-muted font-semibold">Total Arsip Bulan Ini</h6>
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+                    <h6 class="text-muted font-semibold">Arsip Bulan Ini</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
                         {{ DB::table('archive_containers')->whereMonth('created_at', now()->month)->count() }}
@@ -86,12 +87,12 @@
             <div class="card">
               <div class="card-body px-4 py-4-5">
                 <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                     <div class="stats-icon mb-2">
                       <i class="ri-file-check-line"></i>
                     </div>
                   </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                     <h6 class="text-muted font-semibold">Total Arsip Aktif</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
@@ -109,12 +110,12 @@
             <div class="card">
               <div class="card-body px-4 py-4-5">
                 <div class="row">
-                  <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                     <div class="stats-icon red mb-2">
                       <i class="ri-file-close-line"></i>
                     </div>
                   </div>
-                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12">
                     <h6 class="text-muted font-semibold">Total Arsip Inaktif</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
@@ -129,6 +130,81 @@
             </div>
           </div>
         </div>
+
+        {{-- BOX CONTAINER --}}
+        <div class="row">
+          <div class="col-6 col-lg-4 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
+                    <div class="stats-icon blue mb-2">
+                      <i class="ri-box-3-fill"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Total Box Container</h6>
+                    <h6 class="font-extrabold mb-0">
+                      @can('super_admin')
+                        {{ DB::table('location_containers')->count() }}
+                      @else
+                        {{ DB::table('location_containers')->where('company_id', $companies)->count() }}
+                      @endcan
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-4 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
+                    <div class="stats-icon green mb-2">
+                      <i class="ri-archive-fill"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Total Box Tahun Ini</h6>
+                    <h6 class="font-extrabold mb-0">
+                      @can('super_admin')
+                        {{ DB::table('location_containers')->whereYear('created_at', now()->year)->count() }}
+                      @else
+                        {{ DB::table('location_containers')->where('company_id', $companies)->whereYear('created_at', now()->year)->count() }}
+                      @endcan
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-4 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
+                    <div class="stats-icon red mb-2">
+                      <i class="ri-archive-line"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Total Box Bulan Ini</h6>
+                    <h6 class="font-extrabold mb-0">
+                      @can('super_admin')
+                        {{ DB::table('location_containers')->whereMonth('created_at', now()->month)->count() }}
+                      @else
+                        {{ DB::table('location_containers')->where('company_id', $companies)->whereMonth('created_at', now()->month)->count() }}
+                      @endcan
+                    </h6>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         @foreach ($workUnits as $company)
           <div class="row">
@@ -270,23 +346,33 @@
                           <th scope="col">No. Dokumen</th>
                           <th scope="col" style="width: 20%">Divisi</th>
                           <th scope="col">Status</th>
-                          {{-- <th scope="col">Tipe</th> --}}
                         </tr>
                       </thead>
                       <tbody>
                         @forelse ($lendingTopten as $lending)
                           <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $lending->archiveContainer->number_document ?? 'N/A' }}</td>
+                            <td>
+                              {{ $lending->archiveContainer->number_document ?? 'N/A' }}
+                            </td>
                             <td>{{ $lending->archiveContainer->division->code ?? 'N/A' }}</td>
                             <td>
-                              @if ($lending->archiveContainer->is_lend)
-                                <span class="badge bg-light-warning">Dipinjam</span>
+                              @if ($lending->archiveContainer)
+                                @if ($lending->archiveContainer)
+                                  <span class="badge bg-light-warning">Dipinjam</span>
+                                @else
+                                  <span class="badge bg-light-info">Dikembalikan</span>
+                                @endif
                               @else
-                                <span class="badge bg-light-info">Dikembalikan</span>
+                                <span>
+                                  @can('super_admin')
+                                    <small> ID : {{ $lending->archive_container_id }}</small>
+                                  @else
+                                    -
+                                  @endcan
+                                </span>
                               @endif
                             </td>
-                            {{-- <td>{{ $lending->document_type }}</td> --}}
                           </tr>
                         @empty
                           <tr>
@@ -313,7 +399,6 @@
                         <th scope="col" style="width: 10%">#</th>
                         <th scope="col">No. Dokumen</th>
                         <th scope="col" style="width:20%">Divisi</th>
-                        {{-- <th scope="col">Perihal</th> --}}
                       </tr>
                     </thead>
                     <tbody>
@@ -322,7 +407,6 @@
                           <td>{{ $loop->iteration }}</td>
                           <td>{{ $archive->number_document ?? 'N/A' }}</td>
                           <td>{{ $archive->division->code ?? 'N/A' }}</td>
-                          {{-- <td>{{ $archive->tag }}</td> --}}
                         </tr>
                       @empty
                         <tr>
@@ -398,8 +482,10 @@
           </div>
         </div>
       </div> --}}
+
     </section>
   </div>
+
   <script>
     var monthCounts = [
       @foreach ($monthCounts as $count)

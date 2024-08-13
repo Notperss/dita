@@ -233,7 +233,7 @@
                     </div>
                     <div class="form-group">
                       <label for="regarding">Perihal</label>
-                      <textarea type="text" id="regarding" class="form-control" name="regarding" rows="5">{{ $archiveContainers->regarding }}</textarea>
+                      <textarea type="text" id="regarding" class="form-control" name="regarding" rows="10">{{ $archiveContainers->regarding }}</textarea>
                       @if ($errors->has('regarding'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('regarding') }}</p>
@@ -274,7 +274,7 @@
 
                     <div class="form-group">
                       <label for="tag">Tag</label>
-                      <textarea maxlength="200" type="text" id="tag" class="form-control" name="tag" rows="5">{{ $archiveContainers->tag }}</textarea>
+                      <textarea maxlength="200" type="text" id="tag" class="form-control" name="tag" rows="10">{{ $archiveContainers->tag }}</textarea>
                       @if ($errors->has('tag'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('tag') }}</p>
@@ -292,10 +292,10 @@
                       <label for="document_type">Bentuk Dokumen<code>*</code></label>
                       <select type="text" id="document_type" class="form-control" style="width: 100%"
                         name="document_type" required>
-                        <option value="" disabled selected>Choose</option>
-                        <option value="ASLI" {{ $archiveContainers->document_type = 'ASLI' ? 'selected' : '' }}>Asli
+                        <option value="" disabled>Choose</option>
+                        <option value="ASLI" {{ $archiveContainers->document_type == 'ASLI' ? 'selected' : '' }}>Asli
                         </option>
-                        <option value="COPY"{{ $archiveContainers->document_type = 'COPY' ? 'selected' : '' }}>Copy
+                        <option value="COPY"{{ $archiveContainers->document_type == 'COPY' ? 'selected' : '' }}>Copy
                         </option>
                       </select>
                       @if ($errors->has('document_type'))
@@ -309,7 +309,7 @@
                         name="archive_type" required>
                         <option value="" disabled selected>Choose</option>
                         <option value="PERUSAHAAN"
-                          {{ $archiveContainers->archive_type = 'PERUSAHAAN' ? 'selected' : '' }}>PERUSAHAAN</option>
+                          {{ $archiveContainers->archive_type == 'PERUSAHAAN' ? 'selected' : '' }}>PERUSAHAAN</option>
                         <option value="PROYEK" {{ $archiveContainers->archive_type = 'PROYEK' ? 'selected' : '' }}>
                           PROYEK</option>
                       </select>
