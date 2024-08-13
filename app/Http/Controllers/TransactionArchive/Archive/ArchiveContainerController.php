@@ -645,9 +645,9 @@ class ArchiveContainerController extends Controller
 
     public function dataArchive(Request $request)
     {
-        // if (! Gate::allows('archive_container_index')) {
-        //     abort(403);
-        // }
+        if (! Gate::allows('all_archive')) {
+            abort(403);
+        }
 
         if (request()->ajax()) {
 

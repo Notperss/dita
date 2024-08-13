@@ -54,6 +54,18 @@
       @endif
     </td>
   </tr>
+  @if ($lendings->file)
+    <tr>
+      <th>File</th>
+      <td>
+        <a type="button" data-fancybox data-src="{{ asset('storage/' . $lendings->file) }}"
+          class="btn btn-info btn-sm text-white mb-1">
+          Lihat File
+        </a>
+        <p>Latest File : {{ pathinfo($lendings->file, PATHINFO_FILENAME) }}</p>
+      </td>
+    </tr>
+  @endif
 </table>
 <table class="table table-bordered tampildata">
 </table>

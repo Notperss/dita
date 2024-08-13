@@ -283,7 +283,8 @@ class LendingArchiveController extends Controller
         // Get the approval values from the request
         $approvals = $request->input('approval');
         $damagedStatuses = $request->input('damage_status');
-        $files = $request->file('files');
+        $files = $request->file('file');
+        $has_finished = $request->has_finished;
 
 
         // Update the LendingArchive records for each approval value
@@ -295,15 +296,17 @@ class LendingArchiveController extends Controller
             // Fetch the LendingArchive record
             $lendingArchive = LendingArchive::find($approvedId);
 
-            $path_file = $lendingArchive['file'];
+            $path_file = $lendingArchive->lending['file'];
+
             // Handle file upload if a file is provided
-            if (isset($files[$approvedId])) {
-                $file = $files[$approvedId];
+            if (isset($files)) {
+
                 // Save the file to storage/app/public/uploads directory
-                $filePath = $file->storeAs('file-kerusakan-arsip', time() . '-' . Str::random(2) . '-' . $file->getClientOriginalName(), 'nas');
+                $filePath = $files->storeAs('file-kerusakan-arsip', time() . '-' . Str::random(2) . '-' . $files->getClientOriginalName(), 'nas');
 
                 // You can store the file path or name in the database if needed
-                $lendingArchive->file_path = $filePath; // Assuming you have a column for storing file paths
+                $lendingArchive->lending->file = $filePath; // Assuming you have a column for storing file paths
+                $lendingArchive->lending->save();
 
                 // hapus file
                 if ($path_file != null || $path_file != '') {
@@ -320,13 +323,14 @@ class LendingArchiveController extends Controller
                 LendingArchive::where('id', $approvedId)->update([
                     'period' => $approval ? $period : null,
                     'is_approve' => $approval,
-                    'damage_status' => $damagedStatus !== null ? $damagedStatus : $lendingArchive->damaged_status,
-                    'file' => $lendingArchive->file_path,
+                    'damage_status' => $damagedStatus !== null ? $damagedStatus : 'baik',
+                    // 'file' => $lendingArchive->file_path,
+                    'has_finished' => $has_finished !== null ? $has_finished : $lendingArchive->has_finished,
                 ]);
 
                 // dd($approvedId->archiveContainer->id);
                 $archiveContainer = $lendingArchive->archiveContainer;
-                $archiveContainer->update(['archive_status' => $damagedStatus !== null ? $damagedStatus : $lendingArchive->damaged_status]);
+                $archiveContainer->update(['archive_status' => $damagedStatus !== null ? $damagedStatus : $archiveContainer->archive_status]);
 
             }
         }
@@ -356,7 +360,7 @@ class LendingArchiveController extends Controller
 
             // Loop through each lending archive
             foreach ($lendingArchives as $lendingArchive) {
-                $lendingArchive->update(['has_finished' => true]);
+                // $lendingArchive->update(['has_finished' => true]);
 
                 // Check if the archive container relationship exists
                 if ($archiveContainer = $lendingArchive->archiveContainer) {

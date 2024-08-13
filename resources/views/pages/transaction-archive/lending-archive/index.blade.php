@@ -385,7 +385,7 @@
                                   <td>
                                     <div class="btn-group mb-1">
 
-                                      @if ($approval->is_approve !== null && $lending->has_finished == false)
+                                      @if ($approval->is_approve !== null && $lending->has_finished == false && $approval->has_finished)
                                         @can('approval')
                                           <a class="btn btn-sm btn-success"
                                             onclick="update({{ $lending->id }})"><small>Selesai</small></a>
@@ -503,14 +503,13 @@
                                   @endif
 
                                   @if ($archives->period && strtotime($archives->period) >= strtotime('now'))
-                                    @if ($archives->archiveContainer->file && $archives->document_type == 'DIGITAL')
+                                    @if ($archives->archiveContainer->file)
+                                      {{-- @if ($archives->archiveContainer->file && $archives->document_type == 'DIGITAL') --}}
                                       <a type="button" class="badge bg-light-success mt-1" data-fancy
                                         data-custom-class="pdf"
                                         data-src="{{ asset('storage/' . $archives->archiveContainer->file) }}"
                                         class="dropdown-item">
-
                                         Lihat File
-
                                       </a>
                                     @endif
                                     {{-- @else

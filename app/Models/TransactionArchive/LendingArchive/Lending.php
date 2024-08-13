@@ -20,6 +20,7 @@ class Lending extends Model
         'status',//
         'has_finished',//
         'description',//
+        'file',//
     ];
 
     public function lendingArchive()
