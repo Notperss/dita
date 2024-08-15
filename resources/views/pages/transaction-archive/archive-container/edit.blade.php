@@ -308,9 +308,9 @@
                       <select type="text" id="archive_type" class="form-control" style="width: 100%"
                         name="archive_type" required>
                         <option value="" disabled selected>Choose</option>
-                        <option value="PERUSAHAAN"
-                          {{ $archiveContainers->archive_type == 'PERUSAHAAN' ? 'selected' : '' }}>PERUSAHAAN</option>
-                        <option value="PROYEK" {{ $archiveContainers->archive_type = 'PROYEK' ? 'selected' : '' }}>
+                        <option value="NON-PROYEK"
+                          {{ $archiveContainers->archive_type == 'NON-PROYEK' ? 'selected' : '' }}>NON-PROYEK</option>
+                        <option value="PROYEK" {{ $archiveContainers->archive_type == 'PROYEK' ? 'selected' : '' }}>
                           PROYEK</option>
                       </select>
                       @if ($errors->has('archive_type'))

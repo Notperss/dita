@@ -197,7 +197,7 @@ class ArchiveContainerController extends Controller
             'archive_type' => 'required|string',
             'archive_in' => 'required|date',
 
-            'number_app' => 'required|string|unique:archive_containers',
+            'number_app' => 'string|unique:archive_containers',
             'number_container' => 'required|string',
             'year' => 'required|string',
 
@@ -217,17 +217,6 @@ class ArchiveContainerController extends Controller
 
         // Retrieve form data
         $data = $request->all();
-
-        // Assuming you have a 'division_id' field in your data
-        if (isset($data['division_id'])) {
-            // Retrieve data related to the division
-            $divisionData = Division::findOrFail($data['division_id'])->code;
-            // Here, 'code' is the attribute you want to retrieve from the Division model
-
-            // Now, you can use $divisionData as needed
-            // For example, you can attach it to the $data array
-            $data['division_code'] = $divisionData;
-        }
 
         // Process file upload only if a file is uploaded
         if ($request->hasFile('file')) {
@@ -261,7 +250,6 @@ class ArchiveContainerController extends Controller
 
             $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
             $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
-            // $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
 
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first100Chars . ' )' . '-' . Str::random(5);
@@ -285,8 +273,6 @@ class ArchiveContainerController extends Controller
                 return redirect()->back()->withInput();
             }
         }
-
-        $company_id = Auth::user()->company_id;
 
         if (isset($data['masa_aktif']) && is_numeric($data['masa_aktif'])) {
             // Add a specific number of years to the current date if dateArchive does not exist
@@ -316,6 +302,17 @@ class ArchiveContainerController extends Controller
             // Set expiration_active to 'permanent'
             $data['expiration_inactive'] = 'PERMANEN';
         }
+
+        $divisionData = Division::findOrFail($data['division_id'])->code;
+
+        // Correct the ternary operator to ensure it applies only to the document type
+        $documentType = $data['document_type'] == 'COPY' ? 'C' : 'A';
+        $latestRecord = DB::table('archive_containers')->latest()->first();
+        $lastId = $latestRecord ? $latestRecord->id + 1 : '1';
+        $number_app = $divisionData . '/' . $data['number_container'] . '/' . $documentType . '/' . $data['year'] . '/' . $lastId;
+        $data['number_app'] = $number_app;
+
+        $company_id = Auth::user()->company_id;
         // Merge the company_id into the request data
         $requestData = array_merge($data, ['company_id' => $company_id]);
         // Store to database
@@ -418,22 +415,10 @@ class ArchiveContainerController extends Controller
         // Retrieve form data
         $data = $request->all();
 
-        // Assuming you have a 'division_id' field in your data
-        if (isset($data['division_id'])) {
-            // Retrieve data related to the division
-            $divisionData = Division::findOrFail($data['division_id'])->code;
-            // Here, 'code' is the attribute you want to retrieve from the Division model
-
-            // Now, you can use $divisionData as needed
-            // For example, you can attach it to the $data array
-            $data['division_code'] = $divisionData;
-        }
-
         $path_file = $archiveContainer['file'];
         // Process file upload only if a file is uploaded
         if ($request->hasFile('file')) {
             $files = $request->file('file');
-
 
             //PDF TO TEXT
             // if ($files->getClientOriginalExtension() == 'pdf') {
@@ -467,7 +452,6 @@ class ArchiveContainerController extends Controller
 
             $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
             $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
-            // $regarding = str_replace($replaceInvalidCharacters, '-', $data['regarding']);
 
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
@@ -557,30 +541,6 @@ class ArchiveContainerController extends Controller
         return back();
     }
 
-    // public function form_upload(Request $request)
-    // {
-    //     if ($request->ajax()) {
-
-    //         $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
-    //         $divisions = Division::orderBy('id', 'asc')->get();
-    //         $mainClassifications = MainClassification::orderBy('name', 'asc')->get();
-    //         // $divisions = Division::orderBy('id', 'asc')->get();
-    //         $sections = Section::orderBy('id', 'asc')->get();
-    //         $data = [
-    //             'archiveContainers' => $archiveContainers,
-    //             'divisions' => $divisions,
-    //             'sections' => $sections,
-    //             'mainClassifications' => $mainClassifications,
-    //         ];
-
-    //         $msg = [
-    //             'data' => view('pages.transaction-archive.archive-container.form-upload', $data)->render(),
-    //         ];
-
-    //         return response()->json($msg);
-    //     }
-    // }
-
     public function getNumberContainer(Request $request)
     {
         $divisionId = $request->input('division_id');
@@ -591,10 +551,10 @@ class ArchiveContainerController extends Controller
             return [
                 'id' => $detailLocation->id,
                 'number_container' => $detailLocation->number_container,
-                'nameMainLocation' => $detailLocation->mainLocation->name, // Assuming 'name' is a property in the 'mainLocation' model
-                'nameSubLocation' => $detailLocation->subLocation->name, // Assuming 'name' is a property in the 'mainLocation' model
-                'nameDetailLocation' => $detailLocation->detailLocation->name, // Assuming 'name' is a property in the 'mainLocation' model
-                'descriptionLocation' => $detailLocation->description, // Assuming 'name' is a property in the 'mainLocation' model
+                'nameMainLocation' => $detailLocation->mainLocation->name,
+                'nameSubLocation' => $detailLocation->subLocation->name,
+                'nameDetailLocation' => $detailLocation->detailLocation->name,
+                'descriptionLocation' => $detailLocation->description,
             ];
         });
 
@@ -614,9 +574,9 @@ class ArchiveContainerController extends Controller
             return [
                 'id' => $detailNumber->id,
                 'number_container' => $detailNumber->number_container,
-                'number_document' => $detailNumber->number_document, // Assuming 'name' is a property in the 'mainLocation' model
-                'regarding' => $detailNumber->regarding, // Assuming 'name' is a property in the 'mainLocation' model
-                'archive_type' => $detailNumber->archive_type, // Assuming 'name' is a property in the 'mainLocation' model
+                'number_document' => $detailNumber->number_document,
+                'regarding' => $detailNumber->regarding,
+                'archive_type' => $detailNumber->archive_type,
             ];
         });
 
@@ -651,48 +611,68 @@ class ArchiveContainerController extends Controller
 
         if (request()->ajax()) {
 
-            $company_id = auth()->user()->company_id; // Assuming the company_id is associated with the authenticated user
+            $company_id = auth()->user()->company_id;
 
             if (Gate::allows('super_admin')) {
-                // Super admin: can view all archive containers
                 $archiveContainers = ArchiveContainer::with('division')->where('status', 1)->orderBy('created_at', 'desc');
             } else {
-                // Non-super admin: view archive containers limited to their company
                 $archiveContainers = ArchiveContainer::where('company_id', $company_id)->where('status', 1)
                     ->with('division')
                     ->orderBy('created_at', 'desc');
             }
 
-            // Apply year filter if present
-            if ($request->has('year') && ! empty($request->year)) {
-                $archiveContainers->where('year', $request->year);
+            // // Apply year filter if present
+            // if ($request->has('year') && ! empty($request->year)) {
+            //     $archiveContainers->where('year', $request->year);
+            // }
+            // // Apply regarding filter if present
+            // if ($request->has('regarding') && ! empty($request->regarding)) {
+            //     $archiveContainers->where('regarding', 'like', '%' . $request->regarding . '%');
+            // }
+            // // Apply catalog filter if present
+            // if ($request->has('catalog') && ! empty($request->catalog)) {
+            //     $archiveContainers->where('number_catalog', 'like', '%' . $request->catalog . '%');
+            // }
+            // // Apply document filter if present
+            // if ($request->has('document') && ! empty($request->document)) {
+            //     $archiveContainers->where('number_document', 'like', '%' . $request->document . '%');
+            // }
+            // // Apply archive filter if present
+            // if ($request->has('archive') && ! empty($request->archive)) {
+            //     $archiveContainers->where('number_archive', 'like', '%' . $request->archive . '%');
+            // }
+            // // Apply tag filter if present
+            // if ($request->has('tag') && ! empty($request->tag)) {
+            //     $archiveContainers->where('tag', 'like', '%' . $request->tag . '%');
+            // }
+            // // Apply type filter if present
+            // if ($request->has('type') && ! empty($request->type)) {
+            //     $archiveContainers->where('archive_type', 'like', $request->type);
+            // }
+            // // Apply division filter if present
+            // if ($request->has('division') && ! empty($request->division)) {
+            //     $archiveContainers->whereHas('division', function ($query) use ($request) {
+            //         $query->where('code', 'like', '%' . $request->division . '%');
+            //     });
+            // }
+
+            $filters = [
+                'year' => 'year',
+                'regarding' => 'regarding',
+                'catalog' => 'number_catalog',
+                'document' => 'number_document',
+                'archive' => 'number_archive',
+                'tag' => 'tag',
+                'type' => 'archive_type',
+            ];
+
+            foreach ($filters as $requestKey => $dbColumn) {
+                if ($request->filled($requestKey)) {
+                    $archiveContainers->where($dbColumn, 'like', '%' . $request->$requestKey . '%');
+                }
             }
-            // Apply regarding filter if present
-            if ($request->has('regarding') && ! empty($request->regarding)) {
-                $archiveContainers->where('regarding', 'like', '%' . $request->regarding . '%');
-            }
-            // Apply catalog filter if present
-            if ($request->has('catalog') && ! empty($request->catalog)) {
-                $archiveContainers->where('number_catalog', 'like', '%' . $request->catalog . '%');
-            }
-            // Apply document filter if present
-            if ($request->has('document') && ! empty($request->document)) {
-                $archiveContainers->where('number_document', 'like', '%' . $request->document . '%');
-            }
-            // Apply archive filter if present
-            if ($request->has('archive') && ! empty($request->archive)) {
-                $archiveContainers->where('number_archive', 'like', '%' . $request->archive . '%');
-            }
-            // Apply tag filter if present
-            if ($request->has('tag') && ! empty($request->tag)) {
-                $archiveContainers->where('tag', 'like', '%' . $request->tag . '%');
-            }
-            // Apply type filter if present
-            if ($request->has('type') && ! empty($request->type)) {
-                $archiveContainers->where('archive_type', 'like', $request->type);
-            }
-            // Apply division filter if present
-            if ($request->has('division') && ! empty($request->division)) {
+
+            if ($request->filled('division')) {
                 $archiveContainers->whereHas('division', function ($query) use ($request) {
                     $query->where('code', 'like', '%' . $request->division . '%');
                 });
@@ -790,58 +770,6 @@ class ArchiveContainerController extends Controller
         }
     }
 
-    // public function viewFile($id)
-    // {
-    //     // Find the archive container or fail
-    //     $archiveContainer = ArchiveContainer::findOrFail($id);
-
-    //     // Log the view action
-    //     ArchiveContainerLog::create([
-    //         'archive_container_id' => $archiveContainer->id,
-    //         'user_id' => auth()->id(),
-    //         'ip_address' => request()->ip(),
-    //         'action' => 'viewed',
-    //     ]);
-
-    //     // Define the disk to use
-    //     $disk = Storage::disk('nas');
-
-    //     // Check if the file exists
-    //     if (! $disk->exists($archiveContainer->file)) {
-    //         return response()->json(['error' => 'File not found.'], 404);
-    //     }
-
-    //     // Get the file path
-    //     $filePath = $disk->path($archiveContainer->file);
-
-    //     // Return the file
-    //     return response()->file($filePath);
-    // }
-
-    // public function downloadFile($id)
-    // {
-    //     $archiveContainer = ArchiveContainer::findOrFail($id);
-
-    //     // Increment downloads
-    //     // $archiveContainer->increment('downloads');
-
-    //     // Log the download action
-    //     ArchiveContainerLog::create([
-    //         'archive_container_id' => $archiveContainer->id,
-    //         'user_id' => auth()->id(),
-    //         'ip_address' => request()->ip(),
-    //         'action' => 'download',
-    //     ]);
-
-    //     // Check if the file exists in storage
-    //     $filePath = Storage::disk('nas')->path($archiveContainer->file);
-    //     if (! Storage::disk('nas')->exists($archiveContainer->file)) {
-    //         return response()->json(['error' => 'File not found.'], 404);
-    //     }
-
-    //     // Return the file
-    //     return response()->file($filePath);
-    // }
 
     public function lock($id)
     {

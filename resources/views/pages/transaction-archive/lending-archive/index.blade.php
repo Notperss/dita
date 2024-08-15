@@ -21,12 +21,12 @@
         <div class="card">
           <div class="card-body px-4 py-4-5">
             <div class="row">
-              <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+              <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                 <div class="stats-icon purple mb-2">
                   <i class="iconly-boldShow"></i>
                 </div>
               </div>
-              <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+              <div class="col-md-10 col-lg-12 col-xl-12 col-xxl-10">
                 <a href="{{ route('history') }}">
                   <h6 class="text-muted font-semibold">Riwayat Semua Arsip</h6>
                   <h6 class="font-extrabold mb-0">
@@ -48,15 +48,15 @@
         <div class="card">
           <div class="card-body px-4 py-4-5">
             <div class="row">
-              <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+              <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                 <div class="stats-icon blue mb-2">
                   <i class="ri-file-paper-line"></i>
                 </div>
               </div>
               <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                <h6 class="text-muted font-semibold">Riwayat Fisik</h6>
-                <h6 class="font-extrabold mb-0">
-                  <a href="{{ route('fisik') }}">
+                <a href="{{ route('fisik') }}">
+                  <h6 class="text-muted font-semibold">Riwayat Fisik</h6>
+                  <h6 class="font-extrabold mb-0">
                     @can('super_admin')
                       {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'FISIK')->count() }}
                     @elsecan('admin')
@@ -64,7 +64,7 @@
                     @else
                       {{ DB::table('lending_archives')->where('has_finished', true)->where('document_type', 'FISIK')->where('user_id', auth()->user()->id)->count() }}
                     @endcan
-                </h6>
+                  </h6>
                 </a>
               </div>
             </div>
@@ -75,7 +75,7 @@
         <div class="card">
           <div class="card-body px-4 py-4-5">
             <div class="row">
-              <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+              <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                 <div class="stats-icon green mb-2">
                   <i class="ri-remote-control-line"></i>
                 </div>
@@ -102,7 +102,7 @@
         <div class="card">
           <div class="card-body px-4 py-4-5">
             <div class="row">
-              <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+              <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-12 d-flex justify-content-start ">
                 <div class="stats-icon red mb-2">
                   <i class="ri-mail-close-line"></i>
                 </div>
@@ -280,6 +280,8 @@
                   </tbody>
                 </table>
 
+                <hr>
+
                 <div class="row match-height">
                   <div class="col-12">
                     <div class="card">
@@ -441,6 +443,8 @@
                   </div>
                 </div>
               </div>
+
+              <hr>
 
               <div class="row match-height">
                 <div class="col-12">

@@ -251,7 +251,7 @@
                   <div class="col-md-4 col-4">
                     <div class="form-group">
                       <label for="number_app">Nomor Aplikasi <small>(Otomatis)</small></label>
-                      <input type="text" id="number_app" name="number_app" class="form-control" readonly>
+                      <input type="text" id="number_app" class="form-control" readonly>
                       @if ($errors->has('number_app'))
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('number_app') }}</p>

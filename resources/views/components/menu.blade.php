@@ -5,15 +5,22 @@
             <div class="logo mx-1">
               <a href="{{ route('dashboard.index') }}">
                 @if (Auth::check())
-                  @if (auth()->user()->company)
-                    <img src="{{ asset('storage/' . (auth()->user()->company->logo ?? 'assets/logo-default.png')) }}"
-                      alt="Logo" srcset="" style="width: 150px; height: auto; border-radius: 3%">
+                  @role('super-admin')
+                    <h5 class="my-auto">Welcome, Superadmin!</h5>
                   @else
-                    <img src="{{ asset('/dist/assets/img/cmnplogo.png') }}" alt="Logo" srcset=""
-                      style="width: 150px; height: auto;">
-                  @endif
+                    @if (auth()->user()->company)
+                      @if (auth()->user()->company->logo)
+                        <img src="{{ asset('storage/' . auth()->user()->company->logo) }}" alt="Logo" srcset=""
+                          style="width: 150px; height: auto; border-radius: 3%">
+                      @else
+                        <h5 class="my-auto">Welcome, {{ auth()->user()->name }}!</h5>
+                      @endif
+                    @else
+                      <h5 class="my-auto">Welcome, {{ auth()->user()->name }}!</h5>
+                    @endif
+                  @endrole
                 @else
-                  <h3 class="my-auto">Welcome!</h3>
+                  <h5 class="my-auto">Welcome, Guest!</h5>
                 @endif
               </a>
             </div>
@@ -54,7 +61,7 @@
           <ul class="menu">
             @foreach ($menus as $menu)
               @can($menu->permission_name)
-                <li class="sidebar-title">{{ $menu->name }}</li>
+                {{-- <li class="sidebar-title">{{ $menu->name }}</li>
 
                 @foreach ($menu->items as $item)
                   @can($item->permission_name)
@@ -65,7 +72,37 @@
                     </li>
                   @endcan
                   <!-- end can item -->
-                @endforeach
+                @endforeach --}}
+
+                @php
+                  // Determine if any of the submenu items are active
+                  $isActive = false;
+                  foreach ($menu->items as $item) {
+                      if (request()->routeIs($item->route)) {
+                          $isActive = true;
+                          break;
+                      }
+                  }
+                @endphp
+
+                <li class="sidebar-item has-sub {{ $isActive ? 'active' : '' }} ">
+                  <a href="#" class='sidebar-link'>
+                    {{-- <i class="bi bi-caret-right-fill"></i> --}}
+                    <span>{{ $menu->name }}</span>
+                  </a>
+
+                  <ul class="submenu">
+                    @foreach ($menu->items as $item)
+                      @can($item->permission_name)
+                        <li class="submenu-item {{ request()->routeIs($item->route) ? 'active' : '' }} ">
+                          <a href="{{ route($item->route) }}" class="submenu-link">
+                            {{ $item->name }}</a>
+                        </li>
+                      @endcan
+                    @endforeach
+                  </ul>
+                </li>
+
                 <!-- end foreach items -->
               @endcan
               <!-- end can menu -->
