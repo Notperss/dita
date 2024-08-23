@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\TransactionArchive\FolderDivision;
 
+use App\Models\User;
+use App\Mail\SendEmail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\TransactionArchive\FolderDivision\ItemFileStoreRequest;
+// use Mail;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TransactionArchive\FolderDivision\FolderItem;
 use App\Models\TransactionArchive\FolderDivision\FolderDivision;
 use App\Models\TransactionArchive\FolderDivision\FolderItemFile;
+use App\Http\Requests\TransactionArchive\FolderDivision\ItemFileStoreRequest;
 
 class FolderDivisionController extends Controller
 {
@@ -30,6 +34,8 @@ class FolderDivisionController extends Controller
         if (Gate::allows('super_admin')) {
             $folders = $folderQuery->get();
             $folderFiles = $folderFilesQuery->get();
+            $notifications = $folderFilesQuery->whereNotNull('notification')->get();
+
         }
         //  elseif (Gate::allows('admin')) {
         //     $folders = $folderQuery->where('company_id', $auth->company_id)->get();
@@ -38,12 +44,13 @@ class FolderDivisionController extends Controller
         else {
             $folders = $folderQuery->where('company_id', $auth->company_id)->where('division_id', $auth->division_id)->get();
             $folderFiles = $folderFilesQuery->where('company_id', $auth->company_id)->where('division_id', $auth->division_id)->get();
+            $notifications = $folderFilesQuery->whereNotNull('notification')->where('company_id', $auth->company_id)->where('division_id', $auth->division_id)->get();
         }
 
-        // Debugging
+
         // dd($folders);
 
-        return view('pages.transaction-archive.folder-division.index', compact('folders', 'folderFiles'));
+        return view('pages.transaction-archive.folder-division.index', compact('folders', 'folderFiles', 'notifications'));
     }
 
     /**
@@ -110,6 +117,9 @@ class FolderDivisionController extends Controller
     {
         // Find the folder
         $folders = FolderDivision::findOrFail($id);
+        $allFolders = FolderDivision::where('company_id', auth()->user()->company_id)
+            ->where('division_id', auth()->user()->division_id)
+            ->orderBy('created_at', 'desc')->get();
 
         // Load only direct children (not all descendants)
         $descendants = $folders->children()->get();
@@ -121,7 +131,7 @@ class FolderDivisionController extends Controller
         // if ($folders->parent_id != null) {
         //     abort(404, 'Folder not found or is not a root folder');
         // }
-        return view('pages.transaction-archive.folder-division.show', compact('folders', 'descendants', 'ancestors', 'files'));
+        return view('pages.transaction-archive.folder-division.show', compact('folders', 'allFolders', 'descendants', 'ancestors', 'files'));
     }
 
     /**
@@ -188,8 +198,16 @@ class FolderDivisionController extends Controller
             $id = $request->id;
 
             $row = FolderDivision::findOrFail($id);
+            $users = User::
+                where('company_id', auth()->user()->company_id)
+                ->whereDoesntHave('roles', function ($query) {
+                    $query->whereIn('name', ['super-admin',]);
+                })
+                ->where('email', '!=', auth()->user()->email)
+                ->orderBy('name', 'asc')->get();
             $data = [
                 'id' => $row['id'],
+                'users' => $users,
             ];
 
             $msg = [
@@ -202,6 +220,10 @@ class FolderDivisionController extends Controller
 
     public function upload(Request $request)
     {
+        // $attach = $request->all();
+
+        // dd($attach);
+
         // Custom validation messages
         $messages = [
             'required' => 'The :attribute field is required.',
@@ -210,13 +232,19 @@ class FolderDivisionController extends Controller
                 'string' => ':attribute terlalu panjang (maks 250 karakter).',
             ],
             'unique' => ':attribute already been used.',
+            'email' => ':attribute tidak sesuai, Masukan Email dengan benar.',
         ];
         // Validation rules
         $validator = Validator::make($request->all(), [
             'number' => 'required', // Ensure the parent exists if provided
+            'email' => 'email', // Ensure the parent exists if provided
             'date' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'file.*' => 'required|max:51200' //50MB,
+            'file.*' => 'required|max:51200', //50MB,
+            'email_cc' => 'nullable',
+            // 'attach_file' => 'boolean',
+            // 'email_cc' => 'nullable|array',
+            // 'email_cc.*' => 'nullable|email',
         ], $messages);
 
         // Check if validation fails
@@ -229,6 +257,7 @@ class FolderDivisionController extends Controller
 
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
 
         $auth = auth()->user();
         $folder = FolderDivision::find($request->id);
@@ -243,9 +272,9 @@ class FolderDivisionController extends Controller
         $path = 'file-folder/' . $companyName . '/' . $divisionCode;
 
         foreach ($ancestors as $ancestor) {
-            $path .= '/' . $ancestor->id;
+            $path .= '/' . $ancestor->name;
         }
-        $path .= '/' . $folder->id;
+        $path .= '/' . $folder->name;
 
         $disk_root = config('filesystems.disks.nas.root');
         if (! file_exists($disk_root) || ! is_dir($disk_root)) {
@@ -265,6 +294,10 @@ class FolderDivisionController extends Controller
             }
         }
 
+        // $emailCC = $request->email_cc ? implode(',', $request->email_cc) : null;
+
+        // dd($emailCC);
+
         foreach ($files as $file) {
             FolderItemFile::create([
                 'folder_id' => $request->id,
@@ -275,6 +308,13 @@ class FolderDivisionController extends Controller
                 'date' => $request->date,
                 'description' => $request->description,
                 'file' => $file,
+                'notification' => $request->notification,
+                'date_notification' => $request->date_notification,
+                'email' => $request->email,
+                // 'email' => auth()->user()->email,
+                // 'email_cc' => $emailCC,
+                'email_cc' => $request->email_cc,
+                'attach_file' => $request->attach_file,
             ]);
         }
 
@@ -362,4 +402,46 @@ class FolderDivisionController extends Controller
 
         return redirect()->back();
     }
+
+    public function moveFile($id, Request $request)
+    {
+        $destinationFolder = $request->folderId;
+        // dd($destinationFolder);
+        $file = FolderItemFile::find($id);
+        if ($destinationFolder) {
+
+            $file->folder_id = $destinationFolder;
+            $file->update();
+            alert()->success('Berhasil', 'tidakGagamen!');
+
+        } else {
+            alert()->error('Error', 'Gagalmen!');
+        }
+        // dd($file->is_lock);
+        return redirect()->back();
+        $file->save();
+
+        return redirect()->back();
+    }
+
+    // public function sendMails()
+    // {
+    //     $folderFiles = FolderItemFile::whereNotNull('notification')->whereDate('date_notification', today())->get();
+
+    //     foreach ($folderFiles as $file) {
+    //         $ccRecipients = array_filter(explode(',', $file->email_cc));
+
+    //         $email = Mail::to($file->email);
+
+    //         if (! empty($ccRecipients)) {
+    //             $email->cc($ccRecipients);
+    //         }
+
+    //         $email->send(new SendEmail([
+    //             'title' => $file->notification,
+    //             'body' => $file->description,
+    //         ]));
+    //     }
+
+    // }
 }

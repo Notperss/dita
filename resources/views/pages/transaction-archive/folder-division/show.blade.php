@@ -184,11 +184,12 @@
                     </td>
                     <td class="text-center">
                       @canany(['admin', 'super_admin', 'admin_divisi'])
-                        @if ($file->is_lock)
-                          <p class="text-danger h6">Terkunci</p>
-                        @else
+                        @if (!$file->is_lock)
                           <button onclick="deleteFile({{ $file->id }})" class="btn btn-sm btn-danger">
                             </i>Delete</button>
+                          <a data-bs-toggle="modal" data-bs-target="#modal-form-move-menu-{{ $file->id }}"
+                            class="btn btn-sm btn-info" title="Edit"> Pindah</a>
+                          @include('pages.transaction-archive.folder-division.move-file')
 
                           <form id="deleteFile_{{ $file->id }}"
                             action="{{ route('folder.delete_file', $file->id) }}" method="POST"
@@ -214,6 +215,7 @@
       </div>
     </div>
 
+    <!-- EDIT FOLDER -->
     <div class="modal fade" data-backdrop="false" id="mymodal" tabindex="-1" dialog>
       <div class="modal-dialog modal-md">
         <div class="modal-content">

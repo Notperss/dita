@@ -56,6 +56,13 @@ class FolderItemFile extends Model
         'description',
         'file',
         'is_lock',
+
+
+        'notification',
+        'date_notification',
+        'email',
+        'email_cc',
+        'attach_file',
     ];
 
     public function company()

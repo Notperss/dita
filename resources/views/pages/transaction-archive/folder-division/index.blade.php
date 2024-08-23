@@ -172,6 +172,67 @@
 
     <div class="card">
       <div class="card-header">
+        <h5 class="card-title">Notification</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped" id="table1">
+            <thead>
+              <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Nomor</th>
+                <th class="text-center">Tanggal Notifikasi</th>
+                <th class="text-center">Pengingat</th>
+                <th class="text-center">Keterangan</th>
+                <th class="text-center">Folder</th>
+                {{-- <th class="text-center">File</th> --}}
+                {{-- <th class="text-center">Action</th> --}}
+              </tr>
+            </thead>
+            <tbody>
+              @foreach ($notifications as $notif)
+                <tr>
+                  <td class="text-center">{{ $loop->iteration }}</td>
+                  <td class="text-center">{{ $notif->number ?? 'N/A' }}</td>
+                  <td class="text-center">
+                    {{ Carbon\Carbon::parse($notif->date_notifikasi)->translatedFormat('l, d F Y') ?? 'N/A' }}
+                  </td>
+                  <td class="text-center">{{ $notif->notification ?? 'N/A' }}</td>
+                  <td class="text-center">{{ $notif->description ?? 'N/A' }}</td>
+                  <td class="text-center">
+                    @if ($notif->folder->ancestors->count() > 3)
+                      .../
+                    @endif
+                    @forelse ($notif->folder->ancestors->slice(-3) as $ancestor)
+                      <small>{{ $ancestor->name }}</small> /
+                    @empty
+                    @endforelse
+                    <strong>
+                      <a href="{{ route('folder.show', $notif->folder->id) }}">{{ $notif->folder->name }}</a>
+                    </strong>
+                  </td>
+                  {{-- <td class="text-center"><a type="button" href="{{ asset('storage/' . $file->file) }}"
+                      class="btn btn-warning btn-sm text-white " download>Unduh</a>
+                    <p class="mt-1"><small>{{ pathinfo($file->file, PATHINFO_FILENAME) }}</small></p>
+                  </td> --}}
+                  {{-- <td class="text-center">Action</td> --}}
+                  {{-- <td class="text-center">
+                    @foreach ($file->ancestors as $ances)
+                      {{ $ances->name }},
+                    @endforeach
+                  </td> --}}
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="viewmodal" style="display: none;"></div>
+    </div>
+
+    <!--Recent-->
+    <div class="card">
+      <div class="card-header">
         <h5 class="card-title">Recent File</h5>
       </div>
       <div class="card-body">

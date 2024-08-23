@@ -218,6 +218,15 @@ class ArchiveContainerController extends Controller
         // Retrieve form data
         $data = $request->all();
 
+        $divisionData = Division::findOrFail($data['division_id'])->code;
+
+        // Correct the ternary operator to ensure it applies only to the document type
+        $documentType = $data['document_type'] == 'COPY' ? 'C' : 'A';
+        $latestRecord = DB::table('archive_containers')->latest()->first();
+        $lastId = $latestRecord ? $latestRecord->id + 1 : '1';
+        $number_app = $divisionData . '/' . $data['number_container'] . '/' . $documentType . '/' . $data['year'] . '/' . $lastId;
+        $data['number_app'] = $number_app;
+
         // Process file upload only if a file is uploaded
         if ($request->hasFile('file')) {
             $files = $request->file('file');
@@ -248,7 +257,7 @@ class ArchiveContainerController extends Controller
 
             $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
 
-            $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
+            $numberApp = str_replace($replaceInvalidCharacters, '-', $number_app);
             $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
 
             $file = $files->getClientOriginalName();
@@ -265,7 +274,7 @@ class ArchiveContainerController extends Controller
             }
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'nas');
+            $data['file'] = $files->storeAs('file-arsip/' . $divisionData . '/' . $data['number_container'], $fullname, 'nas');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -303,14 +312,7 @@ class ArchiveContainerController extends Controller
             $data['expiration_inactive'] = 'PERMANEN';
         }
 
-        $divisionData = Division::findOrFail($data['division_id'])->code;
 
-        // Correct the ternary operator to ensure it applies only to the document type
-        $documentType = $data['document_type'] == 'COPY' ? 'C' : 'A';
-        $latestRecord = DB::table('archive_containers')->latest()->first();
-        $lastId = $latestRecord ? $latestRecord->id + 1 : '1';
-        $number_app = $divisionData . '/' . $data['number_container'] . '/' . $documentType . '/' . $data['year'] . '/' . $lastId;
-        $data['number_app'] = $number_app;
 
         $company_id = Auth::user()->company_id;
         // Merge the company_id into the request data
@@ -415,6 +417,12 @@ class ArchiveContainerController extends Controller
         // Retrieve form data
         $data = $request->all();
 
+        $divisionData = Division::findOrFail($data['division_id'])->code;
+
+        $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
+        $numberAppRep = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
+        $tagRep = str_replace($replaceInvalidCharacters, '-', $data['tag']);
+
         $path_file = $archiveContainer['file'];
         // Process file upload only if a file is uploaded
         if ($request->hasFile('file')) {
@@ -447,16 +455,10 @@ class ArchiveContainerController extends Controller
             //     $data['content_file'] = $filteredText;
             // }
 
-
-            $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
-
-            $numberApp = str_replace($replaceInvalidCharacters, '-', $data['number_app']);
-            $tag = str_replace($replaceInvalidCharacters, '-', $data['tag']);
-
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
             $extension = $files->getClientOriginalExtension();
-            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . Str::random(3);
+            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberAppRep . '_' . $tagRep . '_' . Str::random(3);
             $fullname = $basename . '.' . $extension;
 
             // Check if the disk root directory exists
@@ -467,7 +469,7 @@ class ArchiveContainerController extends Controller
             }
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('file-arsip/' . $data['division_code'] . '/' . $data['number_container'], $fullname, 'nas');
+            $data['file'] = $files->storeAs('file-arsip/' . $divisionData . '/' . $data['number_container'], $fullname, 'nas');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -480,6 +482,27 @@ class ArchiveContainerController extends Controller
                 Storage::disk('nas')->delete($path_file);
             }
         }
+
+        if ($data['tag'] != $archiveContainer['tag'] || $data['number_app'] != $archiveContainer['number_app'] && $path_file) {
+
+            // Extract the original file name and extension
+            // $originalName = pathinfo($path_file, PATHINFO_FILENAME);
+            $ext = pathinfo($path_file, PATHINFO_EXTENSION);
+            $checkedName = $numberAppRep . '_' . $tagRep . '_' . Str::random(5) . '.' . $ext;
+
+            // Define the new file path
+            $newPath = dirname($path_file) . '/' . $checkedName;
+
+            // Rename the file in the storage
+            if (Storage::disk('nas')->exists($path_file)) {
+                Storage::disk('nas')->move($path_file, $newPath);
+            }
+
+            // Update the folderFile record with the new name
+            $archiveContainer->file = $newPath;
+            $archiveContainer->update();
+        }
+
 
         if (isset($data['masa_aktif']) && is_numeric($data['masa_aktif'])) {
             // Add a specific number of years to the current date if dateArchive does not exist
@@ -544,7 +567,7 @@ class ArchiveContainerController extends Controller
     public function getNumberContainer(Request $request)
     {
         $divisionId = $request->input('division_id');
-        $detailLocations = ContainerLocation::with('mainLocation')->where('division_id', $divisionId)->get();
+        $detailLocations = ContainerLocation::with('mainLocation')->where('division_id', $divisionId)->latest()->get();
 
         // Extracting relevant data and adding 'name' property
         $formattedDetailLocations = $detailLocations->map(function ($detailLocation) {
@@ -731,6 +754,7 @@ class ArchiveContainerController extends Controller
         $deletedArchives = ArchiveContainer::onlyTrashed()->get();
         return view('pages.transaction-archive.archive-container.deleted-archives', compact('deletedArchives'));
     }
+
     public function restoreArchives($id)
     {
         if (! Gate::allows('super_admin')) {
@@ -746,6 +770,7 @@ class ArchiveContainerController extends Controller
             return back();
         }
     }
+
     public function forceDelete($id)
     {
         if (! Gate::allows('super_admin')) {
@@ -769,7 +794,6 @@ class ArchiveContainerController extends Controller
             return back();
         }
     }
-
 
     public function lock($id)
     {
@@ -818,8 +842,37 @@ class ArchiveContainerController extends Controller
     public function movingArchive($id, Request $request)
     {
         $archiveContainer = ArchiveContainer::find($id);
+        $path_file = $archiveContainer['file'];
+
+        $divisionData = Division::findOrFail($archiveContainer['division_id'])->code;
 
         $container = $request->all();
+        $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
+        $numberAppRep = str_replace($replaceInvalidCharacters, '-', $container['number_app']);
+        $tagRep = str_replace($replaceInvalidCharacters, '-', $archiveContainer['tag']);
+
+        $numberContainer = $container['number_container'];
+
+        if ($container['number_container'] != $archiveContainer['number_container'] && $path_file) {
+
+            // Extract the original file name and extension
+            // $originalName = pathinfo($path_file, PATHINFO_FILENAME);
+            $ext = pathinfo($path_file, PATHINFO_EXTENSION);
+            $checkedName = $numberAppRep . '_' . $tagRep . '_' . Str::random(5) . '.' . $ext;
+
+            $newDir = 'file-arsip/' . $divisionData . '/' . $numberContainer;
+            $newPath = $newDir . '/' . $checkedName;
+            // dd($newPath);            // Define the new file path
+
+            // Rename the file in the storage
+            if (Storage::disk('nas')->exists($path_file)) {
+                Storage::disk('nas')->move($path_file, $newPath);
+            }
+
+            // Update the folderFile record with the new name
+            $archiveContainer->file = $newPath;
+            $archiveContainer->update();
+        }
 
         ArchiveContainerLog::create([
             'archive_container_id' => $archiveContainer->id,

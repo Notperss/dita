@@ -103,10 +103,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     // Route::get('/get-sub-classification', [RetentionArchivesController::class, 'getSubClassifications'])->name('getSubClassifications');
     Route::get('/get-sub-series', [RetentionArchivesController::class, 'getSeriesClassifications'])->name('getSeriesClassifications');
 
-    //Management Access
-    // Route::resource('type_user', TypeUserController::class);
-    // Route::resource('user', UserController::class);
-
     //Transaction Archives
     Route::resource('archive-container', ArchiveContainerController::class);
     Route::controller(ArchiveContainerController::class)->group(function () {
@@ -164,6 +160,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::delete('/folder/{id}/delete_file', 'delete_file')->name('folder.delete_file');
         Route::get('/lock-folder/{id}', 'lockFolder')->name('lockFolder');
         Route::get('/lock-folder-file/{id}', 'lockFolderFile')->name('lockFolderFile');
+        Route::put('/move/{id}', 'moveFile')->name('folder.moveFile');
+        // Route::get('/send-mail', 'sendMails')->name('sendMails');
     });
 
 
@@ -188,8 +186,6 @@ Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
 
     Route::resource('activity-log', ActivityLogController::class)->only('index');
 
-    // Route::post('view-file/{id}', [ArchiveContainerController::class, 'viewFile'])->name('view.file');
-    // Route::get('download-file/{id}', [ArchiveContainerController::class, 'downloadFile'])->name('download.file');
 });
 
 

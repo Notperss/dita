@@ -22,44 +22,58 @@
                   </li>
                   <li><a class="dropdown-item" href="#">No new mail</a></li>
                 </ul>
-              </li>
-              <li class="nav-item dropdown me-3">
-                <a class="nav-link active dropdown-toggle text-gray-600" href="#" data-bs-toggle="dropdown"
-                  data-bs-display="static" aria-expanded="false">
-                  <i class='bi bi-bell bi-sub fs-4'></i>
-                  <span class="badge badge-notification bg-danger">7</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="dropdownMenuButton">
-                  <li class="dropdown-header">
-                    <h6>Notifications</h6>
-                  </li>
-                  <li class="dropdown-item notification-item">
-                    <a class="d-flex align-items-center" href="#">
-                      <div class="notification-icon bg-primary">
-                        <i class="bi bi-cart-check"></i>
-                      </div>
-                      <div class="notification-text ms-4">
-                        <p class="notification-title font-bold">Successfully check out</p>
-                        <p class="notification-subtitle font-thin text-sm">Order ID #256</p>
-                      </div>
-                    </a>
-                  </li>
-                  <li class="dropdown-item notification-item">
-                    <a class="d-flex align-items-center" href="#">
-                      <div class="notification-icon bg-success">
-                        <i class="bi bi-file-earmark-check"></i>
-                      </div>
-                      <div class="notification-text ms-4">
-                        <p class="notification-title font-bold">Homework submitted</p>
-                        <p class="notification-subtitle font-thin text-sm">Algebra math homework</p>
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <p class="text-center py-2 mb-0"><a href="#">See all notification</a></p>
-                  </li>
-                </ul>
               </li> --}}
+              @if (Auth::check())
+                <li class="nav-item dropdown me-3">
+                  <a class="nav-link active dropdown-toggle text-gray-600" href="#" data-bs-toggle="dropdown"
+                    data-bs-display="static" aria-expanded="false">
+                    <i class='bi bi-bell bi-sub fs-4'></i>
+                    <span class="badge badge-notification bg-danger">
+                      {{ DB::table('folder_item_files')->whereDate('date_notification', today())->whereNotNull('notification')->where('company_id', auth()->user()->company_id)->where('division_id', auth()->user()->division_id)->count() }}
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end notification-dropdown"
+                    aria-labelledby="dropdownMenuButton">
+                    <li class="dropdown-header">
+                      <h6>Notifications Files Folder</h6>
+                    </li>
+                    @php
+                      $files = App\Models\TransactionArchive\FolderDivision\FolderItemFile::whereNotNull('notification')
+                          ->where('company_id', auth()->user()->company_id)
+                          ->where('division_id', auth()->user()->division_id)
+                          ->whereDate('date_notification', today())
+                          ->take(5)
+                          ->get();
+                    @endphp
+
+                    @forelse ($files as $file)
+                      <li class="dropdown-item notification-item">
+                        <a class="d-flex align-items-center" href="{{ route('folder.show', $file->folder->id) }}">
+                          {{-- <div class="notification-icon bg-primary">
+                          <i class="bi bi-cart-check"></i>
+                        </div> --}}
+                          <div class="notification-text ms-4">
+                            <p class="notification-title font-bold">{{ $file->number }}</p>
+                            <p class="notification-subtitle font-thin text-sm">{{ $file->notification }},
+                              {{ Carbon\Carbon::parse($file->date_notification)->translatedFormat('d F Y ') ?? 'N/A' }}
+                            </p>
+                          </div>
+                        </a>
+                      </li>
+
+                    @empty
+                      <li>
+                        <p class="text-center py-2 mb-0">Empty</p>
+                      </li>
+                    @endforelse
+                    <li>
+                      <p class="text-center py-2 mb-0"><a href="{{ route('folder.index') }}">See all notification</a>
+                      </p>
+                    </li>
+                  </ul>
+                </li>
+              @endif
+
             </ul>
             <div class="dropdown">
               <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
