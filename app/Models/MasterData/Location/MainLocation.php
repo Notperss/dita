@@ -5,10 +5,11 @@ namespace App\Models\MasterData\Location;
 use App\Models\MasterData\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MainLocation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'location_mains';
     protected $fillable = [

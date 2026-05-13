@@ -4,9 +4,7 @@
   <x-breadcrumb title="Dashboard" page="Dashboard" active="Dashboard" route="{{ route('dashboard.index') }}" />
 @endsection
 @section('content')
-  {{-- <div class="page-heading">
-    <h3>Dashboard</h3>
-  </div> --}}
+
   <div class="page-content">
     <section class="row">
       <div class="col-12 col-lg-12">
@@ -26,9 +24,9 @@
                     <h6 class="text-muted font-semibold">Total Semua Arsip</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
-                        {{ DB::table('archive_containers')->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->count() }}
                       @else
-                        {{ DB::table('archive_containers')->where('company_id', $companies)->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->where('company_id', $companyId)->count() }}
                       @endcan
                     </h6>
                   </div>
@@ -49,9 +47,9 @@
                     <h6 class="text-muted font-semibold">Arsip Tahun Ini</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
-                        {{ DB::table('archive_containers')->whereYear('created_at', now()->year)->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->whereYear('created_at', now()->year)->count() }}
                       @else
-                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereYear('created_at', now()->year)->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->where('company_id', $companyId)->whereYear('created_at', now()->year)->count() }}
                       @endcan
                     </h6>
                   </div>
@@ -72,9 +70,9 @@
                     <h6 class="text-muted font-semibold">Arsip Bulan Ini</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
-                        {{ DB::table('archive_containers')->whereMonth('created_at', now()->month)->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->whereMonth('created_at', now()->month)->count() }}
                       @else
-                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereMonth('created_at', now()->month)->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->where('company_id', $companyId)->whereMonth('created_at', now()->month)->count() }}
                       @endcan
                     </h6>
                     </h6>
@@ -96,9 +94,9 @@
                     <h6 class="text-muted font-semibold">Total Arsip Aktif</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
-                        {{ DB::table('archive_containers')->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
                       @else
-                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->where('company_id', $companyId)->whereDate('expiration_active', '>=', now()->toDateString())->count() }}
                       @endcan
                     </h6>
                   </div>
@@ -119,9 +117,9 @@
                     <h6 class="text-muted font-semibold">Total Arsip Inaktif</h6>
                     <h6 class="font-extrabold mb-0">
                       @can('super_admin')
-                        {{ DB::table('archive_containers')->whereDate('expiration_active', '<', now()->toDateString())->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->whereDate('expiration_active', '<', now()->toDateString())->count() }}
                       @else
-                        {{ DB::table('archive_containers')->where('company_id', $companies)->whereDate('expiration_active', '<', now()->toDateString())->count() }}
+                        {{ DB::table('archive_containers')->whereNull('deleted_at')->where('company_id', $companyId)->whereDate('expiration_active', '<', now()->toDateString())->count() }}
                       @endcan
                     </h6>
                   </div>
@@ -148,7 +146,7 @@
                       @can('super_admin')
                         {{ DB::table('location_containers')->count() }}
                       @else
-                        {{ DB::table('location_containers')->where('company_id', $companies)->count() }}
+                        {{ DB::table('location_containers')->where('company_id', $companyId)->count() }}
                       @endcan
                     </h6>
                   </div>
@@ -171,7 +169,7 @@
                       @can('super_admin')
                         {{ DB::table('location_containers')->whereYear('created_at', now()->year)->count() }}
                       @else
-                        {{ DB::table('location_containers')->where('company_id', $companies)->whereYear('created_at', now()->year)->count() }}
+                        {{ DB::table('location_containers')->where('company_id', $companyId)->whereYear('created_at', now()->year)->count() }}
                       @endcan
                     </h6>
                   </div>
@@ -194,7 +192,7 @@
                       @can('super_admin')
                         {{ DB::table('location_containers')->whereMonth('created_at', now()->month)->count() }}
                       @else
-                        {{ DB::table('location_containers')->where('company_id', $companies)->whereMonth('created_at', now()->month)->count() }}
+                        {{ DB::table('location_containers')->where('company_id', $companyId)->whereMonth('created_at', now()->month)->count() }}
                       @endcan
                     </h6>
                     </h6>
@@ -204,7 +202,6 @@
             </div>
           </div>
         </div>
-
 
         @foreach ($workUnits as $company)
           <div class="row">
@@ -244,33 +241,20 @@
           </div>
         @endforeach
 
-        {{-- <div class="row">
-          <h5>Total Arsip Divisi</h5>
-          @foreach ($divisions as $division)
-            <div class="col-6 col-lg-2 col-md-6">
-              <div class="card">
-                <div class="card-body ">
-                  <div class="row">
-                    <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
-                      <h6 class="text-muted font-semibold"><a
-                          href="{{ route('division-archive', $division->id) }}"> {{ $division->code }}</a>
-                      </h6>
-                      <h6 class="font-extrabold mb-0">
-                        {{ $division->archive_container->count() }}
-                      </h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          @endforeach
-        </div> --}}
-
         <div class="row">
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h4>Data Arsip Per Bulan ({{ date('Y') }})</h4>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4>Data Input Arsip Per Bulan (<span id="chart-year">{{ date('Y') }}</span>)</h4>
+
+                  <div class="col-md-2">
+                    <label for="year-select">Pilih Tahun</label>
+                    <input type="text" class="form-control" name="year" id="year"
+                      data-provide="datepicker" data-date-format="yyyy" data-date-min-view-mode="2" autocomplete="off"
+                      readonly>
+                  </div>
+                </div>
               </div>
               <div class="card-body">
                 <div id="chart"></div>
@@ -320,8 +304,19 @@
         <div class="row">
           <div class="col-12">
             <div class="card">
+
               <div class="card-header">
-                <h4>Data Peminjaman Arsip Per Bulan ({{ date('Y') }})</h4>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4>Data Peminjaman Arsip Per Bulan (<span id="chart-lending-year">{{ date('Y') }}</span>)</h4>
+
+                  <div class="col-md-2">
+                    <label for="year-select">Pilih Tahun</label>
+                    <input type="text" class="form-control" name="year-lending" id="year-lending"
+                      data-provide="datepicker" data-date-format="yyyy" data-date-min-view-mode="2" autocomplete="off"
+                      readonly>
+                  </div>
+
+                </div>
               </div>
               <div class="card-body">
                 <div id="lending-chart"></div>
@@ -422,71 +417,10 @@
         </div>
       </div>
 
-      {{-- <div class="col-12 col-lg-3">
-        <div class="card">
-          <div class="card-body py-4 px-4">
-            <div class="d-flex align-items-center">
-              <div class="avatar avatar-xl">
-                <img src="../assets/compiled/jpg/1.jpg" alt="Face 1">
-              </div>
-              <div class="ms-3 name">
-                <h5 class="font-bold">John Duck</h5>
-                <h6 class="text-muted mb-0">@johnducky</h6>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h4>Recent Messages</h4>
-          </div>
-          <div class="card-content pb-4">
-            <div class="recent-message d-flex px-4 py-3">
-              <div class="avatar avatar-lg">
-                <img src="../assets/compiled/jpg/4.jpg">
-              </div>
-              <div class="name ms-4">
-                <h5 class="mb-1">Hank Schrader</h5>
-                <h6 class="text-muted mb-0">@johnducky</h6>
-              </div>
-            </div>
-            <div class="recent-message d-flex px-4 py-3">
-              <div class="avatar avatar-lg">
-                <img src="../assets/compiled/jpg/5.jpg">
-              </div>
-              <div class="name ms-4">
-                <h5 class="mb-1">Dean Winchester</h5>
-                <h6 class="text-muted mb-0">@imdean</h6>
-              </div>
-            </div>
-            <div class="recent-message d-flex px-4 py-3">
-              <div class="avatar avatar-lg">
-                <img src="../assets/compiled/jpg/1.jpg">
-              </div>
-              <div class="name ms-4">
-                <h5 class="mb-1">John Dodol</h5>
-                <h6 class="text-muted mb-0">@dodoljohn</h6>
-              </div>
-            </div>
-            <div class="px-4">
-              <button class='btn btn-block btn-xl btn-outline-primary font-bold mt-3'>Start Conversation</button>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h4>Visitors Profile</h4>
-          </div>
-          <div class="card-body">
-            <div id="chart-visitors-profile"></div>
-          </div>
-        </div>
-      </div> --}}
-
     </section>
   </div>
 
-  <script>
+  {{-- <script>
     var monthCounts = [
       @foreach ($monthCounts as $count)
         {{ $count }},
@@ -514,9 +448,78 @@
 
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
-  </script>
+  </script> --}}
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentYear = new Date().getFullYear();
+      $('#year').val(currentYear);
+
+      let chart;
+
+      function renderChart(monthCounts) {
+        const options = {
+          chart: {
+            type: 'bar',
+            height: 300,
+          },
+          series: [{
+            name: 'Total Arsip',
+            data: monthCounts
+          }],
+          xaxis: {
+            categories: [
+              'January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+          }
+        };
+
+        chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+      }
+
+      function loadChartData(year) {
+        $.ajax({
+          url: 'dita/arsip/chart-data',
+          type: 'GET',
+          data: {
+            year: year
+          },
+          success: function(response) {
+            $('#chart-year').text(year);
+            chart.updateSeries([{
+              name: 'Total Arsip',
+              data: response.data
+            }]);
+          },
+          error: function() {
+            alert('Gagal memuat data arsip untuk tahun ' + year);
+          }
+        });
+      }
+
+      // Load awal
+      $.ajax({
+        url: 'dita/arsip/chart-data',
+        type: 'GET',
+        data: {
+          year: currentYear
+        },
+        success: function(response) {
+          renderChart(response.data);
+        }
+      });
+
+      // Saat tahun diganti
+      $('#year').on('change', function() {
+        const selectedYear = $(this).val();
+        loadChartData(selectedYear);
+      });
+    });
+  </script>
+
+  {{-- <script>
     var totalLendingCounts = [
       @foreach ($lendingMonthCounts as $count)
         {{ $count }},
@@ -565,8 +568,93 @@
 
     var chart = new ApexCharts(document.querySelector("#lending-chart"), options);
     chart.render();
-  </script>
+  </script> --}}
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentYear = new Date().getFullYear();
+      $('#year-lending').val(currentYear);
+
+      let lendingChart;
+
+      function renderLendingChart(total, digital, physic) {
+        const options = {
+          chart: {
+            type: 'bar',
+            height: 300,
+          },
+          series: [{
+              name: 'Total Peminjaman Arsip',
+              data: total,
+            },
+            {
+              name: 'Total Peminjaman Digital',
+              data: digital
+            },
+            {
+              name: 'Total Peminjaman Fisik',
+              data: physic
+            }
+          ],
+          xaxis: {
+            categories: [
+              'January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+          }
+        };
+
+        lendingChart = new ApexCharts(document.querySelector("#lending-chart"), options);
+        lendingChart.render();
+      }
+
+      function loadLendingChartData(year) {
+        $.ajax({
+          url: 'dita/arsip/lending-chart-data',
+          type: 'GET',
+          data: {
+            year: year
+          },
+          success: function(response) {
+            $('#chart-lending-year').text(year);
+            lendingChart.updateSeries([{
+                name: 'Total Peminjaman Arsip',
+                data: response.total
+              },
+              {
+                name: 'Total Peminjaman Digital',
+                data: response.digital
+              },
+              {
+                name: 'Total Peminjaman Fisik',
+                data: response.physic
+              }
+            ]);
+          },
+          error: function() {
+            alert('Gagal memuat data peminjaman arsip untuk tahun ' + year);
+          }
+        });
+      }
+
+      // Load awal
+      $.ajax({
+        url: 'dita/arsip/lending-chart-data',
+        type: 'GET',
+        data: {
+          year: currentYear
+        },
+        success: function(response) {
+          renderLendingChart(response.total, response.digital, response.physic);
+        }
+      });
+
+      $('#year-lending').on('change', function() {
+        const selectedYear = $(this).val();
+        loadLendingChartData(selectedYear);
+      });
+    });
+  </script>
 
 @endsection
 <script src="{{ asset('/assets/extensions/apexcharts/apexcharts.min.js') }}"></script>

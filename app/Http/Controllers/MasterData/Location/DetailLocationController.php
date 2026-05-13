@@ -170,7 +170,7 @@ class DetailLocationController extends Controller
 
         // dd($detailLocations);
         // hapus location
-        $detailLocations->forceDelete();
+        $detailLocations->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

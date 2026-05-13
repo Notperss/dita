@@ -19,9 +19,9 @@ class UserManagementController extends Controller
      */
     public function index(Request $request)
     {
-        if (! Gate::allows('user_index')) {
-            abort(403);
-        }
+        // if (! Gate::allows('user_index')) {
+        //     abort(403);
+        // }
 
         $company_id = auth()->user()->company_id;
         if (Gate::allows('super_admin')) {

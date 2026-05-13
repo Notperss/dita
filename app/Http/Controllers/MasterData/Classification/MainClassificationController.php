@@ -161,7 +161,7 @@ class MainClassificationController extends Controller
             }
 
             // No foreign key relationships, proceed with deletion
-            $mainClassification->forceDelete();
+            $mainClassification->delete();
 
             alert()->success('Sukses', 'Data berhasil dihapus');
             return back();

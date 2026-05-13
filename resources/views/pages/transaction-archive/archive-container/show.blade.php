@@ -239,7 +239,8 @@
           @if ($archiveContainers->file && Storage::disk('nas')->exists($archiveContainers->file))
             <div class="row">
               <div class="col-auto">
-                <form action="{{ route('view.file.archive', $archiveContainers->id) }}" method="post" target="_blank">
+                <form action="{{ route('view.file.archive', encrypt($archiveContainers->id)) }}" method="post"
+                  target="_blank">
                   @csrf
                   <button type="submit" class="btn btn-info btn-sm text-white">
                     Lihat

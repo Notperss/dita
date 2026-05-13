@@ -7,10 +7,11 @@ use App\Models\MasterData\Company\Company;
 use App\Models\MasterData\Retention\RetentionArchives;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SubClassification extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'classification_subs';
     protected $fillable = [

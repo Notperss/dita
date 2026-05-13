@@ -115,7 +115,7 @@ class TypeUserController extends Controller
         $type_user = TypeUser::find($decrypt_id);
 
         // hapus daily activity
-        $type_user->forceDelete();
+        $type_user->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

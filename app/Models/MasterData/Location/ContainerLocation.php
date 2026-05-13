@@ -5,11 +5,13 @@ namespace App\Models\MasterData\Location;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MasterData\Company\Company;
 use App\Models\MasterData\WorkUnits\Division;
+use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ContainerLocation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'location_containers';
     protected $fillable = [
         'main_location_id',
@@ -46,6 +48,11 @@ class ContainerLocation extends Model
     {
         // 2 parameter (path model, field foreign key)
         return $this->belongsTo(Division::class, 'division_id');
+    }
+    public function archiveContainer()
+    {
+        // 2 parameter (path model, field foreign key)
+        return $this->hasMany(ArchiveContainer::class, 'location_container_id');
     }
 
 }

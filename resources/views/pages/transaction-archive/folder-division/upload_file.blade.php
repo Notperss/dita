@@ -88,24 +88,30 @@
               <p class="col-md-4">Selected File :</p>
               <div id="fileList" style="word-break: break-all"></div>
 
-              <label class="col-md-6 form-label" for="name">Sertakan File di Notifikasi</label>
-              <div class="col-md-6">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" value="1" type="radio" name="attach_file" id="enable">
-                  <label class="form-check-label" for="enable">
-                    Ya
-                  </label>
+              <div id="fields" style="display: none;">
+
+                <label class="col-md-6 form-label" for="name">Sertakan File di Notifikasi</label>
+                <div class="col-md-6">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" value="1" type="radio" name="attach_file" id="enable">
+                    <label class="form-check-label" for="enable">
+                      Ya
+                    </label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input col-md-4" value="0" type="radio" name="attach_file"
+                      id="disable" checked>
+                    <label class="form-check-label" for="disable">
+                      Tidak
+                    </label>
+                  </div>
+                  @if ($errors->has('name'))
+                    <p style="font-style: bold; color: red;">
+                      {{ $errors->first('name') }}</p>
+                  @endif
                 </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input col-md-4" type="radio" name="attach_file" id="disable" checked>
-                  <label class="form-check-label" for="disable">
-                    Tidak
-                  </label>
-                </div>
-                @if ($errors->has('name'))
-                  <p style="font-style: bold; color: red;">
-                    {{ $errors->first('name') }}</p>
-                @endif
+
+
               </div>
             </div>
 
@@ -115,7 +121,8 @@
               <label class="col-md-4 form-label" for="name">Notifikasi</label>
               <div class="col-md-8">
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="notification_radio" id="enable_notification">
+                  <input class="form-check-input check-radio" type="radio" name="notification_radio"
+                    id="enable_notification">
                   <label class="form-check-label" for="enable_notification">
                     Ya
                   </label>
@@ -159,8 +166,9 @@
               <div class="form-group row">
                 <label class="col-md-4 form-label" for="email">Email</label>
                 <div class="col-md-8">
-                  <input type="email" class="form-control" id="email" name="email"
-                    placeholder="Enter Email">
+                  <label class="form-label" for="email">{{ auth()->user()->email }}</label>
+                  {{-- <label type="email" class="form-control" id="email" name="email"
+                    placeholder="Enter Email"> --}}
                   @if ($errors->has('email'))
                     <p style="font-style: bold; color: red;">
                       {{ $errors->first('email') }}</p>
@@ -215,28 +223,28 @@
 </div>
 <script>
   $(document).ready(function() {
-    let choicesInstance = null;
+    // let choicesInstance = null;
 
-    function initializeChoices() {
-      const element = document.querySelector('.js-example-basic-multiple');
+    // function initializeChoices() {
+    //   const element = document.querySelector('.js-example-basic-multiple');
 
-      if (choicesInstance) {
-        choicesInstance.destroy(); // Destroy previous instance
-      }
+    //   if (choicesInstance) {
+    //     choicesInstance.destroy(); // Destroy previous instance
+    //   }
 
-      choicesInstance = new Choices(element, {
-        removeItemButton: true,
-        shouldSort: false,
-      });
-    }
+    //   choicesInstance = new Choices(element, {
+    //     removeItemButton: true,
+    //     shouldSort: false,
+    //   });
+    // }
 
     function resetForm() {
       $('#notificationFields').find('input, textarea').val('');
       $('#notificationFields').find('select').each(function() {
         // Clear the selected items
-        if (choicesInstance) {
-          choicesInstance.clearStore();
-        }
+        // if (choicesInstance) {
+        //   choicesInstance.clearStore();
+        // }
         $(this).val(null).trigger('change'); // Reset select element
       });
       $('#notificationFields').hide();
@@ -245,16 +253,16 @@
     function toggleNotificationFields() {
       if ($('#enable_notification').is(':checked')) {
         $('#notificationFields').show();
-        initializeChoices(); // Initialize Choices.js when showing fields
+        // initializeChoices(); // Initialize Choices.js when showing fields
       } else {
         resetForm(); // Reset fields when hiding
       }
     }
 
     // Initialize Choices.js when modal is shown
-    $('#modalupload').on('shown.bs.modal', function() {
-      initializeChoices();
-    });
+    // $('#modalupload').on('shown.bs.modal', function() {
+    //   initializeChoices();
+    // });
 
     // Add change event listener to the radio buttons
     $('input[name="notification_radio"]').change(function() {
@@ -312,6 +320,17 @@
   }
 </script>
 
+<script>
+  $(document).ready(function() {
+    $('input[name="notification_radio"]').on('change', function() {
+      if ($('.check-radio').is(':checked')) {
+        $('#fields').show();
+      } else {
+        $('#fields').hide();
+      }
+    });
+  });
+</script>
 
 {{-- <script>
   document.getElementById('addCcButton').addEventListener('click', function() {

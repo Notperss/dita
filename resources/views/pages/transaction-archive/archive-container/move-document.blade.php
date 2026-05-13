@@ -41,7 +41,7 @@
                     <h4 class="card-title">Pilih Kontainer</h4>
                     <div class="form-group">
                       <label for="division_id">Nama Divisi</label>
-                      <select type="text" id="division_id" class="form-control " style="width: 100%" disabled required>
+                      <select type="text" id="division_id" class="form-control " style="width: 100%" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($divisions as $division)
                           <option value="{{ $division->id }}" data-code={{ $division->code }}
@@ -108,7 +108,7 @@
                     <h4 class="card-title">Pilih Klasifikasi</h4>
                     <div class="form-group">
                       <label for="main_classification_id">Klasifikasi Arsip </label>
-                      <select type="text" id="main_classification_id" class="form-control" style="width: 100%" disabled
+                      <select type="text" id="main_classification_id" class="form-control" style="width: 100%"
                         required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($mainClassifications as $classification)
@@ -124,8 +124,7 @@
                     </div>
                     <div class="form-group">
                       <label for="sub_classificatio_id">Sub Klasifikasi Arsip</label>
-                      <select type="text" id="sub_classification_id" class="form-control" style="width: 100%" disabled
-                        required>
+                      <select type="text" id="sub_classification_id" class="form-control" style="width: 100%" required>
                         <option value="" disabled selected>Choose</option>
                         @foreach ($subClassifications as $subClassification)
                           <option value="{{ $subClassification->id }}"
@@ -284,6 +283,15 @@
                   <div class="col-md-4 col-4">
                     <div class="form-group">
                       <label for="document_type">Bentuk Dokumen</label>
+                      <input type="text" class="form-control" id="document_type" autocomplete="off"
+                        value="{{ $archiveContainers->document_type }}" readonly>
+                      @if ($errors->has('document_type'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('document_type') }}</p>
+                      @endif
+                    </div>
+                    {{-- <div class="form-group">
+                      <label for="document_type">Bentuk Dokumen</label>
                       <select type="text" id="document_type" class="form-control" style="width: 100%" disabled
                         required>
                         <option value="" disabled selected>Choose</option>
@@ -296,8 +304,18 @@
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('document_type') }}</p>
                       @endif
-                    </div>
+                    </div> --}}
+
                     <div class="form-group">
+                      <label for="archive_type">Jenis Arsip</label>
+                      <input type="text" class="form-control" id="archive_type" autocomplete="off"
+                        value="{{ old('archive_type', $archiveContainers->archive_type) }}" readonly required>
+                      @if ($errors->has('archive_type'))
+                        <p style="font-style: bold; color: red;">
+                          {{ $errors->first('archive_type') }}</p>
+                      @endif
+                    </div>
+                    {{-- <div class="form-group">
                       <label for="archive_type">Jenis Arsip</label>
                       <select type="text" id="archive_type" class="form-control" style="width: 100%" disabled
                         required>
@@ -311,7 +329,7 @@
                         <p style="font-style: bold; color: red;">
                           {{ $errors->first('archive_type') }}</p>
                       @endif
-                    </div>
+                    </div> --}}
                     <div class="form-group">
                       <label for="amount">Jumlah & Satuan</label>
                       <input type="text" id="amount" value="{{ old('amount', $archiveContainers->amount) }}"

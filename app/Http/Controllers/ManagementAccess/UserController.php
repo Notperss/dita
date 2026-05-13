@@ -152,7 +152,7 @@ class UserController extends Controller
         $user = User::find($decrypt_id);
 
         // hapus user
-        $user->forceDelete();
+        $user->delete();
 
         // Hapus Detail User
         $detail_user = DetailUser::find($user['id']);
@@ -163,7 +163,7 @@ class UserController extends Controller
             Storage::delete($path_icon);
         }
         // dd($detail_user);
-        $detail_user->forceDelete();
+        $detail_user->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

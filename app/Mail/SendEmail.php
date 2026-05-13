@@ -52,7 +52,7 @@ class SendEmail extends Mailable
     public function attachments() : array
     {
         return [
-            Attachment::fromStorageDisk('nas', $this->data['file']),
+            // Attachment::fromStorageDisk('nas', $this->data['file']),
         ];
     }
 }

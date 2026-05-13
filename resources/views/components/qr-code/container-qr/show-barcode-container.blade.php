@@ -105,7 +105,7 @@
       </tr>
       <tr>
         <td class="text-center description-cell" colspan="2">
-          {{ isset($location_container->description) ? $location_container->description : 'N/A' }}
+          {!! isset($location_container->description) ? $location_container->description : 'N/A' !!}
         </td>
       </tr>
     </table>

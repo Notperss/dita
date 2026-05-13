@@ -137,6 +137,7 @@
                           {{ $errors->first('description') }}</p>
                       @endif
                     </div>
+                    <p><small><code>*Baris baru menggunakan Shift + Enter</code></small></p>
                   </div>
 
                   <div class="col-12 d-flex justify-content-end">
@@ -152,6 +153,10 @@
       </div>
     </div>
   </section>
+
+  <!-- include summernote css/js -->
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+
   <!-- // Basic multiple Column Form section end -->
   <script>
     $(document).ready(function() {
@@ -218,6 +223,36 @@
 @endsection
 
 @push('after-script')
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $('#description').summernote({
+        height: 120,
+        toolbar: [
+          // ['style', ['style']],
+          // ['font', ['bold', 'underline', 'clear']],
+          // ['color', ['color']],
+          // ['para', ['ul', 'ol', 'paragraph']],
+          // ['table', ['table']],
+          // ['insert', ['link', 'picture', 'video']],
+          // ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+          onEnter: function(e) {
+            // Check if Shift key is not pressed (i.e., only Enter is pressed)
+            if (!e.shiftKey) {
+              // Insert a line break
+              $(this).summernote('pasteHTML', '<br>');
+              // Prevent the default Enter key behavior (creating a new paragraph)
+              e.preventDefault();
+            }
+            // If Shift+Enter is pressed, allow default behavior (which is already a line break in Summernote)
+          }
+        }
+      });
+    });
+  </script>
   <script>
     Fancybox.bind('[data-fancy]', {
       // infinite: false,

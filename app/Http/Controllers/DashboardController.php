@@ -19,86 +19,49 @@ class DashboardController extends Controller
     {
         if (auth()->check() && ! (auth()->user()->can('super_admin') || auth()->user()->can('admin'))) {
             // If the user has either 'super_admin' or 'admin' permission, redirect to the lending page
-            if (auth()->user()->can('all_archive')) {
+            if (auth()->user()->hasRole('folder-division')) {
+                return redirect()->route('folder.index');
+            } elseif (auth()->user()->can('all_archive')) {
                 return redirect()->route('dataArchive');
-            }
-            return redirect()->route('lending-archive.index');
-        }
+            } else {
 
-        $companies = auth()->user()->company_id;
-
-        // $archivesQuery = ArchiveContainer::where('status', 1)->whereDate('expiration_active', '<', now()->toDateString())->orderBy('created_at', 'desc');
-
-        if (Gate::allows('super_admin')) {
-            // $divisions = Division::with('archive_container')->get();
-            $workUnits = Company::orderBy('name', 'asc')->with('division')->get();
-            $archiveContainers = ArchiveContainer::orderBy('created_at', 'desc')->take(10)->get();
-
-            $lendingArchives = LendingArchive::orderBy('created_at', 'desc');
-            $lendingTopten = $lendingArchives->take(10)->get();
-            $lendingData = $lendingArchives->get();
-
-            $currentYear = date('Y'); // Get the current year
-            $monthCounts = [];
-            $lendingMonthCounts = [];
-            $digitalLendingMonthCounts = [];
-            $physicLendingMonthCounts = [];
-            foreach (range(1, 12) as $month) {
-                $count = ArchiveContainer::whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $lendingCount = LendingArchive::whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $digitalLendingCount = LendingArchive::where('document_type', 'DIGITAL')->whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $physicLendingCount = LendingArchive::where('document_type', 'FISIK')->whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $monthCounts[] = $count;
-                $digitalLendingMonthCounts[] = $digitalLendingCount;
-                $physicLendingMonthCounts[] = $physicLendingCount;
-                $lendingMonthCounts[] = $lendingCount;
-            }
-        } else {
-            // $workUnits = Division::where('company_id', $companies)->with('archive_container')->get();
-            $workUnits = Company::orderBy('name', 'asc')->where('id', $companies)->with('division', 'lendingArchive', 'lending')->get();
-
-            $archiveContainers = ArchiveContainer::where('company_id', $companies)->orderBy('created_at', 'desc')->take(10)->get();
-
-            $lendingArchives = LendingArchive::where('company_id', $companies)->orderBy('created_at', 'desc');
-            $lendingTopten = $lendingArchives->take(10)->get();
-            $lendingData = $lendingArchives->get();
-
-            $currentYear = date('Y'); // Get the current year
-            $monthCounts = [];
-            $lendingMonthCounts = [];
-            $digitalLendingMonthCounts = [];
-            $physicLendingMonthCounts = [];
-            foreach (range(1, 12) as $month) {
-                $count = ArchiveContainer::where('company_id', $companies)->whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $lendingCount = LendingArchive::where('company_id', $companies)->whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $digitalLendingCount = LendingArchive::where('company_id', $companies)->where('document_type', 'DIGITAL')->whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $physicLendingCount = LendingArchive::where('company_id', $companies)->where('document_type', 'FISIK')->whereYear('created_at', $currentYear)
-                    ->whereMonth('created_at', $month)
-                    ->count();
-                $monthCounts[] = $count;
-                $digitalLendingMonthCounts[] = $digitalLendingCount;
-                $physicLendingMonthCounts[] = $physicLendingCount;
-                $lendingMonthCounts[] = $lendingCount;
+                return redirect()->route('lending-archive.index');
             }
         }
 
+        $companyId = auth()->user()->company_id;
+        $isSuperAdmin = auth()->user()->hasRole('super-admin');
+
+        // Work Units (Companies with Divisions)
+        $workUnits = Company::when(! $isSuperAdmin, function ($query) use ($companyId) {
+            $query->where('id', $companyId);
+        })->with('division')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        // Archive Containers latest 10
+        $archiveContainers = ArchiveContainer::when(! $isSuperAdmin, function ($query) use ($companyId) {
+            $query->where('company_id', $companyId);
+        })
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        // Lending Top 10
+        $lendingTopten = LendingArchive::when(! $isSuperAdmin, function ($query) use ($companyId) {
+            $query->where('company_id', $companyId);
+        })
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
 
         return view('pages.dashboard.index',
-            compact('workUnits', 'archiveContainers', 'lendingTopten', 'lendingData', 'lendingMonthCounts', 'monthCounts', 'companies', 'digitalLendingMonthCounts', 'physicLendingMonthCounts'));
+            compact(
+                'workUnits',
+                'archiveContainers',
+                'lendingTopten',
+                'companyId',
+            ));
     }
 
     /**
@@ -148,6 +111,57 @@ class DashboardController extends Controller
     {
         return abort(403);
     }
+
+    public function getChartData(Request $request)
+    {
+        $year = $request->input('year', date('Y'));
+
+        $monthCounts = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $count = ArchiveContainer::when(! auth()->user()->hasRole('super-admin'), function ($query) {
+                $query->where('company_id', auth()->user()->company_id);
+            })
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $i)
+                ->count();
+
+            $monthCounts[] = $count;
+        }
+
+        return response()->json([
+            'data' => $monthCounts,
+        ]);
+    }
+
+    public function getLendingChartData(Request $request)
+    {
+        $year = $request->input('year', date('Y'));
+
+        $total = [];
+        $digital = [];
+        $physic = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $baseQuery = LendingArchive::query()
+                ->when(! auth()->user()->hasRole('super-admin'), function ($query) {
+                    $query->where('company_id', auth()->user()->company_id);
+                })
+                ->whereYear('created_at', $year)
+                ->whereMonth('created_at', $i);
+
+            $total[] = (clone $baseQuery)->count();
+            $digital[] = (clone $baseQuery)->where('document_type', 'DIGITAL')->count();
+            $physic[] = (clone $baseQuery)->where('document_type', 'FISIK')->count();
+        }
+
+        return response()->json([
+            'total' => $total,
+            'digital' => $digital,
+            'physic' => $physic,
+        ]);
+    }
+
 
     public function division_archive($id)
     {

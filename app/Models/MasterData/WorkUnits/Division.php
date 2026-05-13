@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\TransactionArchive\Archive\ArchiveContainer;
 use App\Models\TransactionArchive\LendingArchive\LendingArchive;
 use App\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Division extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'company_id',

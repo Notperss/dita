@@ -683,7 +683,7 @@
   </script>
 
   {{-- get mainSublocation --}}
-  <script>
+  {{-- <script>
     $(document).ready(function() {
       $('#division_id').change(function() {
         var divisionId = $(this).val();
@@ -712,7 +712,7 @@
         }
       });
     });
-  </script>
+  </script> --}}
 
   {{-- clasifitcation --}}
   {{-- <script>

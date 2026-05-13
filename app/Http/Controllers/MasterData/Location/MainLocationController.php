@@ -146,7 +146,7 @@ class MainLocationController extends Controller
         $locations = MainLocation::find($decrypt_id);
 
         // hapus location
-        $locations->forceDelete();
+        $locations->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

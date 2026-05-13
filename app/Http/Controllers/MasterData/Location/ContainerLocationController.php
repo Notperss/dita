@@ -60,8 +60,8 @@ class ContainerLocationController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
                     return '
-                    <a href="#mymodal" data-remote="' . route('showBarcode', $item->id) . '" data-toggle="modal"
-                        data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
+                    <a href="#mymodal" data-remote="'.route('showBarcode', $item->id).'" data-toggle="modal"
+                        data-target="#mymodal" data-title="QR Code" class="btn icon btn-info qr-button">
                         <i class="bi bi-qr-code-scan"></i>
                     </a>
 
@@ -73,20 +73,20 @@ class ContainerLocationController extends Controller
                         Action
                     </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a href="#mymodal" data-remote="' . route('container-location.show', $item->id) . '" data-toggle="modal"
+                    <a href="#mymodal" data-remote="'.route('container-location.show', $item->id).'" data-toggle="modal"
                         data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                         Show
                     </a>
                         <a class="dropdown-item"
-                        href="' . route('container-location.edit', $item->id) . '">Edit</a>
-                    <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')">Delete</a>
+                        href="'.route('container-location.edit', $item->id).'">Edit</a>
+                    <a class="dropdown-item" onclick="showSweetAlert('.$item->id.')">Delete</a>
                 </div>
                     </div>
                 </div>
-                <form id="deleteForm_' . $item->id . '"
-                    action="' . route('container-location.destroy', encrypt($item->id)) . '"
+                <form id="deleteForm_'.$item->id.'"
+                    action="'.route('container-location.destroy', encrypt($item->id)).'"
                     method="POST">
-                    ' . method_field('delete') . csrf_field() . '
+                    '.method_field('delete').csrf_field().'
                 </form>
                 ';
                 })
@@ -95,7 +95,7 @@ class ContainerLocationController extends Controller
                 })
                 ->filterColumn('number_container', function ($query, $keyword) {
                     // Use a where clause to search for 'number_container' column
-                    $query->whereRaw("LPAD(number_container, 3, '0') LIKE ?", ["%$keyword%"]);
+                    $query->whereRaw("LPAD(number_container, 4, '0') LIKE ?", ["%$keyword%"]);
                 })
                 ->editColumn('main_location_id', function ($item) {
                     return $item->mainLocation->name;
@@ -103,7 +103,7 @@ class ContainerLocationController extends Controller
                 ->filterColumn('main_location_id', function ($query, $keyword) {
                     // Use a where clause to search for 'name' column in 'mainLocation' relationship
                     $query->whereHas('mainLocation', function ($query) use ($keyword) {
-                        $query->where('name', 'like', '%' . $keyword . '%');
+                        $query->where('name', 'like', '%'.$keyword.'%');
                     });
                 })
                 ->editColumn('sub_location_id', function ($item) {
@@ -112,7 +112,7 @@ class ContainerLocationController extends Controller
                 ->filterColumn('sub_location_id', function ($query, $keyword) {
                     // Use a where clause to search for 'name' column in 'mainLocation' relationship
                     $query->whereHas('subLocation', function ($query) use ($keyword) {
-                        $query->where('name', 'like', '%' . $keyword . '%');
+                        $query->where('name', 'like', '%'.$keyword.'%');
                     });
                 })
                 ->editColumn('detail_location_id', function ($item) {
@@ -121,7 +121,7 @@ class ContainerLocationController extends Controller
                 ->filterColumn('detail_location_id', function ($query, $keyword) {
                     // Use a where clause to search for 'name' column in 'mainLocation' relationship
                     $query->whereHas('detailLocation', function ($query) use ($keyword) {
-                        $query->where('name', 'like', '%' . $keyword . '%');
+                        $query->where('name', 'like', '%'.$keyword.'%');
                     });
                 })
                 ->rawColumns(['action',])
@@ -285,7 +285,7 @@ class ContainerLocationController extends Controller
 
         // dd($containerLocations);
         // hapus location
-        $containerLocations->forceDelete();
+        $containerLocations->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

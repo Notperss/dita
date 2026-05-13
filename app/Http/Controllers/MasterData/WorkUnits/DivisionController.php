@@ -145,7 +145,7 @@ class DivisionController extends Controller
         $division = Division::find($decrypt_id);
 
         // hapus location
-        $division->forceDelete();
+        $division->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

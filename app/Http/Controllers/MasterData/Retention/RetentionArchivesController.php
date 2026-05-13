@@ -195,7 +195,7 @@ class RetentionArchivesController extends Controller
         $retentionArchives = RetentionArchives::find($decrypt_id);
 
         // hapus location
-        $retentionArchives->forceDelete();
+        $retentionArchives->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

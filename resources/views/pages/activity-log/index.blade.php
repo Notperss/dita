@@ -133,6 +133,8 @@
           {
             data: 'causer',
             name: 'causer',
+            orderable: false,
+            searchable: false,
           },
           {
             data: 'description',

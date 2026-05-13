@@ -263,7 +263,7 @@ class SubClassificationController extends Controller
         $subClassification = SubClassification::find($decrypt_id);
 
         // hapus location
-        $subClassification->forceDelete();
+        $subClassification->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

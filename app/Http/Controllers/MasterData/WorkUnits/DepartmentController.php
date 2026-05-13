@@ -144,7 +144,7 @@ class DepartmentController extends Controller
         $department = Department::find($decrypt_id);
 
         // hapus location
-        $department->forceDelete();
+        $department->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

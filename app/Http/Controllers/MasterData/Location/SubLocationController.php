@@ -152,7 +152,7 @@ class SubLocationController extends Controller
         $subLocations = SubLocation::find($decrypt_id);
 
         // hapus location
-        $subLocations->forceDelete();
+        $subLocations->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

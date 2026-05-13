@@ -22,6 +22,13 @@
         .width-50 {
           width: 50%;
         }
+
+        /* Center */
+        /* .width-50 {
+          width: 40%;
+          margin-left: auto;
+          margin-right: auto;
+        } */
       }
     </style>
     <table class="table table-borderless text-left table-no-gap width-50">

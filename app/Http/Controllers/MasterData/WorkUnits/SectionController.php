@@ -151,7 +151,7 @@ class SectionController extends Controller
         $section = Section::find($decrypt_id);
 
         // hapus location
-        $section->forceDelete();
+        $section->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

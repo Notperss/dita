@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ArchiveContainerExport;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +33,7 @@ class ArchiveContainerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (! Gate::allows('archive_container_index')) {
             abort(403);
@@ -41,19 +43,37 @@ class ArchiveContainerController extends Controller
 
             $company_id = auth()->user()->company_id;
 
-            if (Gate::allows('super_admin')) {
-                $archiveContainers = ArchiveContainer::with('division')->orderBy('created_at', 'desc');
-            } else {
-                $archiveContainers = ArchiveContainer::where('archive_containers.company_id', $company_id)->with('division', 'subClassification')->orderBy('created_at', 'desc');
-            }
+            $archiveContainers = ArchiveContainer::when($request->filled('numberBox'), function ($query) use ($request) {
+                $query->where('location_container_id', $request->numberBox);
+            })
+                ->when($request->filled(['start_date', 'end_date']), function ($query) use ($request) {
+                    $query->whereBetween('archive_in', [$request->start_date, $request->end_date]);
+                })
+                ->when($request->filled('division'), function ($query) use ($request) {
+                    $query->where('division_id', $request->division);
+                })
+                ->when(! Gate::allows('super_admin'), function ($query) use ($company_id) {
+                    $query->where('archive_containers.company_id', $company_id);
+                })
+                ->with(['division', 'subClassification'])
+                ->orderBy('created_at', 'desc');
+            // ->orderBy('division_id', 'asc')
+            // ->orderBy('number_container', 'asc')
+            // ->orderBy('location_container_id', 'asc');
+
 
             return DataTables::of($archiveContainers)
                 ->addIndexColumn()
                 ->addColumn('action', function ($item) {
                     $hiddenStatus = $item->is_lend || $item->is_lock ? 'hidden' : '';
                     return '
-             <a href="#mymodal" data-remote="' . route('showBarcodeContainer', $item->id) . '" data-toggle="modal"
-                        data-target="#mymodal" data-title="QR Code" class="btn icon btn-info">
+                    <a href="#mymodal"
+                        data-remote="'.route('showBarcodeContainer', $item->id).'"
+                        data-toggle="modal"
+                        data-target="#mymodal"
+                        data-title="QR Code"
+                        data-id="'.$item->id.'"
+                        class="btn icon btn-info qr-button">
                         <i class="bi bi-qr-code-scan"></i>
                     </a>
                   <div class="btn-group mb-1">
@@ -63,24 +83,24 @@ class ArchiveContainerController extends Controller
                         <i class="bi bi-three-dots-vertical"></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                       <a href="#mymodal" data-remote="' . route('archive-container.show', $item->id) . '" data-toggle="modal"
+                       <a href="#mymodal" data-remote="'.route('archive-container.show', $item->id).'" data-toggle="modal"
                         data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                          <i class="bi bi-eye"></i> Detail
                     </a>
                         <a class="dropdown-item"
-                          href="' . route('archive-container.edit', $item->id) . '" ' . $hiddenStatus . '><i class="bi bi-pencil"></i> Edit</a>
+                          href="'.route('archive-container.edit', $item->id).'" '.$hiddenStatus.'><i class="bi bi-pencil"></i> Edit</a>
                           
-                        <a class="dropdown-item" onclick="showSweetAlert(' . $item->id . ')" ' . $hiddenStatus . '><i class="bi bi-x-lg"></i> Delete</a>
+                        <a class="dropdown-item" onclick="showSweetAlert('.$item->id.')" '.$hiddenStatus.'><i class="bi bi-x-lg"></i> Delete</a>
 
                          <a class="dropdown-item"
-                          href="' . route('moveArchive', $item->id) . '"><i class="bi bi-box-seam"></i> Pindah Container</a>
+                          href="'.route('moveArchive', $item->id).'"><i class="bi bi-box-seam"></i> Pindah Container</a>
                       </div>
                     </div>
                   </div>
-                  <form id="deleteForm_' . $item->id . '"
-                    action="' . route('archive-container.destroy', encrypt($item->id)) . '"
+                  <form id="deleteForm_'.$item->id.'"
+                    action="'.route('archive-container.destroy', encrypt($item->id)).'"
                     method="POST">
-                    ' . method_field('delete') . csrf_field() . '
+                    '.method_field('delete').csrf_field().'
                   </form>
                 ';
                 })->editColumn('is_lock', function ($item) {
@@ -126,7 +146,7 @@ class ArchiveContainerController extends Controller
                     if ($item->is_lock) {
 
                         if (auth()->user()->can('super_admin')) {
-                            return '<a onclick="return confirm(\'Apakah kamu yakin akan membuka kunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-success btn-sm" title="buka kunci">
+                            return '<a onclick="return confirm(\'Apakah kamu yakin akan membuka kunci arsip?\')" href="'.route('lock', $item->id).'" class="btn btn-success btn-sm" title="buka kunci">
                                     <i class="bi bi-lock"></i>
                                     </a>';
                         } elseif ($item->is_lend) {
@@ -143,7 +163,7 @@ class ArchiveContainerController extends Controller
                                 <i class="bi bi-arrow-repeat"></i>
                                 </a>';
                     } else {
-                        return '<a onclick="return confirm(\'Apakah kamu yakin akan mengunci arsip?\')" href="' . route('lock', $item->id) . '" class="btn btn-danger btn-sm" title="Arsip Terbuka">
+                        return '<a onclick="return confirm(\'Apakah kamu yakin akan mengunci arsip?\')" href="'.route('lock', $item->id).'" class="btn btn-danger btn-sm" title="Arsip Terbuka">
                                 <i class="bi bi-unlock"></i>
                                 </a>';
                     }
@@ -152,8 +172,9 @@ class ArchiveContainerController extends Controller
                 ->rawColumns(['action', 'is_lock'])
                 ->toJson();
         }
-        // $archiveContainers = ArchiveContainer::orderBy('id', 'asc')->get();
-        return view('pages.transaction-archive.archive-container.index');
+        $containerNumber = ContainerLocation::orderBy('id', 'asc')->get();
+        $divisions = Division::orderBy('name', 'asc')->get();
+        return view('pages.transaction-archive.archive-container.index', compact('containerNumber', 'divisions'));
     }
 
     /**
@@ -197,7 +218,7 @@ class ArchiveContainerController extends Controller
             'archive_type' => 'required|string',
             'archive_in' => 'required|date',
 
-            'number_app' => 'string|unique:archive_containers',
+            'number_app' => 'string',
             'number_container' => 'required|string',
             'year' => 'required|string',
 
@@ -224,7 +245,8 @@ class ArchiveContainerController extends Controller
         $documentType = $data['document_type'] == 'COPY' ? 'C' : 'A';
         $latestRecord = DB::table('archive_containers')->latest()->first();
         $lastId = $latestRecord ? $latestRecord->id + 1 : '1';
-        $number_app = $divisionData . '/' . $data['number_container'] . '/' . $documentType . '/' . $data['year'] . '/' . $lastId;
+        // dd($lastId);
+        $number_app = $divisionData.'/'.$data['number_container'].'/'.$documentType.'/'.$data['year'].'/'.$lastId;
         $data['number_app'] = $number_app;
 
         // Process file upload only if a file is uploaded
@@ -262,9 +284,9 @@ class ArchiveContainerController extends Controller
 
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first100Chars . ' )' . '-' . Str::random(5);
-            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberApp . '_' . $tag . '_' . Str::random(3);
+            $basename = pathinfo($file, PATHINFO_FILENAME).'_'.$numberApp.'_'.$tag.'_'.Str::random(3);
             $extension = $files->getClientOriginalExtension();
-            $fullname = $basename . '.' . $extension;
+            $fullname = $basename.'.'.$extension;
 
             // Check if the disk root directory exists
             $disk_root = config('filesystems.disks.nas.root');
@@ -274,7 +296,7 @@ class ArchiveContainerController extends Controller
             }
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('file-arsip/' . $divisionData . '/' . $data['number_container'], $fullname, 'nas');
+            $data['file'] = $files->storeAs('file-arsip/'.$divisionData.'/'.$data['number_container'], $fullname, 'nas');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -458,8 +480,8 @@ class ArchiveContainerController extends Controller
             $file = $files->getClientOriginalName();
             // $basename = pathinfo($file, PATHINFO_FILENAME) . ' ( ' . $first200Chars . ' )' . '-' . Str::random(5);
             $extension = $files->getClientOriginalExtension();
-            $basename = pathinfo($file, PATHINFO_FILENAME) . '_' . $numberAppRep . '_' . $tagRep . '_' . Str::random(3);
-            $fullname = $basename . '.' . $extension;
+            $basename = pathinfo($file, PATHINFO_FILENAME).'_'.$numberAppRep.'_'.$tagRep.'_'.Str::random(3);
+            $fullname = $basename.'.'.$extension;
 
             // Check if the disk root directory exists
             $disk_root = config('filesystems.disks.nas.root');
@@ -469,7 +491,7 @@ class ArchiveContainerController extends Controller
             }
 
             // Store the file in the specified directory
-            $data['file'] = $files->storeAs('file-arsip/' . $divisionData . '/' . $data['number_container'], $fullname, 'nas');
+            $data['file'] = $files->storeAs('file-arsip/'.$divisionData.'/'.$data['number_container'], $fullname, 'nas');
 
             if ($data['file'] === false) {
                 // Handle the error
@@ -483,25 +505,25 @@ class ArchiveContainerController extends Controller
             }
         }
 
-        if ($data['tag'] != $archiveContainer['tag'] || $data['number_app'] != $archiveContainer['number_app'] && $path_file) {
+        // if ($data['tag'] != $archiveContainer['tag'] || $data['number_app'] != $archiveContainer['number_app'] && $path_file) {
 
-            // Extract the original file name and extension
-            // $originalName = pathinfo($path_file, PATHINFO_FILENAME);
-            $ext = pathinfo($path_file, PATHINFO_EXTENSION);
-            $checkedName = $numberAppRep . '_' . $tagRep . '_' . Str::random(5) . '.' . $ext;
+        //     // Extract the original file name and extension
+        //     // $originalName = pathinfo($path_file, PATHINFO_FILENAME);
+        //     $ext = pathinfo($path_file, PATHINFO_EXTENSION);
+        //     $checkedName = $numberAppRep.'_'.$tagRep.'_'.Str::random(5).'.'.$ext;
 
-            // Define the new file path
-            $newPath = dirname($path_file) . '/' . $checkedName;
+        //     // Define the new file path
+        //     $newPath = dirname($path_file).'/'.$checkedName;
 
-            // Rename the file in the storage
-            if (Storage::disk('nas')->exists($path_file)) {
-                Storage::disk('nas')->move($path_file, $newPath);
-            }
+        //     // Rename the file in the storage
+        //     if (Storage::disk('nas')->exists($path_file)) {
+        //         Storage::disk('nas')->move($path_file, $newPath);
+        //     }
 
-            // Update the folderFile record with the new name
-            $archiveContainer->file = $newPath;
-            $archiveContainer->update();
-        }
+        //     // Update the folderFile record with the new name
+        //     $archiveContainer->file = $newPath;
+        //     $archiveContainer->update();
+        // }
 
 
         if (isset($data['masa_aktif']) && is_numeric($data['masa_aktif'])) {
@@ -691,13 +713,13 @@ class ArchiveContainerController extends Controller
 
             foreach ($filters as $requestKey => $dbColumn) {
                 if ($request->filled($requestKey)) {
-                    $archiveContainers->where($dbColumn, 'like', '%' . $request->$requestKey . '%');
+                    $archiveContainers->where($dbColumn, 'like', '%'.$request->$requestKey.'%');
                 }
             }
 
             if ($request->filled('division')) {
                 $archiveContainers->whereHas('division', function ($query) use ($request) {
-                    $query->where('code', 'like', '%' . $request->division . '%');
+                    $query->where('code', 'like', '%'.$request->division.'%');
                 });
             }
 
@@ -712,7 +734,7 @@ class ArchiveContainerController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a href="#mymodal" data-remote="' . route('archive-container.show', $item->id) . '" data-toggle="modal"
+                            <a href="#mymodal" data-remote="'.route('archive-container.show', $item->id).'" data-toggle="modal"
                             data-target="#mymodal" data-title="Detail Data" class="dropdown-item">
                                 <i class="bi bi-eye"></i> Detail
                             </a>
@@ -841,39 +863,63 @@ class ArchiveContainerController extends Controller
 
     public function movingArchive($id, Request $request)
     {
-        $archiveContainer = ArchiveContainer::find($id);
-        $path_file = $archiveContainer['file'];
+        $archiveContainer = ArchiveContainer::findOrFail($id);
+        $path_file = $archiveContainer->file;
 
-        $divisionData = Division::findOrFail($archiveContainer['division_id'])->code;
-
+        $divisionData = Division::findOrFail($archiveContainer->division_id)->code;
         $container = $request->all();
+
         $replaceInvalidCharacters = ['/', ':', '*', '?', '"', '<', '>', '|'];
         $numberAppRep = str_replace($replaceInvalidCharacters, '-', $container['number_app']);
         $tagRep = str_replace($replaceInvalidCharacters, '-', $archiveContainer['tag']);
 
         $numberContainer = $container['number_container'];
 
-        if ($container['number_container'] != $archiveContainer['number_container'] && $path_file) {
+        // ✅ Cek dulu apakah file dan container berbeda
+        if ($numberContainer != $archiveContainer->number_container && $path_file) {
 
-            // Extract the original file name and extension
-            // $originalName = pathinfo($path_file, PATHINFO_FILENAME);
-            $ext = pathinfo($path_file, PATHINFO_EXTENSION);
-            $checkedName = $numberAppRep . '_' . $tagRep . '_' . Str::random(5) . '.' . $ext;
-
-            $newDir = 'file-arsip/' . $divisionData . '/' . $numberContainer;
-            $newPath = $newDir . '/' . $checkedName;
-            // dd($newPath);            // Define the new file path
-
-            // Rename the file in the storage
-            if (Storage::disk('nas')->exists($path_file)) {
-                Storage::disk('nas')->move($path_file, $newPath);
+            // Cek apakah file benar-benar ada
+            if (! Storage::disk('nas')->exists($path_file)) {
+                return back()->withErrors([
+                    'file' => "File tidak ditemukan di NAS: <code>{$path_file}</code>",
+                ]);
             }
 
-            // Update the folderFile record with the new name
-            $archiveContainer->file = $newPath;
-            $archiveContainer->update();
+            // ✅ Ambil nama & ekstensi file lama
+            $ext = pathinfo($path_file, PATHINFO_EXTENSION);
+            if (! $ext) {
+                return back()->withErrors([
+                    'file' => "Path file tidak valid atau tidak memiliki ekstensi: <code>{$path_file}</code>",
+                ]);
+            }
+
+            // Buat nama file baru
+            $checkedName = $numberAppRep.'_'.$tagRep.'_'.Str::random(2).'.'.$ext;
+
+            $newDir = 'file-arsip/'.$divisionData.'/'.$numberContainer;
+            $newPath = $newDir.'/'.$checkedName;
+
+            // ✅ Pastikan folder tujuan ada
+            Storage::disk('nas')->makeDirectory($newDir);
+
+            // Pindahkan file
+            try {
+                Storage::disk('nas')->move($path_file, $newPath);
+            } catch (\Exception $e) {
+                return back()->withErrors([
+                    'file' => 'Gagal memindahkan file: '.$e->getMessage(),
+                ]);
+            }
+
+            // Update path di database
+            $archiveContainer->update(['file' => $newPath]);
+        } else {
+            return back()->withErrors([
+                'file' => 'Path tidak ditemukan atau folder tujuan sama seperti sebelumnya.',
+            ]);
         }
 
+        // Catat log
         ArchiveContainerLog::create([
             'archive_container_id' => $archiveContainer->id,
             'user_id' => auth()->id(),
@@ -881,18 +927,45 @@ class ArchiveContainerController extends Controller
             'action' => 'move-archive',
         ]);
 
-        if ($container) {
-            // $archiveContainer->number_container = $container;
-            $archiveContainer->update($container);
-            alert()->success('Success', 'Arsip Dipindahkan!');
-        } else {
-            alert()->error('Error', 'Gagal Melakukan Eksekusi!');
-            return redirect()->back();
+        // Update data lainnya
+        $archiveContainer->update($container);
+
+        alert()->success('Success', 'Arsip berhasil dipindahkan!');
+        return back();
+    }
+
+
+    public function exportArchiveContainer(Request $request)
+    {
+        // dd($request->all());
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $numberBox = $request->get('numberBox');
+        $division = $request->get('division');
+
+        return Excel::download(new ArchiveContainerExport($startDate, $endDate, $numberBox, $division), 'exportArchiveContainers.xlsx');
+    }
+
+    public function printSelected(Request $request)
+    {
+
+        $containerBox = ContainerLocation::find($request->input('number_container_id'));
+
+        if ($containerBox->archiveContainer->count() <= 0) {
+            alert()->error(
+                'Error',
+                'Tidak ada dokumen di box '.
+                str_pad($containerBox->number_container, 3, '0', STR_PAD_LEFT).
+                '!'
+            );
+
+            return back();
         }
 
-        // dd($request->number_container);
 
-        // $archiveContainer->save();
-        return redirect()->back();
+        return view('components.qr-code.archive-qr.print-selected-barcode-archive', compact('containerBox'));
+
+
     }
+
 }

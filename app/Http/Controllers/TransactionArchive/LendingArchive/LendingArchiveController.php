@@ -239,10 +239,10 @@ class LendingArchiveController extends Controller
             $archiveStatus->update(['status' => 1, 'is_lend' => false]);
         }
 
-        $lending->forceDelete();
+        $lending->delete();
 
         // Delete associated LendingArchive records
-        LendingArchive::where('lending_id', $id)->forceDelete();
+        LendingArchive::where('lending_id', $id)->delete();
 
         alert()->success('Sukses', 'Data berhasil dihapus');
         return back();

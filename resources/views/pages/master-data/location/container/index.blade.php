@@ -114,6 +114,20 @@
   </script>
 
   <script>
+    $(document).on('click', '.qr-button', function() {
+      var button = $(this);
+
+      // Tandai sudah diklik (misalnya dengan class atau teks)
+      button.removeClass('btn-info').addClass('btn-outline-secondary');
+      // button.html('<i class="bi bi-qr-code-scan"></i>');
+
+      // Optional: Disable button untuk cegah klik ulang
+      // button.prop('disabled', true);
+    });
+  </script>
+
+
+  <script>
     jQuery(document).ready(function($) {
       $('#location-container-table').DataTable({
         processing: true,

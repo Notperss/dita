@@ -60,7 +60,11 @@ Route::get('/archives/search', [ArchiveContainerController::class, 'search'])->n
 Route::get('/', function () {
     // cek apakah sudah login atau belum
     if (Auth::user() != null) {
-        return redirect()->intended('/dashboard');
+        if (Auth::user('folder-division') != null) {
+            return redirect()->route('folder.index');
+        } else {
+            return redirect()->route('dashboard.index');
+        }
     }
     return view('auth.login');
 });
@@ -117,10 +121,15 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::get('/lock/{id}', 'lock')->name('lock');
         Route::get('/move-archive/{id}', 'moveArchive')->name('moveArchive');
         Route::put('/moving/{id}', 'movingArchive')->name('movingArchive');
+        Route::get('/export-archiveContainers', 'exportArchiveContainer')->name('container.export');
+        Route::post('/selected-printed-box', 'printSelected')->name('container.print');
     });
 
     route::controller(ActivityLogController::class)->group(function () {
         Route::post('view-file/{id}', 'viewFileArchive')->name('view.file.archive');
+        Route::get('view-file/{id}', function () {
+            abort(404); // This will trigger a 404 response for GET requests
+        });
         Route::get('download-file/{id}', 'downloadFileArchive')->name('download.file.archive');
         Route::get('download-file-folder/{id}', 'downloadFileFolder')->name('download.file.folder');
     });
@@ -169,6 +178,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
 Route::group(['middleware' => ['web', 'auth', 'verified']], function () {
     Route::resource('dashboard', DashboardController::class)->only('index');
+    Route::get('dita/arsip/chart-data', [DashboardController::class, 'getChartData'])->name('archive.chart-data');
+    Route::get('dita/arsip/lending-chart-data', [DashboardController::class, 'getLendingChartData']);
+
+
     Route::resource('user', UserManagementController::class)->only('index', 'store', 'update', 'destroy');
 
     Route::prefix('user')->group(function () {
